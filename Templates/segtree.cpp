@@ -83,7 +83,7 @@ struct SegTree
 			return pQuery(node*2, L, M, pos);
 		else
 			return pQuery(node*2 + 1, M + 1, R, pos);
-	}	
+	}
 
 	void Update(int node, int L, int R, int i, int j, int val)
 	{
