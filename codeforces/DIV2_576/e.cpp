@@ -48,6 +48,14 @@ const int nax = 2e5 + 10;
 
 void solve()
 {
+	srand(time(NULL));
+	int n = 5 + rand() % (10);
+	int i = rand() % mod;
+	cout << n << ' ' << i << '\n';
+	while (n--)
+	{
+		cout << rand() % mod << ' ';
+	}
 }
 
 int main()
