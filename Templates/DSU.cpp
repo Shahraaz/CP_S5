@@ -1,7 +1,7 @@
 class UnionFind
 { // OOP style
 private:
-    vi p, rank, setSize; // remember: vi is vector<int>
+    vector<int> p, rank, setSize; // remember: vi is vector<int>
     int numSets;
 
 public:
@@ -16,7 +16,7 @@ public:
     }
     int findSet(int i) { return (p[i] == i) ? i : (p[i] = findSet(p[i])); }
     bool isSameSet(int i, int j) { return findSet(i) == findSet(j); }
-    void unionSet(int i, int j)
+    bool unionSet(int i, int j)
     {
         if (!isSameSet(i, j))
         {
@@ -35,7 +35,9 @@ public:
                 if (rank[x] == rank[y])
                     rank[y]++;
             }
+            return true;
         }
+        return false;
     }
     int numDisjointSets() { return numSets; }
     int sizeOfSet(int i) { return setSize[findSet(i)]; }
