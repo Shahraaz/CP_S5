@@ -1,20 +1,20 @@
 int _n = 1e5 + 10;
-vector<ll> Fact(_n), Inv(_n);
-int kmod = 1000000007;
+vector<int> Fact(_n), Inv(_n);
+const int kmod = 1000000007;
 
-ll mul(ll a, ll b)
+int mul(int a, int b, int mod = kmod)
 {
-	return a * b % kmod;
+	return (long long)a * b % mod;
 }
 
-ll power(int base, int index)
+int power(int base, int index, int mod = kmod)
 {
 	if (index == 0)
 		return 1;
-	ll temp = power(base, index / 2);
-	temp = mul(temp, temp);
+	int temp = power(base, index / 2, mod);
+	temp = mul(temp, temp, mod);
 	if (index & 1)
-		temp = mul(temp, base);
+		temp = mul(temp, base, mod);
 	return temp;
 }
 
@@ -28,7 +28,7 @@ void pre()
 		Inv[i] = mul(Inv[i + 1], (1 + i));
 }
 
-ll ncr(int n, int r)
+int ncr(int n, int r)
 {
 	if (n < 0 || r < 0 || n - r < 0)
 		return 0;

@@ -45,23 +45,27 @@ const long long mod = 1000000007;
 auto TimeStart = chrono::steady_clock::now();
 
 const int nax = 2e5 + 10;
-
 struct Node
 {
-	pair<int, int> val;
-	Node(int one = mod, int two = mod)
-	{
-		val.f = min(one, two);
-		val.s = max(one, two);
-	}
+	ll val;
+	Node(int one = 0) : val(one) {}
 	Node operator+(const Node &rhs)
 	{
 		Node a = *this;
-		a.val.f = min(this->val.f, rhs.val.f);
-		a.val.s = min(max(this->val.f, rhs.val.f), min(this->val.s, rhs.val.s));
+		a.val = max(a.val, rhs.val);
 		return a;
 	}
 };
+ostream &operator<<(ostream &out, const Node &p)
+{
+	out << p.val;
+	return out;
+}
+istream &operator>>(istream &in, Node &p)
+{
+	in >> p.val;
+	return in;
+}
 
 struct Segtree
 {
@@ -194,68 +198,43 @@ struct Segtree
 	}
 };
 
+int n;
+vector<Node> a;
+
 void solve()
 {
-	int n, m, x;
-	cin >> n >> m;
-	vector<Segtree> Tree(10, Segtree(n));
+	db("Start Db");
+	cin >> n;
+	a = vector<Node>(n);
+	db("N taken", a.size());
 	for (int i = 0; i < n; ++i)
 	{
-		cin >> x;
-		auto str = to_string(x);
-		int n = str.length();
-		str = string(10 - n, '0') + str;
-		db(n, str);
-		for (int j = 0; j < 10; ++j)
-			if (str[j] != '0')
-			{
-				Tree[j].update(i, Node(x));
-				// auto temp = Tree[j].query(i).val;
-				// db(temp);
-			}
-			else
-			{
-				Tree[j].update(i, Node());
-				// auto temp = Tree[j].query(i).val;
-				// db(temp);
-			}
+		cin >> a[i];
 	}
-	int ch, i, l, r;
-	while (m--)
+	db("Arr taken");
+	Segtree Tree(n);
+	Tree.build(a);
+	db("Tree Built");
+	int q, ch, p;
+	Node x;
+	cin >> q;
+	while (q--)
 	{
 		cin >> ch;
 		if (ch == 1)
 		{
-			cin >> i >> x;
-			--i;
-			auto str = to_string(x);
-			str = string(10 - str.length(), '0') + str;
-			for (int j = 0; j < 10; ++j)
-				if (str[j] != '0')
-					Tree[j].update(i, Node(x));
-				else
-					Tree[j].update(i, Node());
+			cin >> p >> x;
+			--p;
+			Tree.update(p, x);
 		}
 		else
 		{
-			cin >> l >> r;
-			--l;
-			--r;
-			int sum = INT_MAX;
-			for (int j = 0; j < 10; ++j)
-			{
-				auto temp = Tree[j].query(l, r);
-				db(temp.val, l, r, j);
-				// ret = ret + temp;
-				if (temp.val.s != mod)
-					sum = min(sum, temp.val.f + temp.val.s);
-			}
-			if (sum < INT_MAX)
-				cout << sum << '\n';
-			else
-				cout << -1 << '\n';
+			cin >> x;
+			Tree.update(0, n - 1, x);
 		}
 	}
+	for (int i = 0; i < n; ++i)
+		cout << Tree.query(i) << ' ';
 }
 
 int main()
@@ -268,7 +247,7 @@ int main()
 #endif
 	while (t--)
 		solve();
-#ifdef WIN32
+#ifdef TIME
 	cerr << "\n\nTime elapsed: " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " seconds.\n";
 #endif
 	return 0;

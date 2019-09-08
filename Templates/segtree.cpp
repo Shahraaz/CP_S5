@@ -1,146 +1,152 @@
-const int N=5e5+5;
-
-struct data
+struct Node
 {
-	//Use required attributes
-	int mn;
-
-	//Default Values
-	data() : mn(1e9) {};
+	long long val;
+	Node(int one = 0) : val(one) {}
+	Node operator+(const Node &rhs)
+	{
+		Node a = *this;
+		a.val = max(a.val, rhs.val);
+		return a;
+	}
 };
-
-struct SegTree
+ostream &operator<<(ostream &out, const Node &p)
 {
-	int N;
-	vector<data> st;
-	vector<bool> cLazy;
-	vector<int> lazy;
+	out << p.val;
+	return out;
+}
+istream &operator>>(istream &in, Node &p)
+{
+	in >> p.val;
+	return in;
+}
 
-	void init(int n)
+struct Segtree
+{
+	vector<Node> Seg, Lazy;
+	vector<Node> Base;
+	vector<bool> isLazy;
+	int n;
+	Segtree(int n = 2e5)
 	{
-		N = n;
-		st.resize(4 * N + 5);
-		cLazy.assign(4 * N + 5, false);
-		lazy.assign(4 * N + 5, 0);
+		this->n = n;
+		Seg.resize(4 * n + 10);
+		Lazy.resize(4 * n + 10);
+		isLazy.resize(4 * n + 10);
 	}
-
-	//Write reqd merge functions
-	void merge(data &cur, data &l, data &r) 
+	void merge(Node &curr, Node &l, Node &r)
 	{
-		cur.mn = min(l.mn, r.mn);
+		curr = l + r;
 	}
-
 	void propagate(int node, int L, int R)
 	{
-		if(L != R)
+		if (isLazy[node])
 		{
-			cLazy[node*2] = 1;
-			cLazy[node*2 + 1] = 1;
-			lazy[node*2] = lazy[node];
-			lazy[node*2 + 1] = lazy[node]; 
+			isLazy[node] = false;
+			Seg[node] = Seg[node] + Lazy[node];
+			if (L != R)
+			{
+				Lazy[2 * node] = Lazy[2 * node] + Lazy[node];
+				Lazy[2 * node + 1] = Lazy[2 * node + 1] + Lazy[node];
+				isLazy[2 * node] = true;
+				isLazy[2 * node + 1] = true;
+			}
+			Lazy[node] = Node();
 		}
-		st[node].mn = lazy[node];
-		cLazy[node] = 0;
 	}
-
-	void build(int node, int L, int R)
+	void build(int node, int start, int end)
 	{
-		if(L==R)
+		if (start == end)
 		{
-			st[node].mn = 1e9;
+			Seg[node] = Base[start];
 			return;
 		}
-		int M=(L + R)/2;
-		build(node*2, L, M);
-		build(node*2 + 1, M + 1, R);
-		merge(st[node], st[node*2], st[node*2+1]);
+		int mid = (start + end) / 2;
+		build(2 * node, start, mid);
+		build(2 * node + 1, mid + 1, end);
+		merge(Seg[node], Seg[2 * node], Seg[2 * node + 1]);
 	}
-
-	data Query(int node, int L, int R, int i, int j)
+	void build(vector<Node> &Arr)
 	{
-		if(cLazy[node])
-			propagate(node, L, R);
-		if(j<L || i>R)
-			return data();
-		if(i<=L && R<=j)
-			return st[node];
-		int M = (L + R)/2;
-		data left=Query(node*2, L, M, i, j);
-		data right=Query(node*2 + 1, M + 1, R, i, j);
-		data cur;
-		merge(cur, left, right);
-		return cur;
+		Base = Arr;
+		n = Arr.size();
+		Seg.resize(4 * n + 10);
+		Lazy.resize(4 * n + 10);
+		isLazy.resize(4 * n + 10);
+		build(1, 0, n - 1);
 	}
-
-	data pQuery(int node, int L, int R, int pos)
+	Node Query(int node, int start, int end, int qstart, int qend)
 	{
-		if(cLazy[node])
-			propagate(node, L, R);
-		if(L == R)
-			return st[node];
-		int M = (L + R)/2;
-		if(pos <= M)
-			return pQuery(node*2, L, M, pos);
+		propagate(node, start, end);
+		if (qend < start || qstart > end || start > end)
+			return Node();
+		if (qstart <= start && end <= qend)
+			return Seg[node];
+		int mid = (start + end) / 2;
+		Node l = Query(2 * node, start, mid, qstart, qend);
+		Node r = Query(2 * node + 1, mid + 1, end, qstart, qend);
+		Node ret;
+		merge(ret, l, r);
+		return ret;
+	}
+	Node qQuery(int node, int start, int end, int pos)
+	{
+		propagate(node, start, end);
+		if (start == end)
+			return Seg[node];
+		int mid = (start + end) / 2;
+		if (pos <= mid)
+			return qQuery(2 * node, start, mid, pos);
+		return qQuery(2 * node + 1, mid + 1, end, pos);
+	}
+	void Update(int node, int start, int end, int qstart, int qend, Node val)
+	{
+		propagate(node, start, end);
+		if (qend < start || qstart > end || start > end)
+			return;
+		if (qstart <= start && end <= qend)
+		{
+			isLazy[node] = true;
+			Lazy[node] = val;
+			propagate(node, start, end);
+			return;
+		}
+		int mid = (start + end) / 2;
+		Update(2 * node, start, mid, qstart, qend, val);
+		Update(2 * node + 1, mid + 1, end, qstart, qend, val);
+		merge(Seg[node], Seg[2 * node], Seg[2 * node + 1]);
+	}
+	void pUpdate(int node, int start, int end, int pos, Node val)
+	{
+		propagate(node, start, end);
+		if (start == end)
+		{
+			isLazy[node] = true;
+			Seg[node] = Node();
+			Lazy[node] = val;
+			propagate(node, start, end);
+			return;
+		}
+		int mid = (start + end) / 2;
+		if (pos <= mid)
+			pUpdate(2 * node, start, mid, pos, val);
 		else
-			return pQuery(node*2 + 1, M + 1, R, pos);
+			pUpdate(2 * node + 1, mid + 1, end, pos, val);
+		merge(Seg[node], Seg[2 * node], Seg[2 * node + 1]);
 	}
-
-	void Update(int node, int L, int R, int i, int j, int val)
+	Node query(int pos)
 	{
-		if(cLazy[node])
-			propagate(node, L, R);
-		if(j<L || i>R)
-			return;
-		if(i<=L && R<=j)
-		{
-			cLazy[node] = 1;
-			lazy[node] = val;
-			propagate(node, L, R);
-			return;
-		}
-		int M = (L + R)/2;
-		Update(node*2, L, M, i, j, val);
-		Update(node*2, M + 1, R, i, j, val);
-		merge(st[node], st[node*2], st[node*2 + 1]);
+		return qQuery(1, 0, n - 1, pos);
 	}
-
-	void pUpdate(int node, int L, int R, int pos, int val)
+	Node query(int left, int right)
 	{
-		if(cLazy[node])
-			propagate(node, L, R);
-		if(L == R)
-		{
-			cLazy[node] = 1;
-			lazy[node] = val;
-			propagate(node, L, R);
-			return;
-		}
-		int M = (L + R)/2;
-		if(pos <= M)
-			pUpdate(node*2, L, M, pos, val);
-		else
-			pUpdate(node*2 + 1, M + 1, R, pos, val);
-		merge(st[node], st[node*2], st[node*2 + 1]);
+		return Query(1, 0, n - 1, left, right);
 	}
-
-	data query(int pos)
+	void update(int pos, Node val)
 	{
-		return pQuery(1, 1, N, pos);
+		pUpdate(1, 0, n - 1, pos, val);
 	}
-
-	data query(int l, int r)
+	void update(int start, int end, Node val)
 	{
-		return Query(1, 1, N, l, r);
-	}
-
-	void update(int pos, int val)
-	{
-		pUpdate(1, 1, N, pos, val);
-	}
-
-	void update(int l, int r, int val)
-	{
-		Update(1, 1, N, l, r, val);
+		Update(1, 0, n - 1, start, end, val);
 	}
 };
-
