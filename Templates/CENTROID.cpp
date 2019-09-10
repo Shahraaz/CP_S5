@@ -43,4 +43,8 @@ struct CentroidDecomposition
 			if (!Computed[child])
 				decompose(child, centroid);
 	}
+	int getPar(int node)
+	{
+		return parentInCentroid[node];
+	}
 };

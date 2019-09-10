@@ -1,3 +1,7 @@
+//Here it is an unweighted tree
+//If you want to solve for thath then
+//You have to go for Dist(a,b) = Dist(a) + Dist(b) - 2*Dist(lca(a,b))
+// where Dist(a) is distance from Root to a;
 struct LeastCommonAncestor
 {
 	vector<int> Level;

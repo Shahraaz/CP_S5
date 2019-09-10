@@ -51,6 +51,7 @@ int subTreeSize[nax];
 bool computed[nax];
 int curreNode;
 vector<int> centroidParent;
+map<int, ll> Dist[nax];
 
 void dfs1(int node, int p)
 {
@@ -68,24 +69,74 @@ int getCentroid(int node, int p)
 {
 	for (auto child : Adj[node])
 		if (child.f != p && !computed[child.f])
-			if (subTreeSize[child.f] > curreNode/2)
+			if (subTreeSize[child.f] > curreNode / 2)
 				return getCentroid(child.f, node);
 	return node;
 }
 
 void decompose(int node, int p)
 {
+	db("Decompose", node);
 	curreNode = 0;
 	dfs1(node, p);
 	int centroid = getCentroid(node, node);
-	db(node, centroid);
 	centroidParent[centroid] = p;
 	if (p == -1)
 		centroidParent[centroid] = centroid;
+	queue<pair<int, ll>> Q;
+	Q.push({centroid, 0});
+	set<int> S;
 	computed[centroid] = true;
+	while (!Q.empty())
+	{
+		auto top = Q.front();
+		Q.pop();
+		if (S.count(top.f))
+			continue;
+		Dist[centroid][top.f] = top.s;
+		S.insert(top.f);
+		for (auto child : Adj[centroid])
+			if (!computed[child.f])
+				Q.push({child.f, top.s + child.s});
+	}
+	db(centroid);
+	pc(Dist[centroid]);
 	for (auto child : Adj[centroid])
 		if (!computed[child.f])
 			decompose(child.f, centroid);
+}
+
+int white[nax];
+ll ans = 0;
+
+priority_queue<pair<ll, int>> Q[nax];
+
+void update(int node)
+{
+	white[node] = 1 - white[node];
+	if (white[node])
+	{
+		int curr = node;
+		while (true)
+		{
+			Q[curr].push({Dist[curr][node], node});
+			if(Q[curr].size() > 1)
+			{
+				auto top = Q[curr].top();
+				Q[curr].pop();
+				ans = max(ans,Q[curr].top().f + top.f);
+				Q[curr].push(top);
+			}
+			int par = centroidParent[curr];
+			if (par == curr)
+				break;
+			curr = par;
+		}
+	}
+	else
+	{
+		
+	}
 }
 
 void solve()
@@ -102,6 +153,8 @@ void solve()
 	}
 	decompose(0, -1);
 	pc(centroidParent);
+	for (int i = 0; i < n; ++i)
+		update(i);
 	
 }
 
