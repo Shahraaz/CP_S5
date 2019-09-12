@@ -6,8 +6,9 @@ struct LeastCommonAncestor
 {
 	vector<int> Level;
 	vector<vector<int>> dp;
-	vector<vector<int>> &Adj;
+	vector<vector<int>> Adj;
 	int Log;
+	LeastCommonAncestor() {}
 	LeastCommonAncestor(vector<vector<int>> &Tree) : Adj(Tree)
 	{
 		Log = 20;
