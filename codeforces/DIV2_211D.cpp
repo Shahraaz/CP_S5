@@ -57,71 +57,53 @@ using ll = long long;
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 3e5 + 10, mod = 1000000007, LOG = 20;
-int LogBase[nax], a[LOG][nax], ans[nax];
+const int nax = 2e5 + 10, mod = 1000000007;
+vector<int> b, p;
+int n, m, a;
 
-int getMin(int l, int r)
+bool solve(int len, ll &cost)
 {
-	int k = LogBase[r - l];
-	return min(a[k][l], a[k][r - (1 << k)]);
+	ll bud = 0;
+	cost = 0;
+	for (int i = 0; i < len; ++i)
+		if (p[i] > b[i + n - len])
+			bud += p[i] - b[i + n - len];
+	// db(bud, len, cost);
+	return bud <= a;
 }
 
 void solve(int caseNo)
 {
-	int n;
-	cin >> n;
-	db("here");
-	for (int i = 2; i <= n; ++i)
-		LogBase[i] = LogBase[i / 2] + 1;
-	db("here");
-	for (int i = 0; i < n; ++i)
+	cin >> n >> m >> a;
+	b.resize(n);
+	p.resize(m);
+	for (auto &x : b)
+		cin >> x;
+	for (auto &x : p)
+		cin >> x;
+	sort(b.begin(), b.end());
+	sort(p.begin(), p.end());
+	pc(b, p);
+	int low = 0, high = min(n, m);
+	long long r, s;
+	r = s = 0;
+	while (low <= high)
 	{
-		cin >> a[0][i];
-		a[0][i + n + n] = a[0][i + n] = a[0][i];
-	}
-	db("here");
-	for (int k = 0; k < LOG - 1; ++k)
-		for (int i = 0; i + (1 << k) <= 3 * n; ++i)
-			a[k + 1][i] = min(a[k][i], a[k][i + (1 << k)]);
-	db("here");
-	int mx = a[0][n - 1];
-	ans[n - 1] = -1;
-	for (int i = n; i < 3 * n; ++i)
-	{
-		if (2 * a[0][i] < mx)
+		int mid = (low + high) / 2;
+		ll cost;
+		if (solve(mid, cost))
 		{
-			ans[n - 1] = i - n + 1;
-			break;
+			low = mid + 1;
+			r = mid;
+			s = cost;
 		}
-		mx = max(mx, a[0][i]);
+		else
+			high = mid - 1;
 	}
-	if (ans[n - 1] == -1)
-	{
-		for (int i = 0; i < n; ++i)
-			cout << -1 << ' ';
-		return;
-	}
-	for (int i = n - 2; i >= 0; --i)
-	{
-		int low = 1, high = ans[i + 1] + 1, Ans = 1;
-		db(i, low, high);
-		while (low <= high)
-		{
-			int mid = (low + high) / 2;
-			int temp = getMin(i, i + mid);
-			db(i, i + mid, temp);
-			if (a[0][i] > 2 * temp)
-				high = mid - 1;
-			else
-			{
-				low = mid + 1;
-				Ans = mid;
-			}
-		}
-		ans[i] = Ans;
-	}
-	for (int i = 0; i < n; ++i)
-		cout << ans[i] << ' ';
+	s = 0;
+	for (int i = 0; i < r; ++i)
+		s += p[i];
+	cout << r << ' ' << max(0LL, s - a) << '\n';
 }
 
 int main()

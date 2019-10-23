@@ -57,71 +57,109 @@ using ll = long long;
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 3e5 + 10, mod = 1000000007, LOG = 20;
-int LogBase[nax], a[LOG][nax], ans[nax];
+const int nax = 3e5 + 10, mod = 1000000007;
+vector<int> G[nax];
+int par[nax], Size[nax], Diam[nax];
+bool vis[nax];
 
-int getMin(int l, int r)
+int find(int u)
 {
-	int k = LogBase[r - l];
-	return min(a[k][l], a[k][r - (1 << k)]);
+	if (u == par[u])
+		return u;
+	return par[u] = find(par[u]);
+}
+
+bool Union(int u, int v)
+{
+	u = find(u);
+	v = find(v);
+	if (u == v)
+		return false;
+	if (Size[u] < Size[v])
+		swap(u, v);
+	par[v] = u;
+	Size[u] += Size[v];
+	return true;
+}
+
+int maxDepth, Node;
+void dfs(int node, int par, int depth)
+{
+	// db(node, par, depth);
+	if (depth > maxDepth)
+	{
+		maxDepth = depth;
+		Node = node;
+	}
+	for (auto child : G[node])
+		if (child != par)
+			dfs(child, node, depth + 1);
+}
+
+int diam(int node)
+{
+	maxDepth = -1;
+	dfs(node, -1, 0);
+	maxDepth = -1;
+	dfs(Node, -1, 0);
+	// db(node, maxDepth);
+	return maxDepth;
+}
+
+int rad(int node)
+{
+	return (Diam[node] + 1) / 2;
 }
 
 void solve(int caseNo)
 {
-	int n;
-	cin >> n;
-	db("here");
-	for (int i = 2; i <= n; ++i)
-		LogBase[i] = LogBase[i / 2] + 1;
-	db("here");
-	for (int i = 0; i < n; ++i)
+	int n, m, u, v, q;
+	cin >> n >> m >> q;
+	for (int i = 0; i <= n; ++i)
 	{
-		cin >> a[0][i];
-		a[0][i + n + n] = a[0][i + n] = a[0][i];
+		par[i] = i;
+		Size[i] = 1;
 	}
-	db("here");
-	for (int k = 0; k < LOG - 1; ++k)
-		for (int i = 0; i + (1 << k) <= 3 * n; ++i)
-			a[k + 1][i] = min(a[k][i], a[k][i + (1 << k)]);
-	db("here");
-	int mx = a[0][n - 1];
-	ans[n - 1] = -1;
-	for (int i = n; i < 3 * n; ++i)
+	for (int i = 0; i < m; ++i)
 	{
-		if (2 * a[0][i] < mx)
+		cin >> u >> v;
+		G[u].pb(v);
+		G[v].pb(u);
+		Union(u, v);
+	}
+	for (int i = 1; i <= n; ++i)
+	{
+		// db(i);
+		int u = find(i);
+		// db(u, i);
+		if (vis[u])
+			continue;
+		vis[u] = true;
+		Diam[u] = diam(u);
+	}
+	int ch;
+	while (q--)
+	{
+		cin >> ch;
+		switch (ch)
 		{
-			ans[n - 1] = i - n + 1;
+		case 1:
+			cin >> u;
+			cout << Diam[find(u)] << '\n';
+			break;
+		case 2:
+			cin >> u >> v;
+			u = find(u);
+			v = find(v);
+			if (Union(u, v))
+			{
+				Diam[find(u)] = max(Diam[u], max(Diam[v], rad(u) + rad(v) + 1));
+				db(Diam[find(u)], find(u), find(v));
+			}
+		default:
 			break;
 		}
-		mx = max(mx, a[0][i]);
 	}
-	if (ans[n - 1] == -1)
-	{
-		for (int i = 0; i < n; ++i)
-			cout << -1 << ' ';
-		return;
-	}
-	for (int i = n - 2; i >= 0; --i)
-	{
-		int low = 1, high = ans[i + 1] + 1, Ans = 1;
-		db(i, low, high);
-		while (low <= high)
-		{
-			int mid = (low + high) / 2;
-			int temp = getMin(i, i + mid);
-			db(i, i + mid, temp);
-			if (a[0][i] > 2 * temp)
-				high = mid - 1;
-			else
-			{
-				low = mid + 1;
-				Ans = mid;
-			}
-		}
-		ans[i] = Ans;
-	}
-	for (int i = 0; i < n; ++i)
-		cout << ans[i] << ' ';
 }
 
 int main()

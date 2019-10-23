@@ -57,71 +57,97 @@ using ll = long long;
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 3e5 + 10, mod = 1000000007, LOG = 20;
-int LogBase[nax], a[LOG][nax], ans[nax];
+const int nax = 2e5 + 10, mod = 1000000007;
 
-int getMin(int l, int r)
+struct Line
 {
-	int k = LogBase[r - l];
-	return min(a[k][l], a[k][r - (1 << k)]);
+	mutable long long k, m;
+	mutable function<const Line *()> succ;
+	bool operator<(const Line &o) const
+	{
+		return k > o.k;
+	}
+	bool operator<(const long long &_p) const
+	{
+		const Line *s = succ();
+		if (s == nullptr)
+			return false;
+		return (m + k * _p) < (s->m + s->k * _p);
+	}
+};
+
+ostream &operator<<(ostream &out, const Line &p)
+{
+	out << "slope " << p.k << " constant " << p.m << ' ';
+	return out;
 }
+//Max Query
+
+struct lineContainer : multiset<Line, less<>>
+{
+	bool bad(iterator y)
+	{
+		auto z = next(y);
+		if (y == begin())
+		{
+			if (z == end())
+				return false;
+			return y->k == z->k && y->m <= z->m;
+		}
+		auto x = prev(y);
+		if (z == end())
+			return y->k == x->k && y->m <= x->m;
+		return 1.0L * (x->m - y->m) * (y->k - z->k) >= 1.0L * (y->k - x->k) * (z->m - y->m);
+	}
+	void add(long long k, long long m)
+	{
+		auto y = insert({k, m});
+		y->succ = [=] { return next(y) == end() ? nullptr : &*(next(y)); };
+		if (bad(y))
+		{
+			erase(y);
+			return;
+		}
+		while (next(y) != end() && bad(next(y)))
+			erase(next(y));
+		while (y != begin() && bad(prev(y)))
+			erase(prev(y));
+	}
+	long long query(long long x)
+	{
+		auto l = lower_bound(x);
+		// db(x, *l);
+		// pc(*this);
+		return l->k * x + l->m;
+	}
+};
 
 void solve(int caseNo)
 {
-	int n;
-	cin >> n;
-	db("here");
-	for (int i = 2; i <= n; ++i)
-		LogBase[i] = LogBase[i / 2] + 1;
-	db("here");
-	for (int i = 0; i < n; ++i)
+	int n, q;
+	cin >> n >> q;
+	lineContainer l;
+	l.add(0, 0);
+	vector<ll> speed(n + 1), pos(n + 1, 0), pTime(n + 1);
+	ll ch, cyclNo, newSpeed, Time;
+	while (q--)
 	{
-		cin >> a[0][i];
-		a[0][i + n + n] = a[0][i + n] = a[0][i];
-	}
-	db("here");
-	for (int k = 0; k < LOG - 1; ++k)
-		for (int i = 0; i + (1 << k) <= 3 * n; ++i)
-			a[k + 1][i] = min(a[k][i], a[k][i + (1 << k)]);
-	db("here");
-	int mx = a[0][n - 1];
-	ans[n - 1] = -1;
-	for (int i = n; i < 3 * n; ++i)
-	{
-		if (2 * a[0][i] < mx)
+		cin >> ch;
+		if (ch == 1)
 		{
-			ans[n - 1] = i - n + 1;
-			break;
+			cin >> Time >> cyclNo >> newSpeed;
+			ll newPos = speed[cyclNo] * (Time - pTime[cyclNo]) + pos[cyclNo];
+			l.add(newSpeed, newPos - newSpeed * Time);
+			pTime[cyclNo] = Time;
+			pos[cyclNo] = newPos;
+			speed[cyclNo] = newSpeed;
 		}
-		mx = max(mx, a[0][i]);
-	}
-	if (ans[n - 1] == -1)
-	{
-		for (int i = 0; i < n; ++i)
-			cout << -1 << ' ';
-		return;
-	}
-	for (int i = n - 2; i >= 0; --i)
-	{
-		int low = 1, high = ans[i + 1] + 1, Ans = 1;
-		db(i, low, high);
-		while (low <= high)
+		else
 		{
-			int mid = (low + high) / 2;
-			int temp = getMin(i, i + mid);
-			db(i, i + mid, temp);
-			if (a[0][i] > 2 * temp)
-				high = mid - 1;
-			else
-			{
-				low = mid + 1;
-				Ans = mid;
-			}
+			cin >> Time;
+			cout << l.query(Time) << '\n';
 		}
-		ans[i] = Ans;
 	}
-	for (int i = 0; i < n; ++i)
-		cout << ans[i] << ' ';
 }
 
 int main()

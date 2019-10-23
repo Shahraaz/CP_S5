@@ -57,71 +57,10 @@ using ll = long long;
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 3e5 + 10, mod = 1000000007, LOG = 20;
-int LogBase[nax], a[LOG][nax], ans[nax];
-
-int getMin(int l, int r)
-{
-	int k = LogBase[r - l];
-	return min(a[k][l], a[k][r - (1 << k)]);
-}
+const int nax = 2e5 + 10, mod = 1000000007;
 
 void solve(int caseNo)
 {
-	int n;
-	cin >> n;
-	db("here");
-	for (int i = 2; i <= n; ++i)
-		LogBase[i] = LogBase[i / 2] + 1;
-	db("here");
-	for (int i = 0; i < n; ++i)
-	{
-		cin >> a[0][i];
-		a[0][i + n + n] = a[0][i + n] = a[0][i];
-	}
-	db("here");
-	for (int k = 0; k < LOG - 1; ++k)
-		for (int i = 0; i + (1 << k) <= 3 * n; ++i)
-			a[k + 1][i] = min(a[k][i], a[k][i + (1 << k)]);
-	db("here");
-	int mx = a[0][n - 1];
-	ans[n - 1] = -1;
-	for (int i = n; i < 3 * n; ++i)
-	{
-		if (2 * a[0][i] < mx)
-		{
-			ans[n - 1] = i - n + 1;
-			break;
-		}
-		mx = max(mx, a[0][i]);
-	}
-	if (ans[n - 1] == -1)
-	{
-		for (int i = 0; i < n; ++i)
-			cout << -1 << ' ';
-		return;
-	}
-	for (int i = n - 2; i >= 0; --i)
-	{
-		int low = 1, high = ans[i + 1] + 1, Ans = 1;
-		db(i, low, high);
-		while (low <= high)
-		{
-			int mid = (low + high) / 2;
-			int temp = getMin(i, i + mid);
-			db(i, i + mid, temp);
-			if (a[0][i] > 2 * temp)
-				high = mid - 1;
-			else
-			{
-				low = mid + 1;
-				Ans = mid;
-			}
-		}
-		ans[i] = Ans;
-	}
-	for (int i = 0; i < n; ++i)
-		cout << ans[i] << ' ';
 }
 
 int main()
