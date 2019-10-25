@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// #define multitest 1
+#define multitest 1
 #ifdef WIN32
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -55,31 +55,63 @@ using ll = long long;
 #define f first
 #define s second
 #define pb push_back
-const long long mod = 1000000007;
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10;
+const int nax = 2e5 + 10, mod = 1000000007;
 
-void solve()
+void solve(int caseNo)
 {
-	ll n, res = 0;
-	cin >> n;
 	string s;
 	cin >> s;
-	for (int x = 0; x < 2; ++x)
+	int even, odd;
+	even = odd = 0;
+	deque<int> Odd, Even;
+	for (auto c : s)
+		if ((c - '0') % 2)
+		{
+			Odd.pb(c - '0');
+			odd++;
+		}
+		else
+		{
+			Even.pb(c - '0');
+			even++;
+		}
+	db(odd, even, s);
+	if (odd == 0 || even == 0)
 	{
-		int curr = 1;
-		for (int i = 1; i < n; ++i)
-			if (s[i] == s[i - 1])
-				curr++;
+		cout << s << '\n';
+	}
+	else
+	{
+		while (Even.size() || Odd.size())
+		{
+			if (Even.size() == 0)
+			{
+				cout << Odd.front();
+				Odd.pop_front();
+			}
+			else if (Odd.size() == 0)
+			{
+				cout << Even.front();
+				Even.pop_front();
+			}
 			else
 			{
-				res += curr - x;
-				curr = 1;
+				if (Odd.front() < Even.front())
+				{
+					cout << Odd.front();
+					Odd.pop_front();
+				}
+				else
+				{
+					cout << Even.front();
+					Even.pop_front();
+				}
 			}
-		reverse(s.begin(), s.end());
+		}
+		cout << '\n';
 	}
-	cout << n * (n - 1) / 2 - res << '\n';
 }
 
 int main()
@@ -92,9 +124,9 @@ int main()
 #ifdef multitest
 	cin >> t;
 #endif
-	while (t--)
-		solve();
-#ifdef WIN32
+	for (int i = 0; i < t; ++i)
+		solve(i);
+#ifdef TIME
 	cerr << "\n\nTime elapsed: " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " seconds.\n";
 #endif
 	return 0;

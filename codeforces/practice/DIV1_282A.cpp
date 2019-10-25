@@ -61,6 +61,38 @@ const int nax = 2e5 + 10, mod = 1000000007;
 
 void solve(int caseNo)
 {
+	string s;
+	cin >> s;
+	int n = s.length(), cnt = 0, pos = -1, total = 0;
+	db(s, n);
+	for (int i = 0; i < n; ++i)
+	{
+		total += s[i] == '(' ? 1 : -1;
+		if (s[i] == '#')
+			pos = i;
+	}
+	if (total < 0)
+	{
+		cout << -1 << '\n';
+		return;
+	}
+	int last = 1 + total;
+	total = 0;
+	for (int i = 0; i < n; ++i)
+	{
+		total += i == pos ? -last : (s[i] == '(' ? 1 : -1);
+		if (total < 0)
+		{
+			cout << -1 << '\n';
+			return;
+		}
+	}
+	for (int i = 0; i < n; ++i)
+		if (s[i] == '#')
+			if (i == pos)
+				cout << last << '\n';
+			else
+				cout << 1 << '\n';
 }
 
 int main()

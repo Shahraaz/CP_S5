@@ -55,31 +55,72 @@ using ll = long long;
 #define f first
 #define s second
 #define pb push_back
-const long long mod = 1000000007;
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10;
+const int nax = (1 << 17) + 10, mod = 1000000007;
+int n, m;
+int base[nax], tree[4 * nax], isOr[20];
+bool done = false;
 
-void solve()
+void build(int node, int start, int end, int level)
 {
-	ll n, res = 0;
-	cin >> n;
-	string s;
-	cin >> s;
-	for (int x = 0; x < 2; ++x)
+	if (start == end)
 	{
-		int curr = 1;
-		for (int i = 1; i < n; ++i)
-			if (s[i] == s[i - 1])
-				curr++;
-			else
+		tree[node] = base[start];
+		if (!done)
+		{
+			done = true;
+			bool a = true;
+			for (int i = level - 1; i >= 0; --i)
 			{
-				res += curr - x;
-				curr = 1;
+				isOr[i] = a;
+				a = !a;
 			}
-		reverse(s.begin(), s.end());
+		}
+		return;
 	}
-	cout << n * (n - 1) / 2 - res << '\n';
+	int mid = (start + end) / 2;
+	build(2 * node, start, mid, level + 1);
+	build(2 * node + 1, mid + 1, end, level + 1);
+	if (isOr[level])
+		tree[node] = tree[2 * node] | tree[2 * node + 1];
+	else
+		tree[node] = tree[2 * node] ^ tree[2 * node + 1];
+}
+
+void update(int node, int start, int end, int pos, int val, int level)
+{
+	if (start == end)
+	{
+		tree[node] = val;
+		return;
+	}
+	int mid = (start + end) / 2;
+	if (pos <= mid)
+		update(2 * node, start, mid, pos, val, level + 1);
+	else
+		update(2 * node + 1, mid + 1, end, pos, val, level + 1);
+	if (isOr[level])
+		tree[node] = tree[2 * node] | tree[2 * node + 1];
+	else
+		tree[node] = tree[2 * node] ^ tree[2 * node + 1];
+}
+
+void solve(int caseNo)
+{
+	cin >> n >> m;
+	n = 1 << n;
+	for (int i = 0; i < n; ++i)
+		cin >> base[i];
+	int pos, val;
+	build(1, 0, n - 1, 0);
+	while (m--)
+	{
+		cin >> pos >> val;
+		pos--;
+		update(1, 0, n - 1, pos, val, 0);
+		cout << tree[1] << '\n';
+	}
 }
 
 int main()
@@ -92,8 +133,8 @@ int main()
 #ifdef multitest
 	cin >> t;
 #endif
-	while (t--)
-		solve();
+	for (int i = 0; i < t; ++i)
+		solve(i);
 #ifdef WIN32
 	cerr << "\n\nTime elapsed: " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " seconds.\n";
 #endif

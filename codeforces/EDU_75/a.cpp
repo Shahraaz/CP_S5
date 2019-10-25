@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// #define multitest 1
+#define multitest 1
 #ifdef WIN32
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -55,31 +55,42 @@ using ll = long long;
 #define f first
 #define s second
 #define pb push_back
-const long long mod = 1000000007;
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10;
+const int nax = 2e5 + 10, mod = 1000000007;
 
-void solve()
+void solve(int caseNo)
 {
-	ll n, res = 0;
-	cin >> n;
 	string s;
+	vector<bool> vis(26);
 	cin >> s;
-	for (int x = 0; x < 2; ++x)
+	int n = s.length(), prev = -1, cnt = 0;
+	for (int i = 0; i < n; ++i)
 	{
-		int curr = 1;
-		for (int i = 1; i < n; ++i)
-			if (s[i] == s[i - 1])
-				curr++;
-			else
+		if (s[i] - 'a' == prev)
+		{
+			cnt++;
+		}
+		else
+		{
+			if (cnt & 1)
 			{
-				res += curr - x;
-				curr = 1;
+				if (prev >= 0)
+					vis[prev] = true;
 			}
-		reverse(s.begin(), s.end());
+			cnt = 1;
+			prev = s[i] - 'a';
+		}
 	}
-	cout << n * (n - 1) / 2 - res << '\n';
+	if (cnt & 1)
+	{
+		if (prev >= 0)
+			vis[prev] = true;
+	}
+	for (int i = 0; i < 26; ++i)
+		if (vis[i])
+			cout << char(i + 'a');
+	cout << '\n';
 }
 
 int main()
@@ -92,9 +103,9 @@ int main()
 #ifdef multitest
 	cin >> t;
 #endif
-	while (t--)
-		solve();
-#ifdef WIN32
+	for (int i = 0; i < t; ++i)
+		solve(i);
+#ifdef TIME
 	cerr << "\n\nTime elapsed: " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " seconds.\n";
 #endif
 	return 0;

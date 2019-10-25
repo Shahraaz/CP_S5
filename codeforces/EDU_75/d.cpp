@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// #define multitest 1
+#define multitest 1
 #ifdef WIN32
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -55,31 +55,57 @@ using ll = long long;
 #define f first
 #define s second
 #define pb push_back
-const long long mod = 1000000007;
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10;
+const int nax = 2e5 + 10, mod = 1000000007;
+vector<pair<int, int>> v;
+int n;
+ll L;
 
-void solve()
+bool solve(ll mid, int zz)
 {
-	ll n, res = 0;
-	cin >> n;
-	string s;
-	cin >> s;
-	for (int x = 0; x < 2; ++x)
+	priority_queue<int> Q;
+	for (int i = 0; i < n; ++i)
+		if (v[i].s >= mid)
+			Q.push(v[i].f);
+	if (Q.size() >= (n + 1) / 2)
 	{
-		int curr = 1;
-		for (int i = 1; i < n; ++i)
-			if (s[i] == s[i - 1])
-				curr++;
-			else
-			{
-				res += curr - x;
-				curr = 1;
-			}
-		reverse(s.begin(), s.end());
+		ll cost = 0, k = n + 1;
+		k /= 2;
+		while (k--)
+		{
+			auto top = Q.top();
+			Q.pop();
+			cost += max(0LL, mid - top);
+		}
+		if (cost <= L)
+			return true;
 	}
-	cout << n * (n - 1) / 2 - res << '\n';
+	return false;
+}
+
+void solve(int caseNo)
+{
+	cin >> n >> L;
+	v.resize(n);
+	for (auto &s : v)
+	{
+		cin >> s.f >> s.s;
+		L -= s.f;
+	}
+	ll res = 0, low = 0, high = 1e15;
+	while (low <= high)
+	{
+		ll mid = (low + high) / 2;
+		if (solve(mid, 0))
+		{
+			low = mid + 1;
+			res = mid;
+		}
+		else
+			high = mid - 1;
+	}
+	cout << res << '\n';
 }
 
 int main()
@@ -92,9 +118,9 @@ int main()
 #ifdef multitest
 	cin >> t;
 #endif
-	while (t--)
-		solve();
-#ifdef WIN32
+	for (int i = 0; i < t; ++i)
+		solve(i);
+#ifdef TIME
 	cerr << "\n\nTime elapsed: " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " seconds.\n";
 #endif
 	return 0;

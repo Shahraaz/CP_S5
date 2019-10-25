@@ -55,31 +55,63 @@ using ll = long long;
 #define f first
 #define s second
 #define pb push_back
-const long long mod = 1000000007;
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10;
+const int nax = 1e5 + 10, mod = 1000000007, m = 1 << 20;
+int a[nax], nxt[20][nax], ans;
+int n;
+bool f[m];
 
-void solve()
+void work(int k)
 {
-	ll n, res = 0;
-	cin >> n;
-	string s;
-	cin >> s;
-	for (int x = 0; x < 2; ++x)
+	if (f[a[k]] == 0)
+		ans++;
+	f[a[k]] = 1;
+	int cur = a[k], idx = k;
+	while (true)
 	{
-		int curr = 1;
-		for (int i = 1; i < n; ++i)
-			if (s[i] == s[i - 1])
-				curr++;
+		int next = n + 1, store = 0;
+		for (int j = 0; j < 20; ++j)
+			if (cur & (1 << j))
+				;
 			else
 			{
-				res += curr - x;
-				curr = 1;
+				if (nxt[j][idx] < next)
+				{
+					next = nxt[j][idx];
+					store = a[next];
+				}
 			}
-		reverse(s.begin(), s.end());
+		if (next == n + 1)
+			break;
+		idx = next;
+		cur = cur | store;
+		if (f[cur] == 0)
+			ans++;
+		f[cur] = 1;
 	}
-	cout << n * (n - 1) / 2 - res << '\n';
+}
+
+void solve(int caseNo)
+{
+	cin >> n;
+	for (int i = 1; i <= n; ++i)
+		cin >> a[i];
+	for (int i = n; i > 0; --i)
+	{
+		for (int j = 0; j < 20; ++j)
+		{
+			if (a[i] & (1 << j))
+				nxt[j][i] = i;
+			else
+				nxt[j][i] = nxt[j][i + 1];
+			if (nxt[j][i] == 0)
+				nxt[j][i] = n + 1;
+		}
+	}
+	for (int i = 1; i <= n; ++i)
+		work(i);
+	cout << ans << '\n';
 }
 
 int main()
@@ -92,8 +124,8 @@ int main()
 #ifdef multitest
 	cin >> t;
 #endif
-	while (t--)
-		solve();
+	for (int i = 0; i < t; ++i)
+		solve(i);
 #ifdef WIN32
 	cerr << "\n\nTime elapsed: " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " seconds.\n";
 #endif

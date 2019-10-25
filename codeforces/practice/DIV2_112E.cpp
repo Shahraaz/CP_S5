@@ -55,31 +55,30 @@ using ll = long long;
 #define f first
 #define s second
 #define pb push_back
-const long long mod = 1000000007;
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10;
+const int LOG = 22, nax = (1 << LOG), mod = 1000000007;
+int dp[nax];
 
-void solve()
+void solve(int caseNo)
 {
-	ll n, res = 0;
+	int n, x;
 	cin >> n;
-	string s;
-	cin >> s;
-	for (int x = 0; x < 2; ++x)
+	int a[n];
+	// db(LOG,nax);
+	for (int i = 0; i < (nax); ++i)
+		dp[i] = -1;
+	for (int i = 0; i < n; ++i)
 	{
-		int curr = 1;
-		for (int i = 1; i < n; ++i)
-			if (s[i] == s[i - 1])
-				curr++;
-			else
-			{
-				res += curr - x;
-				curr = 1;
-			}
-		reverse(s.begin(), s.end());
+		cin >> a[i];
+		dp[a[i]] = a[i];
 	}
-	cout << n * (n - 1) / 2 - res << '\n';
+	for (int mask = 0; mask < (nax); ++mask)
+		for (int j = 0; j < LOG; ++j)
+			if ((mask & (1 << j)))
+				dp[mask] = max(dp[mask], dp[mask ^ (1 << j)]);
+	for (int i = 0; i < n; ++i)
+		cout << dp[((nax) - 1) ^ a[i]] << ' ';
 }
 
 int main()
@@ -92,9 +91,9 @@ int main()
 #ifdef multitest
 	cin >> t;
 #endif
-	while (t--)
-		solve();
-#ifdef WIN32
+	for (int i = 0; i < t; ++i)
+		solve(i);
+#ifdef TIME
 	cerr << "\n\nTime elapsed: " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " seconds.\n";
 #endif
 	return 0;

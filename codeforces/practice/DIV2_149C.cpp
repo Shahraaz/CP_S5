@@ -55,31 +55,49 @@ using ll = long long;
 #define f first
 #define s second
 #define pb push_back
-const long long mod = 1000000007;
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10;
+const int nax = 2e5 + 10, mod = 1000000007;
+using pii = pair<int, int>;
+int f[] = {0, 0, 0, 1, 1, 1, -1, -1, -1};
+int s[] = {1, -1, 0, 1, -1, 0, 1, -1, 0};
 
-void solve()
+void solve(int caseNo)
 {
-	ll n, res = 0;
+	pair<int, int> src, dest;
+	cin >> src.f >> src.s;
+	cin >> dest.f >> dest.s;
+	int n, r, a, b;
 	cin >> n;
-	string s;
-	cin >> s;
-	for (int x = 0; x < 2; ++x)
+	set<pii> unBlocked, vis;
+	map<pii, int> dist;
+	while (n--)
 	{
-		int curr = 1;
-		for (int i = 1; i < n; ++i)
-			if (s[i] == s[i - 1])
-				curr++;
-			else
-			{
-				res += curr - x;
-				curr = 1;
-			}
-		reverse(s.begin(), s.end());
+		cin >> r >> a >> b;
+		for (int i = a; i <= b; ++i)
+			unBlocked.insert({r, i});
 	}
-	cout << n * (n - 1) / 2 - res << '\n';
+	dist[dest] = -1;
+	dist[src] = 0;
+	queue<pii> Q;
+	Q.push(src);
+	vis.insert(src);
+	while (!Q.empty())
+	{
+		auto top = Q.front();
+		Q.pop();
+		for (int i = 0; i < 9; ++i)
+		{
+			pii pp = {top.f + f[i], top.s + s[i]};
+			if (unBlocked.count(pp) && !vis.count(pp))
+			{
+				vis.insert(pp);
+				dist[pp] = dist[top] + 1;
+				Q.push(pp);
+			}
+		}
+	}
+	cout << dist[dest] << '\n';
 }
 
 int main()
@@ -92,8 +110,8 @@ int main()
 #ifdef multitest
 	cin >> t;
 #endif
-	while (t--)
-		solve();
+	for (int i = 0; i < t; ++i)
+		solve(i);
 #ifdef WIN32
 	cerr << "\n\nTime elapsed: " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " seconds.\n";
 #endif

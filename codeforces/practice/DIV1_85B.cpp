@@ -55,31 +55,45 @@ using ll = long long;
 #define f first
 #define s second
 #define pb push_back
-const long long mod = 1000000007;
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10;
+const int nax = 1e5 + 10, mod = 1000000007;
+int last[nax];
 
-void solve()
+vector<int> factors(int x)
 {
-	ll n, res = 0;
-	cin >> n;
-	string s;
-	cin >> s;
-	for (int x = 0; x < 2; ++x)
+	vector<int> ret;
+	for (int i = 1; i * i <= x; ++i)
 	{
-		int curr = 1;
-		for (int i = 1; i < n; ++i)
-			if (s[i] == s[i - 1])
-				curr++;
-			else
-			{
-				res += curr - x;
-				curr = 1;
-			}
-		reverse(s.begin(), s.end());
+		if (x % i == 0)
+		{
+			ret.pb(i);
+			if (x == i * i)
+				continue;
+			ret.pb(x / i);
+		}
 	}
-	cout << n * (n - 1) / 2 - res << '\n';
+	return ret;
+}
+
+void solve(int caseNo)
+{
+	int n, x, y;
+	cin >> n;
+	int cnt = 1;
+	while (n--)
+	{
+		cin >> x >> y;
+		auto ret = factors(x);
+		int res = 0;
+		for (auto it : ret)
+			if (cnt - last[it] > y)
+				res++;
+		cout << res << '\n';
+		for (auto it : ret)
+			last[it] = cnt;
+		cnt++;
+	}
 }
 
 int main()
@@ -92,8 +106,8 @@ int main()
 #ifdef multitest
 	cin >> t;
 #endif
-	while (t--)
-		solve();
+	for (int i = 0; i < t; ++i)
+		solve(i);
 #ifdef WIN32
 	cerr << "\n\nTime elapsed: " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " seconds.\n";
 #endif

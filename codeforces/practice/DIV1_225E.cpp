@@ -55,31 +55,40 @@ using ll = long long;
 #define f first
 #define s second
 #define pb push_back
-const long long mod = 1000000007;
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10;
+const int nax = 1e6 + 10, mod = 1000000007, LOG = 20;
+int cnt[1 << LOG], powe[1 << LOG];
 
-void solve()
+void solve(int caseNo)
 {
-	ll n, res = 0;
+	int n, x;
 	cin >> n;
-	string s;
-	cin >> s;
-	for (int x = 0; x < 2; ++x)
+	db(LOG, 1 << LOG);
+	powe[0] = 1;
+	for (int i = 0; i < n; i++)
 	{
-		int curr = 1;
-		for (int i = 1; i < n; ++i)
-			if (s[i] == s[i - 1])
-				curr++;
-			else
-			{
-				res += curr - x;
-				curr = 1;
-			}
-		reverse(s.begin(), s.end());
+		powe[i + 1] = (powe[i] * 2) % mod;
+		cin >> x;
+		cnt[(1 << LOG) ^ x]++;
 	}
-	cout << n * (n - 1) / 2 - res << '\n';
+	for (int i = 0; i < 20; ++i)
+		for (int mask = 0; mask < (1 << LOG); ++mask)
+			if (!(mask & (1 << i)))
+				cnt[mask | (1 << i)] += cnt[mask];
+	ll ret = 0;
+	for (int mask = 0; mask < (1 << LOG); ++mask)
+	{
+		int cnt = 0;
+		for (int i = 0; i < 20; ++i)
+			if (mask & (1 << i))
+				cnt++;
+		if (cnt & 1)
+			ret = (ret + mod - powe[cnt[mask]]) % mod;
+		else
+			ret = (ret + powe[cnt[mask]]) % mod;
+	}
+	cout << ret << '\n';
 }
 
 int main()
@@ -92,9 +101,9 @@ int main()
 #ifdef multitest
 	cin >> t;
 #endif
-	while (t--)
-		solve();
-#ifdef WIN32
+	for (int i = 0; i < t; ++i)
+		solve(i);
+#ifdef TIME
 	cerr << "\n\nTime elapsed: " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " seconds.\n";
 #endif
 	return 0;

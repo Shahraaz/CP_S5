@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// #define multitest 1
+#define multitest 1
 #ifdef WIN32
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -59,9 +59,33 @@ const long long mod = 1000000007;
 auto TimeStart = chrono::steady_clock::now();
 
 const int nax = 2e5 + 10;
+int n, h[nax], H;
 
 void solve()
 {
+	db("start");
+	cin >> H >> n;
+	ll res = 0, lf = 0;
+	for (int i = 0; i < n; ++i)
+	{
+		cin >> h[i];
+		if (i > 0)
+			if (h[i - 1] > h[i] + 1)
+			{
+				if (lf > 0)
+					res += (i - lf) & 1;
+				else
+					res += 1 - ((i - lf) & 1);
+				lf = i;
+			}
+	}
+	if (h[n - 1] > 1)
+		if (lf != 0)
+			res += (n - lf) & 1;
+		else
+			res += 1 - ((n - lf) & 1);
+	db(res);
+	cout << res << '\n';
 }
 
 int main()

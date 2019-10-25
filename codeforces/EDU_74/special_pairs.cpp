@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// #define multitest 1
+#define multitest 1
 #ifdef WIN32
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -58,28 +58,42 @@ using ll = long long;
 const long long mod = 1000000007;
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10;
+const int nax = 1e5 + 10, LOG = 22;
+ll a[nax];
+ll dp[1048576 + 5][22];
+int freq[1048576 + 5];
+int d[1000000 + 5];
 
 void solve()
 {
-	ll n, res = 0;
+	int n;
 	cin >> n;
-	string s;
-	cin >> s;
-	for (int x = 0; x < 2; ++x)
+	for (int i = 0; i < n; ++i)
 	{
-		int curr = 1;
-		for (int i = 1; i < n; ++i)
-			if (s[i] == s[i - 1])
-				curr++;
-			else
-			{
-				res += curr - x;
-				curr = 1;
-			}
-		reverse(s.begin(), s.end());
+		// db(freq[a[i]], a[i]);
+		cin >> a[i];
+		freq[a[i]]++;
 	}
-	cout << n * (n - 1) / 2 - res << '\n';
+	ll ans = 0;
+	memset(dp, 0, sizeof(dp));
+	for (int mask = 0; mask < (1 << 20); ++mask)
+	{
+		dp[mask][0] = freq[mask];
+		if (mask & 1)
+			dp[mask][0] += freq[mask ^ 1];
+		for (int p = 1; p <= 20; ++p)
+		{
+			dp[mask][p] += dp[mask][p - 1];
+			if (mask & (1 << p))
+				dp[mask][p] += dp[mask ^ (1 << p)][p - 1];
+		}
+	}
+	for (int i = 0; i < n; ++i)
+	{
+		ans += dp[(1 << 20) - 1 - a[i]][20];
+		freq[a[i]] = 0;
+	}
+	cout << ans << '\n';
 }
 
 int main()

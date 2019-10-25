@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// #define multitest 1
+#define multitest 1
 #ifdef WIN32
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -55,31 +55,92 @@ using ll = long long;
 #define f first
 #define s second
 #define pb push_back
-const long long mod = 1000000007;
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10;
+const int nax = 2e5 + 10, mod = 1000000007;
 
-void solve()
+void solve(int caseNo)
 {
-	ll n, res = 0;
+	int n;
 	cin >> n;
 	string s;
-	cin >> s;
-	for (int x = 0; x < 2; ++x)
+	vector<int> len, even, odd;
+	int zero, one, tot = 0;
+	zero = one = 0;
+	for (int i = 0; i < n; ++i)
 	{
-		int curr = 1;
-		for (int i = 1; i < n; ++i)
-			if (s[i] == s[i - 1])
-				curr++;
+		cin >> s;
+		int LL = s.length();
+		tot += LL;
+		for (auto c : s)
+			if (c == '0')
+				zero++;
 			else
-			{
-				res += curr - x;
-				curr = 1;
-			}
-		reverse(s.begin(), s.end());
+				one++;
+		if (LL & 1)
+			odd.pb(LL);
+		else
+			even.pb(LL);
 	}
-	cout << n * (n - 1) / 2 - res << '\n';
+	// sort(len.begin(), len.begin() + n);
+	// db(one, zero);
+	// pc(len);
+	// int res = 0;
+	db(one, zero);
+	pc(odd, even);
+	std::sort(odd.begin(), odd.end());
+	std::sort(even.begin(), even.end());
+	int res = 0;
+	for (auto ee : even)
+	{
+		int kk = min(ee, one / 2 * 2);
+		if (zero < (ee - kk))
+		{
+			cout << n - 1 << '\n';
+			return;
+		}
+		else
+		{
+			res++;
+			one -= kk;
+			zero -= ee - kk;
+		}
+	}
+	db(one,zero);
+	for (auto oo : odd)
+	{
+		int kk;
+		one--;
+		kk = min(oo, one / 2 * 2);
+		if (zero < (oo - kk))
+		{
+			// cout << n - 1 << '\n';
+			// return;
+		}
+		else
+		{
+			res++;
+			one -= kk;
+			zero -= oo - kk;
+			continue;
+		}
+		one++;
+		zero--;
+		kk = min(oo, one / 2 * 2);
+		if (zero < (oo - kk))
+		{
+			// cout << n - 1 << '\n';
+			// return;
+		}
+		else
+		{
+			res++;
+			one -= kk;
+			zero -= oo - kk;
+			continue;
+		}
+	}
+	cout << n << '\n';
 }
 
 int main()
@@ -92,9 +153,9 @@ int main()
 #ifdef multitest
 	cin >> t;
 #endif
-	while (t--)
-		solve();
-#ifdef WIN32
+	for (int i = 0; i < t; ++i)
+		solve(i);
+#ifdef TIME
 	cerr << "\n\nTime elapsed: " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " seconds.\n";
 #endif
 	return 0;

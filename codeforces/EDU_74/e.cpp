@@ -62,6 +62,10 @@ const int nax = 2e5 + 10;
 
 void solve()
 {
+	int n, m;
+	cin >> n >> m;
+	string s;
+	cin >> s;
 }
 
 int main()

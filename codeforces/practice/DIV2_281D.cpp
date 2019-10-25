@@ -55,31 +55,18 @@ using ll = long long;
 #define f first
 #define s second
 #define pb push_back
-const long long mod = 1000000007;
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10;
+const int nax = 2e5 + 10, mod = 1000000007;
 
-void solve()
+void solve(int caseNo)
 {
-	ll n, res = 0;
+	int n;
 	cin >> n;
-	string s;
-	cin >> s;
-	for (int x = 0; x < 2; ++x)
-	{
-		int curr = 1;
-		for (int i = 1; i < n; ++i)
-			if (s[i] == s[i - 1])
-				curr++;
-			else
-			{
-				res += curr - x;
-				curr = 1;
-			}
-		reverse(s.begin(), s.end());
-	}
-	cout << n * (n - 1) / 2 - res << '\n';
+	if ((n & 1) == 0)
+		cout << "white\n1 2\n";
+	else
+		cout << "black";
 }
 
 int main()
@@ -92,9 +79,9 @@ int main()
 #ifdef multitest
 	cin >> t;
 #endif
-	while (t--)
-		solve();
-#ifdef WIN32
+	for (int i = 0; i < t; ++i)
+		solve(i);
+#ifdef TIME
 	cerr << "\n\nTime elapsed: " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " seconds.\n";
 #endif
 	return 0;
