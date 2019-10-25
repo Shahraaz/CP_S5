@@ -1,4 +1,5 @@
 //Optimise
+//https : //www.hackerrank.com/contests/countercode/challenges/subset
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -57,38 +58,11 @@ using ll = long long;
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 1e6 + 10, mod = 1000000007, LOG = 20;
-int cnt[1 << LOG], powe[1 << LOG];
+const int nax = 2e5 + 10, mod = 1000000007;
 
 void solve(int caseNo)
 {
-	int n, x;
-	cin >> n;
-	// db(LOG, 1 << LOG);
-	powe[0] = 1;
-	for (int i = 0; i < n; i++)
-	{
-		powe[i + 1] = (powe[i] * 2LL) % mod;
-		cin >> x;
-		cnt[((1 << LOG) - 1) ^ x]++;
-	}
-	for (int i = 0; i < 20; ++i)
-		for (int mask = 0; mask < (1 << LOG); ++mask)
-			if (!(mask & (1 << i)))
-				cnt[mask | (1 << i)] += cnt[mask];
-	ll ret = 0;
-	for (int mask = 0; mask < (1 << LOG); ++mask)
-	{
-		int Cnt = 0;
-		for (int i = 0; i < 20; ++i)
-			if (mask & (1 << i))
-				Cnt++;
-		if (Cnt & 1)
-			ret = (ret + mod - powe[cnt[mask]]) % mod;
-		else
-			ret = (ret + powe[cnt[mask]]) % mod;
-	}
-	cout << ret << '\n';
+	
 }
 
 int main()
