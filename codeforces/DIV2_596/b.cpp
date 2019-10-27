@@ -1,9 +1,8 @@
 //Optimise
-//https : //www.hackerrank.com/contests/countercode/challenges/subset
 #include <bits/stdc++.h>
 using namespace std;
 
-// #define multitest 1
+#define multitest 1
 #ifdef WIN32
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -58,47 +57,67 @@ using ll = long long;
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10, mod = 1000000007, LOG = 20;
-int dp[1 << LOG], cnt[1 << LOG], pows[1 << LOG];
+const int nax = 2e5 + 10, mod = 1000000007;
+vector<int> a;
 
+struct segtree
+{
+	vector<int> Tree;
+	vector<int> a;
+	segtree(int size)
+	{
+		a.resize(size);
+		Tree.resize(4 * size + 10);
+	}
+	void update(int node, int start, int end, int pos, int dx)
+	{
+		// db(node, start, end, pos, dx);
+		if (start > end)
+			return;
+		if (start == end)
+		{
+			a[start] += dx;
+			Tree[node] = a[start] > 0;
+			return;
+		}
+		int mid = (start + end) / 2;
+		if (pos <= mid)
+			update(2 * node, start, mid, pos, dx);
+		else
+			update(2 * node + 1, mid + 1, end, pos, dx);
+		Tree[node] = Tree[2 * node] + Tree[2 * node + 1];
+	}
+};
+
+segtree S(1e6 + 10);
 void solve(int caseNo)
 {
-	int n, m, x;
-	cin >> n >> m;
-	pows[0] = 1;
-	for (int i = 1; i < (1 << LOG); ++i)
-		pows[i] = (pows[i - 1] * 2) % mod;
-	for (int i = 0; i < (1 << LOG); ++i)
-		pows[i] = (pows[i] - 1 + mod) % mod;
-	string str;
+	int n, k, d;
+	cin >> n >> k >> d;
+	a.resize(n);
 	for (int i = 0; i < n; ++i)
+		cin >> a[i];
+	map<int, int> Cnt;
+	for (int i = 0; i < d; ++i)
 	{
-		cin >> str;
-		x = 0;
-		for (int i = 0; i < m; ++i)
-			x = x * 2 + str[i] - '0';
-		dp[x]++;
+		Cnt[a[i]]++;
+		S.update(1, 0, 1e6 + 9, a[i], 1);
 	}
-	for (int i = 0; i < LOG; ++i)
-		for (int mask = 0; mask < (1 << LOG); ++mask)
-			if ((mask & (1 << i)) == 0)
-				dp[mask | (1 << i)] += dp[mask];
-	int req, ret = 0;
-	cin >> str;
-	x = 0;
-	for (int i = 0; i < m; ++i)
-		x = x * 2 + str[i] - '0';
-	req = x;
-	for (int mask = 0; mask < (1 << LOG); ++mask)
-		if ((mask | req) == req)
-		{
-			if (__builtin_popcount(mask^req) % 2)
-				ret = (ret - pows[dp[mask]] + mod) % mod;
-			else
-				ret = (ret + pows[dp[mask]]) % mod;
-		}
-	cout << ret << '\n';
+	int res = S.Tree[1];
+	for (int i = d; i < n; ++i)
+	{
+		Cnt[a[i - d]]--;
+		Cnt[a[i]]++;
+		S.update(1, 0, 1e6 + 9, a[i - d], -1);
+		S.update(1, 0, 1e6 + 9, a[i], 1);
+		res = min(res, S.Tree[1]);
+		db(i,res);
+	}
+	cout << res << '\n';
+	for (auto elem : Cnt)
+		S.update(1, 0, 1e6 + 10, elem.f, -elem.s);
 }
+
 int main()
 {
 #ifndef WIN32

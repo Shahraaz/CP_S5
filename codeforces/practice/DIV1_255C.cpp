@@ -1,5 +1,4 @@
 //Optimise
-//https : //www.hackerrank.com/contests/countercode/challenges/subset
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -58,47 +57,102 @@ using ll = long long;
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10, mod = 1000000007, LOG = 20;
-int dp[1 << LOG], cnt[1 << LOG], pows[1 << LOG];
+const int nax = 2e5 + 10, mod = 1000000007;
+int n, m, a[nax], st[nax], en[nax], depth[nax], t;
+vector<int> G[nax];
+
+void dfs(int node, int par)
+{
+	st[node] = ++t;
+	depth[node] = depth[par] + 1;
+	for (auto child : G[node])
+		if (child != par)
+			dfs(child, node);
+	en[node] = t;
+}
+
+ll Query(ll *ft, int b)
+{
+	ll sum = 0;
+	for (; b; b -= (b & (-b)))
+		sum += ft[b];
+	return sum;
+}
+
+void Update(ll *ft, int k, ll v)
+{
+	for (; k < nax; k += (k & (-k)))
+		ft[k] += v;
+}
+
+struct range_bit
+{
+	ll B1[nax], B2[nax];
+	ll query(int b)
+	{
+		return Query(B1, b) * b - Query(B2, b);
+	}
+	ll rangeQuery(int i, int j)
+	{
+		return query(j) - query(i - 1);
+	}
+	void range_update(int i, int j, ll val)
+	{
+		Update(B1, i, val);
+		Update(B1, j + 1, -val);
+		Update(B2, i, val * (i - 1));
+		Update(B2, j + 1, -val * j);
+	}
+} odd, even;
+
+void update(int x, int val)
+{
+	if (depth[x] % 2 == 0)
+		val *= -1;
+	odd.range_update(st[x], en[x], val);
+	even.range_update(st[x], en[x], -val);
+}
+
+int get(int x)
+{
+	if (depth[x] & 1)
+		return odd.rangeQuery(st[x], st[x]);
+	return even.rangeQuery(st[x], st[x]);
+}
 
 void solve(int caseNo)
 {
-	int n, m, x;
 	cin >> n >> m;
-	pows[0] = 1;
-	for (int i = 1; i < (1 << LOG); ++i)
-		pows[i] = (pows[i - 1] * 2) % mod;
-	for (int i = 0; i < (1 << LOG); ++i)
-		pows[i] = (pows[i] - 1 + mod) % mod;
-	string str;
-	for (int i = 0; i < n; ++i)
+	for (int i = 1; i <= n; ++i)
+		cin >> a[i];
+	int u, v;
+	for (int i = 0; i < n - 1; ++i)
 	{
-		cin >> str;
-		x = 0;
-		for (int i = 0; i < m; ++i)
-			x = x * 2 + str[i] - '0';
-		dp[x]++;
+		cin >> u >> v;
+		G[u].pb(v);
+		G[v].pb(u);
 	}
-	for (int i = 0; i < LOG; ++i)
-		for (int mask = 0; mask < (1 << LOG); ++mask)
-			if ((mask & (1 << i)) == 0)
-				dp[mask | (1 << i)] += dp[mask];
-	int req, ret = 0;
-	cin >> str;
-	x = 0;
-	for (int i = 0; i < m; ++i)
-		x = x * 2 + str[i] - '0';
-	req = x;
-	for (int mask = 0; mask < (1 << LOG); ++mask)
-		if ((mask | req) == req)
+	dfs(1, 1);
+	while (m--)
+	{
+		int type;
+		cin >> type;
+		switch (type)
 		{
-			if (__builtin_popcount(mask^req) % 2)
-				ret = (ret - pows[dp[mask]] + mod) % mod;
-			else
-				ret = (ret + pows[dp[mask]]) % mod;
+		case 1:
+			int x, val;
+			cin >> x >> val;
+			update(x, val);
+			break;
+
+		default:
+			cin >> x;
+			cout << a[x] + get(x) << '\n';
+			break;
 		}
-	cout << ret << '\n';
+	}
 }
+
 int main()
 {
 #ifndef WIN32

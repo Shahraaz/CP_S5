@@ -1,5 +1,4 @@
 //Optimise
-//https : //www.hackerrank.com/contests/countercode/challenges/subset
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -59,44 +58,38 @@ using ll = long long;
 auto TimeStart = chrono::steady_clock::now();
 
 const int nax = 2e5 + 10, mod = 1000000007, LOG = 20;
-int dp[1 << LOG], cnt[1 << LOG], pows[1 << LOG];
+ll dp[1 << LOG][2];
 
 void solve(int caseNo)
 {
-	int n, m, x;
-	cin >> n >> m;
-	pows[0] = 1;
-	for (int i = 1; i < (1 << LOG); ++i)
-		pows[i] = (pows[i - 1] * 2) % mod;
-	for (int i = 0; i < (1 << LOG); ++i)
-		pows[i] = (pows[i] - 1 + mod) % mod;
-	string str;
+	int n, x;
+	cin >> n;
 	for (int i = 0; i < n; ++i)
 	{
-		cin >> str;
-		x = 0;
-		for (int i = 0; i < m; ++i)
-			x = x * 2 + str[i] - '0';
-		dp[x]++;
+		cin >> x;
+		dp[x][0]++;
 	}
+	dp[0][0] = 1;
 	for (int i = 0; i < LOG; ++i)
-		for (int mask = 0; mask < (1 << LOG); ++mask)
-			if ((mask & (1 << i)) == 0)
-				dp[mask | (1 << i)] += dp[mask];
-	int req, ret = 0;
-	cin >> str;
-	x = 0;
-	for (int i = 0; i < m; ++i)
-		x = x * 2 + str[i] - '0';
-	req = x;
-	for (int mask = 0; mask < (1 << LOG); ++mask)
-		if ((mask | req) == req)
+	{
+		bool curr = (i % 2);
+		bool nest = !curr;
+		for (int mask = 1; mask < (1 << LOG); ++mask)
 		{
-			if (__builtin_popcount(mask^req) % 2)
-				ret = (ret - pows[dp[mask]] + mod) % mod;
-			else
-				ret = (ret + pows[dp[mask]]) % mod;
+			dp[mask][nest] = dp[mask][curr];
+			if (mask & (1 << i))
+				dp[mask][nest] += dp[mask][curr] * dp[mask ^ (1 << i)][curr];
 		}
+	}
+	int ret = 0;
+	bool curr = ((n - 1) % 2);
+	for (int mask = 0; mask < (1 << LOG); ++mask)
+	{
+		if (dp[mask][curr])
+			db(mask, dp[mask][curr]);
+		ret += dp[mask][curr] * (((mask * mask) % mod) * mask) % mod,
+			ret %= mod;
+	}
 	cout << ret << '\n';
 }
 int main()

@@ -1,5 +1,4 @@
 //Optimise
-//https : //www.hackerrank.com/contests/countercode/challenges/subset
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -58,47 +57,102 @@ using ll = long long;
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10, mod = 1000000007, LOG = 20;
-int dp[1 << LOG], cnt[1 << LOG], pows[1 << LOG];
+const int nax = 2e5 + 10, mod = 1000000007;
+
+bool isSq(ll num)
+{
+	return ((ll)sqrtl(num) * (ll)sqrtl(num)) == num;
+}
+
+ll red(ll num)
+{
+	ll ret = 1;
+	for (ll i = 2; i * i <= num; ++i)
+	{
+		if (num % i == 0)
+		{
+			int cnt = 0;
+			while (num % i == 0)
+			{
+				cnt++;
+				num /= i;
+			}
+			if (cnt & 1)
+				ret *= i;
+		}
+	}
+	if (num > 1)
+		ret *= num;
+	return ret;
+}
+
+ll power(ll base, int index)
+{
+	if (index == 0)
+		return 1;
+	ll temp = power(base, index / 2);
+	temp *= temp;
+	if (index & 1)
+		temp *= base;
+	return temp;
+}
 
 void solve(int caseNo)
 {
-	int n, m, x;
-	cin >> n >> m;
-	pows[0] = 1;
-	for (int i = 1; i < (1 << LOG); ++i)
-		pows[i] = (pows[i - 1] * 2) % mod;
-	for (int i = 0; i < (1 << LOG); ++i)
-		pows[i] = (pows[i] - 1 + mod) % mod;
-	string str;
-	for (int i = 0; i < n; ++i)
+	int n, k;
+	cin >> n >> k;
+	vector<ll> a(n);
+	for (auto &x : a)
+		cin >> x;
+	if (k == 2)
 	{
-		cin >> str;
-		x = 0;
-		for (int i = 0; i < m; ++i)
-			x = x * 2 + str[i] - '0';
-		dp[x]++;
-	}
-	for (int i = 0; i < LOG; ++i)
-		for (int mask = 0; mask < (1 << LOG); ++mask)
-			if ((mask & (1 << i)) == 0)
-				dp[mask | (1 << i)] += dp[mask];
-	int req, ret = 0;
-	cin >> str;
-	x = 0;
-	for (int i = 0; i < m; ++i)
-		x = x * 2 + str[i] - '0';
-	req = x;
-	for (int mask = 0; mask < (1 << LOG); ++mask)
-		if ((mask | req) == req)
+		for (int i = 0; i < n; ++i)
+			a[i] = red(a[i]);
+		sort(a.begin(), a.end());
+		ll res = 0, prev = -1, cnt = 0;
+		for (int i = 0; i < n; ++i)
 		{
-			if (__builtin_popcount(mask^req) % 2)
-				ret = (ret - pows[dp[mask]] + mod) % mod;
+			if (a[i] == prev)
+			{
+				cnt++;
+			}
 			else
-				ret = (ret + pows[dp[mask]]) % mod;
+			{
+				res += cnt * (cnt - 1);
+				cnt = 1;
+				prev = a[i];
+			}
 		}
-	cout << ret << '\n';
+		res += cnt * (cnt - 1);
+		cout << res / 2 << '\n';
+	}
+	else
+	{
+		vector<ll> LAL;
+		sort(a.begin(), a.end());
+		ll lim = a[n - 1] * a[n - 2], temp;
+		for (ll i = 1; (pow(i, k)) <= lim; ++i)
+			LAL.pb(power(i, k));
+		vector<int> Cnt(1e6, 0);
+		ll res = 0;
+		pc(LAL);
+		for (int i = 0; i < n; ++i)
+		{
+			for (auto elem : LAL)
+				if (elem % a[i] == 0)
+					if (elem <= a[n - 1] * a[i])
+					{
+						db(elem, res, Cnt[elem / a[i]], elem / a[i]);
+						res += Cnt[elem / a[i]];
+					}
+			Cnt[a[i]]++;
+			db(res, i);
+		}
+		cout << res << '\n';
+	}
+	// db(cnt);
 }
+
 int main()
 {
 #ifndef WIN32

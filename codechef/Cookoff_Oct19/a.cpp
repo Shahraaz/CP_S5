@@ -1,9 +1,8 @@
 //Optimise
-//https : //www.hackerrank.com/contests/countercode/challenges/subset
 #include <bits/stdc++.h>
 using namespace std;
 
-// #define multitest 1
+#define multitest 1
 #ifdef WIN32
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -58,47 +57,63 @@ using ll = long long;
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10, mod = 1000000007, LOG = 20;
-int dp[1 << LOG], cnt[1 << LOG], pows[1 << LOG];
-
+const int nax = 2e5 + 10, mod = 1000000007;
+int cnt[101];
 void solve(int caseNo)
 {
-	int n, m, x;
-	cin >> n >> m;
-	pows[0] = 1;
-	for (int i = 1; i < (1 << LOG); ++i)
-		pows[i] = (pows[i - 1] * 2) % mod;
-	for (int i = 0; i < (1 << LOG); ++i)
-		pows[i] = (pows[i] - 1 + mod) % mod;
-	string str;
+	int n, x, y, z;
+	cin >> n;
+	memset(cnt, 0, sizeof cnt);
 	for (int i = 0; i < n; ++i)
 	{
-		cin >> str;
-		x = 0;
-		for (int i = 0; i < m; ++i)
-			x = x * 2 + str[i] - '0';
-		dp[x]++;
+		cin >> x;
+		cnt[x]++;
 	}
-	for (int i = 0; i < LOG; ++i)
-		for (int mask = 0; mask < (1 << LOG); ++mask)
-			if ((mask & (1 << i)) == 0)
-				dp[mask | (1 << i)] += dp[mask];
-	int req, ret = 0;
-	cin >> str;
-	x = 0;
-	for (int i = 0; i < m; ++i)
-		x = x * 2 + str[i] - '0';
-	req = x;
-	for (int mask = 0; mask < (1 << LOG); ++mask)
-		if ((mask | req) == req)
+	int req = n / 4, prev = 0;
+	for (int i = 100; i >= 0; --i)
+	{
+		prev += cnt[i];
+		if (prev < req)
+			continue;
+		if (prev == req)
 		{
-			if (__builtin_popcount(mask^req) % 2)
-				ret = (ret - pows[dp[mask]] + mod) % mod;
-			else
-				ret = (ret + pows[dp[mask]]) % mod;
+			z = i;
+			break;
 		}
-	cout << ret << '\n';
+		cout << -1 << '\n';
+		return;
+	}
+	prev = 0;
+	for (int i = z - 1; i >= 0; --i)
+	{
+		prev += cnt[i];
+		if (prev < req)
+			continue;
+		if (prev == req)
+		{
+			y = i;
+			break;
+		}
+		cout << -1 << '\n';
+		return;
+	}
+	prev = 0;
+	for (int i = y - 1; i >= 0; --i)
+	{
+		prev += cnt[i];
+		if (prev < req)
+			continue;
+		if (prev == req)
+		{
+			x = i;
+			break;
+		}
+		cout << -1 << '\n';
+		return;
+	}
+	cout << x << ' ' << y << ' ' << z << '\n';
 }
+
 int main()
 {
 #ifndef WIN32

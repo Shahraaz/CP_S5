@@ -1,5 +1,4 @@
 //Optimise
-//https : //www.hackerrank.com/contests/countercode/challenges/subset
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -58,47 +57,97 @@ using ll = long long;
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10, mod = 1000000007, LOG = 20;
-int dp[1 << LOG], cnt[1 << LOG], pows[1 << LOG];
+const int nax = 2e5 + 10, mod = 1000000007;
 
 void solve(int caseNo)
 {
-	int n, m, x;
-	cin >> n >> m;
-	pows[0] = 1;
-	for (int i = 1; i < (1 << LOG); ++i)
-		pows[i] = (pows[i - 1] * 2) % mod;
-	for (int i = 0; i < (1 << LOG); ++i)
-		pows[i] = (pows[i] - 1 + mod) % mod;
-	string str;
-	for (int i = 0; i < n; ++i)
+	vector<pair<int, int>> pos;
+	int a, b;
+	string s;
+	cin >> a >> b >> s;
+	pos.pb({0, 0});
+	for (auto c : s)
 	{
-		cin >> str;
-		x = 0;
-		for (int i = 0; i < m; ++i)
-			x = x * 2 + str[i] - '0';
-		dp[x]++;
-	}
-	for (int i = 0; i < LOG; ++i)
-		for (int mask = 0; mask < (1 << LOG); ++mask)
-			if ((mask & (1 << i)) == 0)
-				dp[mask | (1 << i)] += dp[mask];
-	int req, ret = 0;
-	cin >> str;
-	x = 0;
-	for (int i = 0; i < m; ++i)
-		x = x * 2 + str[i] - '0';
-	req = x;
-	for (int mask = 0; mask < (1 << LOG); ++mask)
-		if ((mask | req) == req)
+		auto b = pos.back();
+		switch (c)
 		{
-			if (__builtin_popcount(mask^req) % 2)
-				ret = (ret - pows[dp[mask]] + mod) % mod;
-			else
-				ret = (ret + pows[dp[mask]]) % mod;
+		case 'U':
+			b.s++;
+			pos.pb(b);
+			break;
+		case 'D':
+			b.s--;
+			pos.pb(b);
+			break;
+		case 'L':
+			b.f--;
+			pos.pb(b);
+			break;
+		case 'R':
+			b.f++;
+			pos.pb(b);
+			break;
+		default:
+			break;
 		}
-	cout << ret << '\n';
+	}
+	auto back = pos.back();
+	int x = back.f, y = back.s;
+	db(x, y);
+	pos.pop_back();
+	for (auto elem : pos)
+	{
+		int a1 = a - elem.f;
+		int b1 = b - elem.s;
+		db(a1, b1);
+		if (x == 0)
+		{
+			if (y == 0)
+			{
+				if (a1 == 0 && b1 == 0)
+				{
+					cout << "Yes\n";
+					return;
+				}
+			}
+			else
+			{
+				if (a1 == 0 && b1 % y == 0)
+				{
+					if (b1 / y >= 0)
+					{
+						cout << "Yes\n";
+						return;
+					}
+				}
+			}
+		}
+		else if (y == 0)
+		{
+			if (a1 % x == 0 && b1 == 0)
+			{
+				if (a1 / x >= 0)
+				{
+					cout << "Yes\n";
+					return;
+				}
+			}
+		}
+		else
+		{
+			if (a1 % x == 0 && b1 % y == 0 && ((a1 / x) == (b1 / y)))
+			{
+				if (a1 / x >= 0)
+				{
+					cout << "Yes\n";
+					return;
+				}
+			}
+		}
+	}
+	cout << "No\n";
 }
+
 int main()
 {
 #ifndef WIN32
