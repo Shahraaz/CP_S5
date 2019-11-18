@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define multitest 1
+// #define multitest 1
 #ifdef WIN32
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -58,23 +58,38 @@ using ll = long long;
 auto TimeStart = chrono::steady_clock::now();
 
 const int nax = 2e5 + 10, mod = 1000000007;
+int n, l, r, a, b, c;
 
-int gcd(int a, int b)
+vector<ll> Solve(int lim)
 {
-	return b == 0 ? a : gcd(b, a % b);
+	vector<ll> ret(3), ret33(3);
+	ret[0] = a;
+	ret[1] = b;
+	ret[2] = c;
+	if (lim == 1)
+		return ret;
+	auto ret2 = Solve(lim - 1);
+	for (int i = 0; i < 3; ++i)
+		for (int j = 0; j < 3; ++j)
+		{
+			ret33[(i + j) % 3] += ret[i] * ret2[j];
+			ret33[(i + j) % 3] %= mod;
+		}
+	return ret33;
 }
 
 void solve(int caseNo)
 {
-	int a, b;
-	cin >> a >> b;
-	db(a, b);
-	a = gcd(a, b);
-	db(a);
-	if (a <= 1)
-		cout << "Finite\n";
-	else
-		cout << "Infinite\n";
+	cin >> n >> l >> r;
+	a = r / 3 - (l - 1) / 3;
+	l++;
+	r++;
+	b = r / 3 - (l - 1) / 3;
+	l++;
+	r++;
+	c = r / 3 - (l - 1) / 3;
+	db(a, b, c);
+	cout << Solve(n)[0] << '\n';
 }
 
 int main()

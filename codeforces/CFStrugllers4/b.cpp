@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define multitest 1
+// #define multitest 1
 #ifdef WIN32
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -59,22 +59,72 @@ auto TimeStart = chrono::steady_clock::now();
 
 const int nax = 2e5 + 10, mod = 1000000007;
 
-int gcd(int a, int b)
+vector<ll> a;
+ll tree[4 * nax];
+int n, m, l;
+
+void build(int node, int left, int right)
 {
-	return b == 0 ? a : gcd(b, a % b);
+	if (left == right)
+	{
+		tree[node] = a[left] > l;
+		db(node, tree[node], a[left]);
+		return;
+	}
+	int mid = (left + right) / 2;
+	build(2 * node, left, mid);
+	build(2 * node + 1, mid + 1, right);
+	tree[node] = tree[2 * node] + tree[2 * node + 1];
+	if (mid + 1 < n)
+		if (a[mid] > l && a[mid + 1] > l)
+			tree[node]--;
+	db(node, tree[node]);
+}
+
+void update(int node, int left, int right, int pos, int dx)
+{
+	if (left == right)
+	{
+		a[left] += dx;
+		tree[node] = a[left] > l;
+		pc(a);
+		return;
+	}
+	int mid = (left + right) / 2;
+	if (mid >= pos)
+		update(2 * node, left, mid, pos, dx);
+	else
+		update(2 * node + 1, mid + 1, right, pos, dx);
+	tree[node] = tree[2 * node] + tree[2 * node + 1];
+	if (mid + 1 < n)
+		if (a[mid] > l && a[mid + 1] > l)
+			tree[node]--;
+	db(left, right, node, tree[node]);
 }
 
 void solve(int caseNo)
 {
-	int a, b;
-	cin >> a >> b;
-	db(a, b);
-	a = gcd(a, b);
-	db(a);
-	if (a <= 1)
-		cout << "Finite\n";
-	else
-		cout << "Infinite\n";
+	cin >> n >> m >> l;
+	a.resize(n);
+	for (int i = 0; i < n; ++i)
+		cin >> a[i];
+	build(1, 0, n - 1);
+	while (m--)
+	{
+		int q;
+		cin >> q;
+		if (q == 0)
+		{
+			cout << tree[1] << '\n';
+		}
+		else
+		{
+			int p, dx;
+			cin >> p >> dx;
+			--p;
+			update(1, 0, n - 1, p, dx);
+		}
+	}
 }
 
 int main()

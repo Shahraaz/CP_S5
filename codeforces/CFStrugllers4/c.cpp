@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define multitest 1
+// #define multitest 1
 #ifdef WIN32
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -59,22 +59,43 @@ auto TimeStart = chrono::steady_clock::now();
 
 const int nax = 2e5 + 10, mod = 1000000007;
 
-int gcd(int a, int b)
+int Solve(int val)
 {
-	return b == 0 ? a : gcd(b, a % b);
+	int ret = 1;
+	if (val == 1)
+		return 1;
+	while (val >= 2)
+	{
+		ret++;
+		val -= 2;
+	}
+	return ret;
 }
 
 void solve(int caseNo)
 {
-	int a, b;
-	cin >> a >> b;
-	db(a, b);
-	a = gcd(a, b);
-	db(a);
-	if (a <= 1)
-		cout << "Finite\n";
-	else
-		cout << "Infinite\n";
+	int a;
+	cin >> a;
+	db(a, Solve(a));
+	int low = 1, high = 1e6, ans = 0;
+	while (low <= high)
+	{
+		int mid = (low + high) / 2;
+		int ret = Solve(mid);
+		db(low, high, ret);
+		if (ret == a)
+		{
+			cout << mid << ' ';
+			cout << 2 << '\n';
+			cout << 1 << ' ' << 2;
+			return;
+		}
+		if (ret > a)
+			high = mid - 1;
+		else
+			low = mid + 1;
+	}
+	cout << -1 << '\n';
 }
 
 int main()
