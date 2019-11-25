@@ -18,8 +18,7 @@ void PC(const char *name, Arg &&arg)
 	while (*name == ',' || *name == ' ')
 		name++;
 	std::cerr << name << " { ";
-	for (const auto
-     &v : arg)
+	for (const auto &v : arg)
 		cerr << v << ' ';
 	cerr << " }\n";
 }
@@ -27,7 +26,15 @@ template <typename Arg1, typename... Args>
 void PC(const char *names, Arg1 &&arg1, Args &&... args)
 {
 	while (*names == ',' || *names == ' ')
-		names++;IV2>
+		names++;
+	const char *comma = strchr(names, ',');
+	std::cerr.write(names, comma - names) << " { ";
+	for (const auto &v : arg1)
+		cerr << v << ' ';
+	cerr << " }\n";
+	PC(comma, args...);
+}
+template <typename Arg1>
 void ZZ(const char *name, Arg1 &&arg1)
 {
 	std::cerr << name << " = " << arg1 << endl;
@@ -43,48 +50,23 @@ void ZZ(const char *names, Arg1 &&arg1, Args &&... args)
 #define db(...)
 #define pc(...)
 #endif
+
 using ll = long long;
 #define f first
 #define s second
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10, mod = 1000000007, LOG = 20;
-ll dp[1 << LOG][2];
+const int nax = 2e5 + 10, mod = 1000000007;
 
 void solve(int caseNo)
 {
-	int n, x;
-	cin >> n;
-	for (int i = 0; i < n; ++i)
-	{
-		cin >> x;
-		dp[x][0]++;
-	}
-	dp[0][0] = 1;
-	for (int i = 0; i < LOG; ++i)
-	{
-		bool curr = (i % 2);
-		bool nest = !curr;
-		for (int mask = 1; mask < (1 << LOG); ++mask)
-		{
-			dp[mask][nest] = dp[mask][curr];
-			if (mask & (1 << i))
-				dp[mask][nest] += dp[mask][curr] * dp[mask ^ (1 << i)][curr];
-		}
-	}
-	int ret = 0;
-	bool curr = ((n - 1) % 2);
-	for (int mask = 0; mask < (1 << LOG); ++mask)
-	{
-		if (dp[mask][curr])
-			db(mask, dp[mask][curr]);
-		ret += dp[mask][curr] * (((mask * mask) % mod) * mask) % mod,
-			ret %= mod;
-	}
-    db("Here");
-	cout << ret << '\n';
+	int x;
+	cin >> x;
+	cout << "Her\n";
+	cout << x << '\n';
 }
+
 int main()
 {
 #ifndef LOCAL
