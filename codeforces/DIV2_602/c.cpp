@@ -65,7 +65,44 @@ void solve(int caseNo)
     cin >> n >> k;
     string s;
     cin >> s;
-    
+    string t;
+    --k;
+    while (t.length() < n)
+    {
+        if (k > 0)
+        {
+            t += "()";
+            --k;
+        }
+        else
+        {
+            int rem = (n - t.length()) / 2;
+            for (int i = 0; i < rem; ++i)
+                t += "(";
+            for (int i = 0; i < rem; ++i)
+                t += ")";
+        }
+    }
+    db(s, t);
+    vector<pair<int, int>> res;
+    for (int i = 0; i < n; ++i)
+    {
+        if (s[i] == t[i])
+            continue;
+        for (int j = i + 1; j < n; ++j)
+        {
+            if (s[j] == t[i])
+            {
+                res.pb({i, j});
+                reverse(s.begin() + i, s.begin() + j + 1);
+                break;
+            }
+        }
+    }
+    db(s, t);
+    cout << res.size() << '\n';
+    for (auto elem : res)
+        cout << elem.f + 1 << ' ' << elem.s + 1 << '\n';
 }
 
 int main()
