@@ -1,6 +1,9 @@
 //Optimise
 #include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
 using namespace std;
+using namespace __gnu_pbds;
 
 // #define multitest 1
 #ifdef LOCAL
@@ -52,15 +55,63 @@ void ZZ(const char *names, Arg1 &&arg1, Args &&... args)
 #endif
 
 using ll = long long;
+using T = pair<int, int>;
+using pbds = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
 #define f first
 #define s second
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10, mod = 998244353;
+const int nax = 2e5 + 10, mod = 1000000007;
+int n, m;
+vector<int> arr;
+
+bool Solve(ll time)
+{
+    int pos = n;
+    auto brr = arr;
+    for (int i = 0; i < m; ++i)
+    {
+        ll Time = time;
+        while (pos > 0 && brr[pos] == 0)
+            pos--;
+        if (pos < 1)
+            return true;
+        Time -= pos;
+        if (Time <= 0)
+            return false;
+        while (pos > 0 && brr[pos] <= Time)
+        {
+            Time -= brr[pos];
+            brr[pos] = 0;
+            pos--;
+        }
+        if (pos > 0 && Time > 0)
+            brr[pos] -= Time;
+    }
+    return pos < 1;
+}
 
 void solve(int caseNo)
 {
+    cin >> n >> m;
+    arr.resize(n + 1);
+    ll low = 0, high = n, ans;
+    for (int i = 1; i <= n; ++i)
+    {
+        cin >> arr[i];
+        high += arr[i];
+    }
+    ans = high;
+    while (low <= high)
+    {
+        ll mid = (low + high) / 2;
+        if (Solve(mid))
+            ans = mid, high = mid - 1;
+        else
+            low = mid + 1;
+    }
+    cout << ans << '\n';
 }
 
 int main()

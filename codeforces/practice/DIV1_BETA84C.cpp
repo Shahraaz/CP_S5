@@ -1,6 +1,9 @@
 //Optimise
 #include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
 using namespace std;
+using namespace __gnu_pbds;
 
 // #define multitest 1
 #ifdef LOCAL
@@ -52,12 +55,14 @@ void ZZ(const char *names, Arg1 &&arg1, Args &&... args)
 #endif
 
 using ll = long long;
+using T = pair<int, int>;
+using pbds = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
 #define f first
 #define s second
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int nax = 2e5 + 10, mod = 998244353;
+const int nax = 2e5 + 10, mod = 1000000007;
 
 void solve(int caseNo)
 {
