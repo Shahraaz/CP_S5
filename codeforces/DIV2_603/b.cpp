@@ -70,47 +70,46 @@ void solveCase(int caseNo)
     cin >> n;
     map<string, vector<int>> p;
     set<string> exist;
+    vector<string> a(n);
+    vector<string> ret(n);
+    vector<bool> vis(n);
     for (int i = 0; i < n; ++i)
     {
         string str;
-        exist.insert(str);
         cin >> str;
+        a[i] = str;
         p[str].pb(i);
+        exist.insert(str);
+        if (p[str].size() == 1)
+            vis[i] = true;
+        ret[i] = str;
     }
-    vector<string> ret(n);
     int ans = 0;
     for (auto elem : p)
     {
-        if (elem.s.size() == 1)
+        auto str = elem.f;
+        int pos = 0, cnt = 0;
+        for (int i = 0; i < elem.s.size(); ++i)
         {
-            ret[elem.s[0]] = elem.f;
-        }
-        else
-        {
-            auto str = elem.f;
-            int pos = 4, cnt = 0;
-
-            for (int i = 0; i < elem.s.size(); ++i)
+            if (vis[elem.s[i]])
+                continue;
+            while (exist.count(str))
             {
-                while (exist.count(str))
+                if (cnt == 10)
                 {
-                    if (cnt == 10)
-                    {
-                        pos--;
-                        cnt = -1;
-                    }
-                    else if (str[pos] == '9')
-                        str[pos] = '0';
-                    else
-                        str[pos] = str[pos] + 1;
-                    cnt++;
+                    pos++;
+                    cnt = 0;
                 }
-                db(str,elem.s[i]);
-                ret[elem.s[i]] = str;
-                exist.insert(str);
-                ans++;
+                else if (str[pos] == '9')
+                    str[pos] = '0';
+                else
+                    str[pos] = str[pos] + 1;
+                cnt++;
             }
-            ans--;
+            db(str, elem.s[i]);
+            ret[elem.s[i]] = str;
+            exist.insert(str);
+            ans++;
         }
     }
     cout << ans << '\n';

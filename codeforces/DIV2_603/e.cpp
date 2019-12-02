@@ -62,73 +62,114 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int NAX = 2e6 + 10, MOD = 1000000007;
+const int NAX = 2e5 + 10, MOD = 1000000007;
 
-vector<int> Tree(2 * NAX), a(2 * NAX), b(2 * NAX);
-
-void update(int node, int left, int right, int pos, char ch)
+struct MyStack
 {
-    if (left == right)
+    int cnt = 0, allOpens = 0;
+    deque<int> s, minValue, maxValue;
+    void push(int x)
     {
-        switch (ch)
-        {
-        case '(':
-            a[node] = 1;
-            b[node] = 0;
-            Tree[node] = 0;
-            break;
-        case ')':
-            a[node] = 0;
-            b[node] = 1;
-            Tree[node] = 0;
-            break;
-        default:
-            a[node] = 0;
-            b[node] = 0;
-            Tree[node] = 0;
-            break;
-        }
-        return;
+        s.push_back(x);
+        cnt += x;
+        if (x == 1)
+            allOpens++;
+        minValue.push_back(minValue.size() ? min(minValue.back(), cnt) : cnt);
+        maxValue.push_back(maxValue.size() ? max(maxValue.back(), cnt) : cnt);
     }
-    int mid = (left + right) / 2;
-    if (pos <= mid)
-        update(2 * node, left, mid, pos, ch);
-    else
-        update(2 * node + 1, mid + 1, right, pos, ch);
-    Tree[node] = 
+    void pop()
+    {
+        if (s.size() == 0)
+            return;
+        cnt -= s.back();
+        if (s.back() == 1)
+            allOpens--;
+        s.pop_back();
+        minValue.pop_back();
+        maxValue.pop_back();
+    }
+    int top()
+    {
+        return s.back();
+    }
+    bool isCorrect()
+    {
+        return (minValue.size() == 0) || (minValue.back() >= 0);
+    }
+    int depth()
+    {
+        return (maxValue.size() ? maxValue.back() : 0);
+    }
+};
+
+ostream &operator<<(ostream &out, MyStack p)
+{
+    out << "cnt " << p.cnt << " allOpens " << p.allOpens << '\n';
+    out << "s {";
+    for (auto elem : p.s)
+        out << elem << ' ';
+    out << "}\n";
+    out << "Minvalue {";
+    for (auto elem : p.minValue)
+        out << elem << ' ';
+    out << "}\n";
+    out << "Maxvalue {";
+    for (auto elem : p.maxValue)
+        out << elem << ' ';
+    out << "}\n";
+    return out;
 }
 
 void solveCase(int caseNo)
 {
-    int curr = 0, n;
+    int n;
     cin >> n;
-    vector<char> str(NAX);
+    string s;
+    cin >> s;
+    MyStack left, right;
+    for (int i = 0; i < n; ++i)
+        right.push(0);
+    left.push(0);
+    int pos = 0;
     for (int i = 0; i < n; ++i)
     {
-        char ch;
-        cin >> ch;
-        if (ch == 'R')
-            curr++;
-        else if (ch == 'L')
+        switch (s[i])
         {
-            if (curr == 0)
-                continue;
-            else
-                curr--;
+        case 'L':
+            if (pos > 0)
+            {
+                pos--;
+                right.push(-left.top());
+                left.pop();
+            }
+            break;
+        case 'R':
+            pos++;
+            left.push(-right.top());
+            right.pop();
+            break;
+        case '(':
+            left.pop();
+            left.push(1);
+            break;
+        case ')':
+            left.pop();
+            left.push(-1);
+            break;
+        default:
+            left.pop();
+            left.push(0);
+            break;
         }
+        db(s[i]);
+        db(left, right);
+        if (left.isCorrect() && right.isCorrect() && (left.cnt == right.cnt))
+            cout << max({left.depth(), right.depth(), left.cnt}) << ' ';
         else
-        {
-            if (ch == '(')
-            {
-            }
-            else if (ch == ')')
-            {
-            }
-            else
-            {
-            }
-        }
+            cout << "-1 ";
+        // cout << '\n';
     }
+    cout << '\n';
 }
 
 int main()
@@ -141,10 +182,13 @@ int main()
 #ifdef MULTI_TEST
     cin >> t;
 #endif
-    for (int i = 0; i < t; ++i)
+    for (int i = 1; i <= t; ++i)
+    {
         solveCase(i);
 #ifdef TIME
-    cerr << "\n\nTime elapsed: " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " seconds.\n";
+        cerr << "Case #" << i << ": Time " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " s.\n";
+        TimeStart = chrono::steady_clock::now();
 #endif
+    }
     return 0;
 }

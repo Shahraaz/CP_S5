@@ -62,66 +62,89 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int NAX = 2e5 + 10, MOD = 1000000007, LOG = 22;
-ll MRG[LOG], IMRG[LOG];
-vector<int> Tree[2 << LOG];
-int a[1 << LOG];
+const int NAX = 2e5 + 10, MOD = 1000000007, LG = 30;
+vector<int> adj[NAX];
+int n, depth[NAX], size[NAX], anc[NAX][LG], tin[NAX], tout[NAX], timer;
 
-void build(int node, int left, int right, int level = 1)
+void dfs(int node, int par = 1, int d = 0)
 {
-    db(node, left, right, level);
-    if (left == right)
-    {
-        Tree[node].pb(a[left]);
-        return;
-    }
-    int mid = (left + right) / 2;
-    build(2 * node, left, mid, level + 1);
-    build(2 * node + 1, mid + 1, right, level + 1);
-    Tree[node] = Tree[2 * node];
-    int j = 0, n = Tree[2 * node].size();
-    for (auto elem : Tree[2 * node])
-    {
-        while ((j < n) && (Tree[2 * node + 1][j] < elem))
-            ++j;
-        MRG[level] += j;
-    }
-    j = 0;
-    n = Tree[2 * node].size();
-    for (auto elem : Tree[2 * node + 1])
-    {
-        while ((j < n) && (Tree[2 * node][j] < elem))
-            ++j;
-        IMRG[level] += j;
-        Tree[node].pb(elem);
-    }
-    db(node, MRG[level], IMRG[level], level);
-    sort(Tree[node].begin(), Tree[node].end());
-    pc(Tree[node]);
+    depth[node] = d;
+    size[node] = 1;
+    tin[node] = timer++;
+    anc[node][0] = par;
+    for (int i = 1; i < LG; ++i)
+        anc[node][i] = anc[anc[node][i - 1]][i - 1];
+    for (auto child : adj[node])
+        if (child != par)
+        {
+            dfs(child, node);
+            size[node] += size[child];
+        }
+    tout[node] = timer++;
 }
 
-bool mark[LOG];
+bool ancestor(int a, int b)
+{
+    return tin[a] <= tin[b] && tout[b] <= tout[a];
+}
+
+int go_up(int a, int b)
+{
+    for (int i = LG - 1; i >= 0; --i)
+        if (!ancestor(anc[a][i], b))
+            a = anc[a][i];
+    return a;
+}
+
+int lca(int a, int b)
+{
+    int result = -1;
+    if (ancestor(a, b))
+        return a;
+    else if (ancestor(b, a))
+        return b;
+    return anc[go_up(a, b)][0];
+}
+
+int query(int a, int b)
+{
+    if (a == b)
+        return n;
+    int l = lca(a, b);
+    if (depth[a] == depth[b])
+        return n - size[go_up(a, l)] - size[go_up(b, l)];
+    if (depth[a] < depth[b])
+        swap(a, b);
+    int dist = depth[a] + depth[b] - 2 * depth[l];
+    if (dist % 2)
+        return 0;
+    dist /= 2;
+    int to = a;
+    for (int i = LG - 1; i >= 0; --i)
+        if (depth[a] - depth[anc[to][i]] < dist)
+            to = anc[to][i];
+    int mid = anc[to][0];
+    return size[mid] - size[to];
+}
 
 void solveCase(int caseNo)
 {
-    int n;
     cin >> n;
-    
-    for (int i = 1; i <= (1 << n); ++i)
-        cin >> a[i];
-    build(1, 1, (1 << n));
+    for (int i = 0; i < n - 1; ++i)
+    {
+        int u, v;
+        cin >> u >> v;
+        adj[u].pb(v);
+        adj[v].pb(u);
+    }
+    dfs(1);
     int q;
     cin >> q;
     while (q--)
     {
-        int a;
-        cin >> a;
-        ll ans = 0;
-        for (int i = n - a + 1; i <= (n + 1); ++i)
-            mark[i] ^= 1;
-        for (int i = 1; i <= (n + 1); ++i)
-            ans += mark[i] ? IMRG[i] : MRG[i];
-        cout << ans << '\n';
+        int u, v;
+        cin >> u >> v;
+        cout << query(u, v) << '\n';
     }
 }
 

@@ -62,67 +62,83 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int NAX = 2e5 + 10, MOD = 1000000007, LOG = 22;
-ll MRG[LOG], IMRG[LOG];
-vector<int> Tree[2 << LOG];
-int a[1 << LOG];
+const int NAX = 2e5 + 10, MOD = 1000000007;
+vector<int> adj[NAX];
+int marked[NAX], maxDistanceUp[NAX], maxDistanceDown[NAX];
 
-void build(int node, int left, int right, int level = 1)
+int dfs1(int node, int par)
 {
-    db(node, left, right, level);
-    if (left == right)
-    {
-        Tree[node].pb(a[left]);
-        return;
-    }
-    int mid = (left + right) / 2;
-    build(2 * node, left, mid, level + 1);
-    build(2 * node + 1, mid + 1, right, level + 1);
-    Tree[node] = Tree[2 * node];
-    int j = 0, n = Tree[2 * node].size();
-    for (auto elem : Tree[2 * node])
-    {
-        while ((j < n) && (Tree[2 * node + 1][j] < elem))
-            ++j;
-        MRG[level] += j;
-    }
-    j = 0;
-    n = Tree[2 * node].size();
-    for (auto elem : Tree[2 * node + 1])
-    {
-        while ((j < n) && (Tree[2 * node][j] < elem))
-            ++j;
-        IMRG[level] += j;
-        Tree[node].pb(elem);
-    }
-    db(node, MRG[level], IMRG[level], level);
-    sort(Tree[node].begin(), Tree[node].end());
-    pc(Tree[node]);
+    maxDistanceDown[node] = marked[node] ? 0 : -1;
+    for (auto child : adj[node])
+        if (child != par)
+        {
+            int d = dfs1(child, node);
+            if (d > -1)
+                maxDistanceDown[node] = max(maxDistanceDown[node], d + 1);
+        }
+    db(node, maxDistanceDown[node]);
+    return maxDistanceDown[node];
 }
 
-bool mark[LOG];
+void dfs2(int node, int par)
+{
+    int mx1, mx2;
+    mx1 = mx2 = -1;
+    for (auto child : adj[node])
+        if (child != par)
+        {
+            if (maxDistanceDown[child] > mx1)
+            {
+                mx2 = mx1;
+                mx1 = maxDistanceDown[child];
+            }
+            else if (maxDistanceDown[child] > mx2)
+                mx2 = maxDistanceDown[child];
+        }
+    for (auto child : adj[node])
+        if (child != par)
+        {
+            int siblingDistance = maxDistanceDown[child] == mx1 ? mx2 : mx1;
+            if (siblingDistance != -1)
+                siblingDistance += 2;
+            maxDistanceUp[child] = siblingDistance;
+            if (maxDistanceUp[node] != -1)
+                maxDistanceUp[child] = max(maxDistanceUp[child], maxDistanceUp[node] + 1);
+            if (marked[child])
+                maxDistanceUp[child] = max(maxDistanceUp[child], 0);
+            dfs2(child, node);
+        }
+    db(node, maxDistanceUp[node]);
+}
 
 void solveCase(int caseNo)
 {
-    int n;
-    cin >> n;
-    
-    for (int i = 1; i <= (1 << n); ++i)
-        cin >> a[i];
-    build(1, 1, (1 << n));
-    int q;
-    cin >> q;
-    while (q--)
+    int n, m, d, u, v;
+    cin >> n >> m >> d;
+    db("Start");
+    while (m--)
     {
-        int a;
-        cin >> a;
-        ll ans = 0;
-        for (int i = n - a + 1; i <= (n + 1); ++i)
-            mark[i] ^= 1;
-        for (int i = 1; i <= (n + 1); ++i)
-            ans += mark[i] ? IMRG[i] : MRG[i];
-        cout << ans << '\n';
+        cin >> u;
+        marked[u - 1] = true;
     }
+    db("Mark");
+    for (int i = 1; i < n; ++i)
+    {
+        cin >> u >> v;
+        --u, --v;
+        adj[u].pb(v);
+        adj[v].pb(u);
+    }
+    db("Graph");
+    dfs1(0, -1);
+    db("Dfs1");
+    maxDistanceUp[0] = marked[0] ? 0 : -1;
+    dfs2(0, -1);
+    db("Dfs2");
+    int ans = 0;
+    for (int i = 0; i < n; ++i)
+        ans += (maxDistanceUp[i] <= d && maxDistanceDown[i] <= d);
+    cout << ans << '\n';
 }
 
 int main()

@@ -62,66 +62,57 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int NAX = 2e5 + 10, MOD = 1000000007, LOG = 22;
-ll MRG[LOG], IMRG[LOG];
-vector<int> Tree[2 << LOG];
-int a[1 << LOG];
+const int NAX = 2e5 + 10, MOD = 1000000007;
 
-void build(int node, int left, int right, int level = 1)
-{
-    db(node, left, right, level);
-    if (left == right)
-    {
-        Tree[node].pb(a[left]);
-        return;
-    }
-    int mid = (left + right) / 2;
-    build(2 * node, left, mid, level + 1);
-    build(2 * node + 1, mid + 1, right, level + 1);
-    Tree[node] = Tree[2 * node];
-    int j = 0, n = Tree[2 * node].size();
-    for (auto elem : Tree[2 * node])
-    {
-        while ((j < n) && (Tree[2 * node + 1][j] < elem))
-            ++j;
-        MRG[level] += j;
-    }
-    j = 0;
-    n = Tree[2 * node].size();
-    for (auto elem : Tree[2 * node + 1])
-    {
-        while ((j < n) && (Tree[2 * node][j] < elem))
-            ++j;
-        IMRG[level] += j;
-        Tree[node].pb(elem);
-    }
-    db(node, MRG[level], IMRG[level], level);
-    sort(Tree[node].begin(), Tree[node].end());
-    pc(Tree[node]);
-}
-
-bool mark[LOG];
+long long n, q, a, b, val[NAX], col[NAX], dp[NAX], vis[NAX];
 
 void solveCase(int caseNo)
 {
-    int n;
-    cin >> n;
-    
-    for (int i = 1; i <= (1 << n); ++i)
-        cin >> a[i];
-    build(1, 1, (1 << n));
-    int q;
-    cin >> q;
+    cin >> n >> q;
+    for (int i = 1; i <= n; ++i)
+        cin >> val[i];
+    for (int i = 1; i <= n; ++i)
+        cin >> col[i];
+    memset(vis,-1,sizeof vis);
     while (q--)
     {
-        int a;
-        cin >> a;
-        ll ans = 0;
-        for (int i = n - a + 1; i <= (n + 1); ++i)
-            mark[i] ^= 1;
-        for (int i = 1; i <= (n + 1); ++i)
-            ans += mark[i] ? IMRG[i] : MRG[i];
-        cout << ans << '\n';
+        cin >> a >> b;
+        long long max1 = 0, max2 = 0, col1 = -1, col2 = -1;
+        for (int i = 1; i <= n; ++i)
+        {
+            if (vis[col[i]] != q)
+            {
+                vis[col[i]] = q;
+                dp[col[i]] = max1 + val[i] * b;
+            }
+            else
+                dp[col[i]] = max({dp[col[i]], dp[col[i]] + val[i] * a, ((col1 == col[i]) ? max2 : max1) + val[i] * b});
+            if (dp[col[i]] > max1)
+            {
+                if (col1 == col[i])
+                    max1 = dp[col[i]];
+                else
+                {
+                    max2 = max1;
+                    col2 = col1;
+                    col1 = col[i];
+                    max1 = dp[col1];
+                }
+            }
+            else if (dp[col[i]] > max2)
+            {
+                if (col2 == col[i])
+                    max2 = dp[col[i]];
+                else
+                {
+                    if (col[i] == col1)
+                        continue;
+                    col2 = col[i];
+                    max2 = dp[col1];
+                }
+            }
+        }
+        cout << max1 << '\n';
     }
 }
 

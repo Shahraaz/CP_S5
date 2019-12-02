@@ -62,67 +62,24 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int NAX = 2e5 + 10, MOD = 1000000007, LOG = 22;
-ll MRG[LOG], IMRG[LOG];
-vector<int> Tree[2 << LOG];
-int a[1 << LOG];
+const int NAX = 2e5 + 10, MOD = 1000000007;
 
-void build(int node, int left, int right, int level = 1)
+string smallest(string str)
 {
-    db(node, left, right, level);
-    if (left == right)
-    {
-        Tree[node].pb(a[left]);
-        return;
-    }
-    int mid = (left + right) / 2;
-    build(2 * node, left, mid, level + 1);
-    build(2 * node + 1, mid + 1, right, level + 1);
-    Tree[node] = Tree[2 * node];
-    int j = 0, n = Tree[2 * node].size();
-    for (auto elem : Tree[2 * node])
-    {
-        while ((j < n) && (Tree[2 * node + 1][j] < elem))
-            ++j;
-        MRG[level] += j;
-    }
-    j = 0;
-    n = Tree[2 * node].size();
-    for (auto elem : Tree[2 * node + 1])
-    {
-        while ((j < n) && (Tree[2 * node][j] < elem))
-            ++j;
-        IMRG[level] += j;
-        Tree[node].pb(elem);
-    }
-    db(node, MRG[level], IMRG[level], level);
-    sort(Tree[node].begin(), Tree[node].end());
-    pc(Tree[node]);
+    if (str.size() % 2)
+        return str;
+    auto left = smallest(str.substr(0, str.size() / 2));
+    auto right = smallest(str.substr(str.size() / 2, str.size() / 2));
+    if(left < right)
+        return left + right;
+    return right + left;
 }
-
-bool mark[LOG];
 
 void solveCase(int caseNo)
 {
-    int n;
-    cin >> n;
-    
-    for (int i = 1; i <= (1 << n); ++i)
-        cin >> a[i];
-    build(1, 1, (1 << n));
-    int q;
-    cin >> q;
-    while (q--)
-    {
-        int a;
-        cin >> a;
-        ll ans = 0;
-        for (int i = n - a + 1; i <= (n + 1); ++i)
-            mark[i] ^= 1;
-        for (int i = 1; i <= (n + 1); ++i)
-            ans += mark[i] ? IMRG[i] : MRG[i];
-        cout << ans << '\n';
-    }
+    string a, b;
+    cin >> a >> b;
+    cout << (smallest(a) == smallest(b) ? "YES" : "NO") << '\n';
 }
 
 int main()

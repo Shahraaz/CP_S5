@@ -69,22 +69,10 @@ void solveCase(int caseNo)
     vector<int> v(3);
     cin >> v[0] >> v[1] >> v[2];
     sort(v.begin(), v.end());
-    auto v1 = v;
-    int res = min(v[0], v[1]), final = 0;
-    v[0] -= res;
-    v[1] -= res;
-    final = res + min(v[2], v[1]);
-    v = v1;
-    res = min(v[2], v[0]);
-    v[0] -= res;
-    v[2] -= res;
-    final = max(final, res + min(v[2], v[1]));
-    v = v1;
-    res = min(v[1], v[0]);
-    v[0] -= res;
-    v[1] -= res;
-    final = max(final, res + min(v[2], v[1]));
-    cout << final << '\n';
+    if (v[2] >= v[0] + v[1])
+        cout << v[0] + v[1] << '\n';
+    else
+        cout << (accumulate(v.begin(),v.end(),0))/2 << '\n';
 }
 
 int main()
