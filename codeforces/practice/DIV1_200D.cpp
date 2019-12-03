@@ -78,13 +78,17 @@ void dfs(int node, int par)
 
 int Tree[NAX * 4];
 bool isLazy[4 * NAX], ToSet[4 * NAX];
+int NodeSet[NAX];
 
 void propagate(int node, int start, int end)
 {
     if (isLazy[node])
     {
         if (ToSet[node])
+        {
+            NodeSet[start] = true;
             Tree[node] = end - start + 1;
+        }
         else
             Tree[node] = 0;
         if (start != end)
@@ -99,9 +103,9 @@ void propagate(int node, int start, int end)
 
 void update(int node, int start, int end, int qstart, int qend, bool set)
 {
-    propagate(node, start, end);
     if (qend < start || qstart > end || start > end)
         return;
+    propagate(node, start, end);
     if (qstart <= start && end <= qend)
     {
         isLazy[node] = true;
@@ -115,30 +119,31 @@ void update(int node, int start, int end, int qstart, int qend, bool set)
     Tree[node] = Tree[2 * node] + Tree[2 * node + 1];
 }
 
-int NodeSet[NAX];
-
-void update2(int node, int start, int end, int pos, int Node)
+void update2(int node, int start, int end, int pos)
 {
+    if (start > end)
+        return;
     propagate(node, start, end);
     if (start == end)
     {
-        if (NodeSet[Node])
+        if (NodeSet[start])
             Tree[node]--;
+        NodeSet[start] = false;
         return;
     }
     int mid = (start + end) / 2;
     if (pos <= mid)
-        update2(2 * node, start, mid, pos, Node);
+        update2(2 * node, start, mid, pos);
     else
-        update2(2 * node + 1, mid + 1, end, pos, Node);
+        update2(2 * node + 1, mid + 1, end, pos);
     Tree[node] = Tree[2 * node] + Tree[2 * node + 1];
 }
 
 int query(int node, int start, int end, int qstart, int qend)
 {
-    propagate(node, start, end);
     if (qend < start || qstart > end || start > end)
         return 0;
+    propagate(node, start, end);
     if (qstart <= start && end <= qend)
         return Tree[node];
     int mid = (start + end) / 2;
@@ -164,20 +169,17 @@ void solveCase(int caseNo)
         switch (type)
         {
         case 1:
+            db("Fill", node);
             update(1, startSegment[1], endSegment[1], startSegment[node], endSegment[node], 1);
-            NodeSet[node] = true;
             break;
         case 2:
-            update2(1, startSegment[1], endSegment[1], startSegment[node], node);
-            NodeSet[node] = false;
+            db("UNFill", node);
+            update2(1, startSegment[1], endSegment[1], startSegment[node]);
             break;
         case 3:
-            cout << (query(1, startSegment[1], endSegment[1], startSegment[node], endSegment[node]) == (endSegment[node] - startSegment[node] + 1)) << '\n';
-            break;
-
-        default:
-            cout << "What just happened\\n";
-            exit(0);
+            int Q = query(1, startSegment[1], endSegment[1], startSegment[node], endSegment[node]);
+            db(Q, node);
+            cout << (Q == (endSegment[node] - startSegment[node] + 1)) << '\n';
             break;
         }
     }
