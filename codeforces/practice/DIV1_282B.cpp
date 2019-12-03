@@ -62,89 +62,53 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int NAX = 2e5 + 10, MOD = 1000000007, LG = 30;
-vector<int> adj[NAX];
-int n, depth[NAX], Size[NAX], anc[NAX][LG], tin[NAX], tout[NAX], timer;
+const int NAX = 2e5 + 10, MOD = 1000000007;
 
-void dfs(int node, int par = 1, int d = 0)
+vector<int> Z_function(string S)
 {
-    depth[node] = d;
-    Size[node] = 1;
-    tin[node] = timer++;
-    anc[node][0] = par;
-    for (int i = 1; i < LG; ++i)
-        anc[node][i] = anc[anc[node][i - 1]][i - 1];
-    for (auto child : adj[node])
-        if (child != par)
-        {
-            dfs(child, node, d + 1);
-            Size[node] += Size[child];
-        }
-    tout[node] = timer++;
-}
+    int n = S.size();
+    vector<int> z(n);
+    int l = 0, r = 0;
+    for (int i = 1; i < n; ++i)
+    {
+        if (i <= r)
+            z[i] = min(r - i + 1, z[i - l]);
+        while (i + z[i] < n && S[z[i]] == S[i + z[i]])
+            ++z[i];
+        if (i + z[i] - 1 > r)
+            l = i, r = i + z[i] - 1;
+    }
+    // for (auto elem : z)
+    //     cout << elem << ' ';
+    // cout << '\n';
 
-bool ancestor(int a, int b)
-{
-    return tin[a] <= tin[b] && tout[b] <= tout[a];
-}
-
-int go_up(int a, int b)
-{
-    for (int i = LG - 1; i >= 0; --i)
-        if (!ancestor(anc[a][i], b))
-            a = anc[a][i];
-    return a;
-}
-
-int lca(int a, int b)
-{
-    if (ancestor(a, b))
-        return a;
-    else if (ancestor(b, a))
-        return b;
-    return anc[go_up(a, b)][0];
-}
-
-int query(int a, int b)
-{
-    if (a == b)
-        return n;
-    int l = lca(a, b);
-    if (depth[a] == depth[b])
-        return n - Size[go_up(a, l)] - Size[go_up(b, l)];
-    if (depth[a] < depth[b])
-        swap(a, b);
-    int dist = depth[a] + depth[b] - 2 * depth[l];
-    if (dist % 2)
-        return 0;
-    dist /= 2;
-    int to = a;
-    for (int i = LG - 1; i >= 0; --i)
-        if (depth[a] - depth[anc[to][i]] < dist)
-            to = anc[to][i];
-    int mid = anc[to][0];
-    return Size[mid] - Size[to];
+    return z;
 }
 
 void solveCase(int caseNo)
 {
-    cin >> n;
-    for (int i = 0; i < n - 1; ++i)
+    string s, t;
+    cin >> s >> t;
+    int n = s.size(), m = t.size();
+    auto Z = Z_function(t + '$' + s);
+    vector<int> dp(n);
+    int sum = 0, accumulated = 0;
+    for (int j = m - 1; j < n; ++j)
     {
-        int u, v;
-        cin >> u >> v;
-        adj[u].pb(v);
-        adj[v].pb(u);
+        int i = j - m + 1;
+        if (i > 0)
+            sum = (sum + dp[i - 1] + 1) % MOD;
+        else
+            sum = (sum + 1) % MOD;
+        if (Z[m + 1 + i] == m)
+            accumulated = sum;
+        if (j > 0)
+            dp[j] = (dp[j - 1] + accumulated) % MOD;
+        else
+            dp[j] = accumulated;
+        // cout << j << ' ' << dp[j] << '\n';
     }
-    dfs(1);
-    int q;
-    cin >> q;
-    while (q--)
-    {
-        int u, v;
-        cin >> u >> v;
-        cout << query(u, v) << '\n';
-    }
+    cout << dp[n - 1] << '\n';
 }
 
 int main()

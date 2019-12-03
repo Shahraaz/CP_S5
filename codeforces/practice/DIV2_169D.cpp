@@ -62,89 +62,13 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int NAX = 2e5 + 10, MOD = 1000000007, LG = 30;
-vector<int> adj[NAX];
-int n, depth[NAX], Size[NAX], anc[NAX][LG], tin[NAX], tout[NAX], timer;
-
-void dfs(int node, int par = 1, int d = 0)
-{
-    depth[node] = d;
-    Size[node] = 1;
-    tin[node] = timer++;
-    anc[node][0] = par;
-    for (int i = 1; i < LG; ++i)
-        anc[node][i] = anc[anc[node][i - 1]][i - 1];
-    for (auto child : adj[node])
-        if (child != par)
-        {
-            dfs(child, node, d + 1);
-            Size[node] += Size[child];
-        }
-    tout[node] = timer++;
-}
-
-bool ancestor(int a, int b)
-{
-    return tin[a] <= tin[b] && tout[b] <= tout[a];
-}
-
-int go_up(int a, int b)
-{
-    for (int i = LG - 1; i >= 0; --i)
-        if (!ancestor(anc[a][i], b))
-            a = anc[a][i];
-    return a;
-}
-
-int lca(int a, int b)
-{
-    if (ancestor(a, b))
-        return a;
-    else if (ancestor(b, a))
-        return b;
-    return anc[go_up(a, b)][0];
-}
-
-int query(int a, int b)
-{
-    if (a == b)
-        return n;
-    int l = lca(a, b);
-    if (depth[a] == depth[b])
-        return n - Size[go_up(a, l)] - Size[go_up(b, l)];
-    if (depth[a] < depth[b])
-        swap(a, b);
-    int dist = depth[a] + depth[b] - 2 * depth[l];
-    if (dist % 2)
-        return 0;
-    dist /= 2;
-    int to = a;
-    for (int i = LG - 1; i >= 0; --i)
-        if (depth[a] - depth[anc[to][i]] < dist)
-            to = anc[to][i];
-    int mid = anc[to][0];
-    return Size[mid] - Size[to];
-}
+const int NAX = 2e5 + 10, MOD = 1000000007;
 
 void solveCase(int caseNo)
 {
-    cin >> n;
-    for (int i = 0; i < n - 1; ++i)
-    {
-        int u, v;
-        cin >> u >> v;
-        adj[u].pb(v);
-        adj[v].pb(u);
-    }
-    dfs(1);
-    int q;
-    cin >> q;
-    while (q--)
-    {
-        int u, v;
-        cin >> u >> v;
-        cout << query(u, v) << '\n';
-    }
+    ll l, r;
+    cin >> l >> r;
+    
 }
 
 int main()
