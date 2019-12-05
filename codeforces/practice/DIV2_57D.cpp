@@ -65,9 +65,41 @@ auto TimeStart = chrono::steady_clock::now();
 const int NAX = 2e5 + 10, MOD = 1000000007;
 int n;
 vector<pair<int, int>> adj[NAX];
+long long dp[NAX][2];
+
+long long dfs(int node, bool returnBack, int parent)
+{
+    auto &ret = dp[node][returnBack];
+    if (ret >= 0)
+        return ret;
+    ret = 0;
+    if (returnBack)
+    {
+        for (auto child : adj[node])
+            if (parent != child.f)
+                ret += dfs(child.f, true, node) + 2 * child.s;
+    }
+    else
+    {
+        long long ret2 = MOD;
+        bool b = false;
+        for (auto child : adj[node])
+            if (parent != child.f)
+            {
+                b = true;
+                ret += dfs(child.f, true, node) + 2 * child.s;
+                ret2 = min(ret2, dfs(child.f, false, node) - dfs(child.f, true, node) - child.s);
+            }
+
+        if (b)
+            ret = min(ret, ret + ret2);
+    }
+    return ret;
+}
 
 void solveCase(int caseNo)
 {
+    memset(dp, -1, sizeof dp);
     cin >> n;
     int u, v, w;
     for (int i = 1; i < n; ++i)
@@ -76,6 +108,7 @@ void solveCase(int caseNo)
         adj[u].pb({v, w});
         adj[v].pb({u, w});
     }
+    cout << dfs(1, false, -1) << '\n';
 }
 
 int main()
