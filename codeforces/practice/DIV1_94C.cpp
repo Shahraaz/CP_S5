@@ -62,40 +62,51 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int NAX = 1e5 + 10, MOD = 1000000007;
+const int NAX = 2e5 + 10, MOD = 1000000007;
 
-int dp[NAX];
+int _n = 1e5 + 10;
+vector<int> Fact(_n), Inv(_n);
+const int kmod = 1000000007;
+
+int mul(int a, int b, int mod = kmod)
+{
+    return (long long)a * b % mod;
+}
+
+int power(int base, int index, int mod = kmod)
+{
+    if (index == 0)
+        return 1;
+    int temp = power(base, index / 2, mod);
+    temp = mul(temp, temp, mod);
+    if (index & 1)
+        temp = mul(temp, base, mod);
+    return temp;
+}
+
+void pre()
+{
+    Fact[0] = 1;
+    for (int i = 1; i < _n; ++i)
+        Fact[i] = mul(Fact[i - 1], i);
+    Inv[_n - 1] = power(Fact[_n - 1], kmod - 2);
+    for (int i = _n - 2; i >= 0; --i)
+        Inv[i] = mul(Inv[i + 1], (1 + i));
+}
+
+int ncr(int n, int r)
+{
+    if (n < 0 || r < 0 || n - r < 0)
+        return 0;
+    return mul(Fact[n], mul(Inv[r], Inv[n - r]));
+}
 
 void solveCase(int caseNo)
 {
-    int n, x;
-    cin >> n;
-    for (int i = 0; i < n; ++i)
-    {
-        cin >> x;
-        dp[x] = 1;
-        for (long long j = 2; j * j <= x; ++j)
-            if (x % j == 0)
-            {
-                int b = x / j;
-                dp[x] = max(dp[x], 1 + dp[j]);
-                if (b != x)
-                    dp[x] = max(dp[x], 1 + dp[b]);
-            }
-        if (x != 1)
-            for (long long j = 2; j * j <= x; ++j)
-                if (x % j == 0)
-                {
-                    int b = x / j;
-                    dp[j] = max(dp[x], dp[j]);
-                    dp[b] = max(dp[x], dp[b]);
-                }
-        if (x != 1)
-            for (ll j = x; j < NAX; j += x)
-                dp[j] = dp[x];
-        // dp[a[i]]++;
-    }
-    cout << *max_element(dp, dp + NAX) << '\n';
+    int n, m, k;
+    cin >> n >> m >> k;
+    pre();
+    cout << mul(ncr(n - 1, 2 * k), ncr(m - 1, 2 * k)) << '\n';
 }
 
 int main()

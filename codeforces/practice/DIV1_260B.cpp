@@ -62,40 +62,75 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define pb push_back
 auto TimeStart = chrono::steady_clock::now();
 
-const int NAX = 1e5 + 10, MOD = 1000000007;
+const int NAX = 2e5 + 10, MOD = 1000000007;
 
-int dp[NAX];
+class Trie_Node
+{
+private:
+    vector<Trie_Node *> child;
+
+public:
+    bool win, lose;
+    Trie_Node(/* args */)
+    {
+        child.resize(26, nullptr);
+        win = lose = false;
+    }
+    void insert(string s)
+    {
+        Trie_Node *curr = this;
+        int len = s.length();
+        for (int i = 0; i < len; ++i)
+        {
+            int c = s[i] - 'a';
+            if (curr->child[c] == nullptr)
+                curr->child[c] = new Trie_Node;
+            curr = curr->child[c];
+        }
+    }
+    void dfs()
+    {
+        bool isLeaf = true;
+        for (auto child_Node : child)
+            if (child_Node != nullptr)
+            {
+                isLeaf = false;
+                child_Node->dfs();
+                win |= !(child_Node->win);
+                lose |= !(child_Node->lose);
+            }
+        if (isLeaf)
+            lose = true;
+    }
+};
+
+void answer(bool b)
+{
+    cout << (b?"First":"Second");
+}
 
 void solveCase(int caseNo)
 {
-    int n, x;
-    cin >> n;
+    int n, k;
+    cin >> n >> k;
+    Trie_Node root;
+    string s;
     for (int i = 0; i < n; ++i)
     {
-        cin >> x;
-        dp[x] = 1;
-        for (long long j = 2; j * j <= x; ++j)
-            if (x % j == 0)
-            {
-                int b = x / j;
-                dp[x] = max(dp[x], 1 + dp[j]);
-                if (b != x)
-                    dp[x] = max(dp[x], 1 + dp[b]);
-            }
-        if (x != 1)
-            for (long long j = 2; j * j <= x; ++j)
-                if (x % j == 0)
-                {
-                    int b = x / j;
-                    dp[j] = max(dp[x], dp[j]);
-                    dp[b] = max(dp[x], dp[b]);
-                }
-        if (x != 1)
-            for (ll j = x; j < NAX; j += x)
-                dp[j] = dp[x];
-        // dp[a[i]]++;
+        cin >> s;
+        root.insert(s);
     }
-    cout << *max_element(dp, dp + NAX) << '\n';
+    root.dfs();
+    if (k == 1)
+        answer(root.win);
+    else if (!root.win)
+        answer(root.win);
+    else if (root.lose)
+        answer(root.win);
+    else if (k & 1)
+        answer(root.win);
+    else
+        answer(!root.win);
 }
 
 int main()

@@ -95,7 +95,35 @@ bool checkComposite(u64 n, u64 a, u64 d, int s)
     return true;
 }
 
-bool MillerRabin1(u64 n)
+// bool MillerRabin1(u64 n)
+// {
+//     const int iter = 16;
+//     if (n < 4)
+//         return n == 2 || n == 3;
+//     int s = 0;
+//     u64 d = n - 1;
+//     while ((d & 1) == 0)
+//     {
+//         d >>= 1;
+//         s++;
+//     }
+//     for (int i = 0; i < iter; ++i)
+//     {
+//         int a = 2 + rand() % (n - 3);
+//         if (checkComposite(n, a, d, s))
+//             return false;
+//     }
+//     for (int a : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37})
+//     {
+//         if (n == a)
+//             return true;
+//         if (checkComposite(n, a, d, s))
+//             return false;
+//     }
+//     return true;
+// }
+
+bool MillerRabin(u64 n)
 {
     const int iter = 16;
     if (n < 4)
@@ -106,12 +134,6 @@ bool MillerRabin1(u64 n)
     {
         d >>= 1;
         s++;
-    }
-    for (int i = 0; i < iter; ++i)
-    {
-        int a = 2 + rand() % (n - 3);
-        if (checkComposite(n, a, d, s))
-            return false;
     }
     for (int a : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37})
     {
@@ -123,69 +145,54 @@ bool MillerRabin1(u64 n)
     return true;
 }
 
-bool MillerRabin2(u64 n)
-{
-    const int iter = 16;
-    if (n < 4)
-        return n == 2 || n == 3;
-    int s = 0;
-    u64 d = n - 1;
-    while ((d & 1) == 0)
-    {
-        d >>= 1;
-        s++;
-    }
-    // for (int i = 0; i < iter; ++i)
-    // {
-    //     int a = 2 + rand() % (n - 3);
-    //     if (checkComposite(n, a, d, s))
-    //         return false;
-    // }
-    for (int a : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37})
-    {
-        if (n == a)
-            return true;
-        if (checkComposite(n, a, d, s))
-            return false;
-    }
-    return true;
-}
-
-bool MillerRabin3(u64 n)
-{
-    const int iter = 16;
-    if (n < 4)
-        return n == 2 || n == 3;
-    int s = 0;
-    u64 d = n - 1;
-    while ((d & 1) == 0)
-    {
-        d >>= 1;
-        s++;
-    }
-    for (int i = 0; i < iter; ++i)
-    {
-        int a = 2 + rand() % (n - 3);
-        if (checkComposite(n, a, d, s))
-            return false;
-    }
-    // for (int a : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37})
-    // {
-    //     if (n == a)
-    //         return true;
-    //     if (checkComposite(n, a, d, s))
-    //         return false;
-    // }
-    return true;
-}
+// bool MillerRabin3(u64 n)
+// {
+//     const int iter = 16;
+//     if (n < 4)
+//         return n == 2 || n == 3;
+//     int s = 0;
+//     u64 d = n - 1;
+//     while ((d & 1) == 0)
+//     {
+//         d >>= 1;
+//         s++;
+//     }
+//     // for (int i = 0; i < iter; ++i)
+//     // {
+//     //     int a = 2 + rand() % (n - 3);
+//     //     if (checkComposite(n, a, d, s))
+//     //         return false;
+//     // }
+//     for (int a : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37})
+//     {
+//         if (n == a)
+//             return true;
+//         if (checkComposite(n, a, d, s))
+//             return false;
+//     }
+//     return true;
+// }
 
 void solveCase(int caseNo)
 {
     int cnt = 0;
-    for (int i = 1; i < 1000000000; ++i)
-        cnt += MillerRabin3(i);
+    for (int i = 1; i < 1000000; ++i)
+        cnt += MillerRabin(i);
     cout << cnt << '\n';
     cout << 50847534 << '\n';
+    while (true)
+    {
+        ll n;
+        cin >> n;
+        if (n == 0)
+            break;
+        cout << MillerRabin(n) << '\n';
+    }
+
+    // All three versions pass the test
+    // If both deterministic and non deterministic are used time 1997.46s
+    // If only deterministic is used time 1333.03 s
+    // If only non-deterministic is used time 1509.77 s
 }
 
 int main()
