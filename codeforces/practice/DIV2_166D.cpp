@@ -5,14 +5,14 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-#define MULTI_TEST
+// #define MULTI_TEST
 #ifdef LOCAL
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
 template <typename T, typename U>
-ostream &operator<<(ostream &out, const pair<T, U> &p1)
+ostream &operator<<(ostream &out, const pair<T, U> &p)
 {
-    out << '[' << p1.first << ", " << p1.second << ']';
+    out << '[' << p.first << ", " << p.second << ']';
     return out;
 }
 template <typename Arg>
@@ -72,16 +72,16 @@ struct Rabin_Karp
     vector<long long> p_pow1, p_pow2, p_pow3;
     Rabin_Karp()
     {
-        p_pow1.resize(maxSize);
-        p_pow2.resize(maxSize);
-        p_pow3.resize(maxSize);
-        p_pow1[0] = p_pow2[0] = p_pow3[0] = 1;
-        for (int i = 1; i < (int)p_pow1.size(); i++)
-        {
-            p_pow1[i] = (p_pow1[i - 1] * p1) % mod1;
-            p_pow2[i] = (p_pow2[i - 1] * p2) % mod2;
-            p_pow3[i] = (p_pow3[i - 1] * p3) % mod3;
-        }
+        // p_pow1.resize(maxSize);
+        // p_pow2.resize(maxSize);
+        // p_pow3.resize(maxSize);
+        // p_pow1[0] = p_pow2[0] = p_pow3[0] = 1;
+        // for (int i = 1; i < (int)p_pow1.size(); i++)
+        // {
+        //     p_pow1[i] = (p_pow1[i - 1] * p1) % mod1;
+        //     p_pow2[i] = (p_pow2[i - 1] * p2) % mod2;
+        //     p_pow3[i] = (p_pow3[i - 1] * p3) % mod3;
+        // }
     }
     vector<int> match(string s, string t)
     {
@@ -113,24 +113,43 @@ struct Rabin_Karp
         }
         return occurences;
     }
+    tuple<int, int, int> getHash()
+    {
+    }
+
+    void solve()
+    {
+        string s, valid;
+        cin >> s >> valid;
+        int k;
+        cin >> k;
+        int n = s.size();
+        set<tuple<int, int, int>> S;
+        for (int i = 0; i < n; ++i)
+        {
+            int cnt = 0;
+            int hash1 = 0, hash2 = 0, hash3 = 0;
+            for (int j = i; j < n; ++j)
+            {
+                if (valid[s[j] - 'a'] == '0')
+                    cnt++;
+                if (cnt > k)
+                    break;
+                hash1 = (hash1 + s[j] - 'a' + 1) * p1 % mod1;
+                hash2 = (hash2 + s[j] - 'a' + 1) * p2 % mod2;
+                hash3 = (hash3 + s[j] - 'a' + 1) * p3 % mod3;
+                S.insert(tuple<int, int, int>(hash1, hash2, hash3));
+            }
+        }
+        cout << S.size() << '\n';
+    }
 };
 
 Rabin_Karp R;
 
 void solveCase(int caseNo)
 {
-    string a, b;
-    cin >> a >> b;
-    auto ret = R.match(b, a);
-    if (ret.size())
-    {
-        cout << ret.size() << '\n';
-        for (auto elem : ret)
-            cout << elem + 1 << ' ';
-    }
-    else
-        cout << "Not Found";
-    cout << "\n\n";
+    R.solve();
 }
 
 int main()
