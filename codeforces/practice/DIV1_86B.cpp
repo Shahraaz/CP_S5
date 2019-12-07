@@ -67,8 +67,8 @@ const int NAX = 2e5 + 10, MOD = 1000000007;
 struct Rabin_Karp
 {
     const int maxSize = 5e3 + 10;
-    const long long p1 = 805306457, p2 = 53, p3 = 31;
-    const int mod1 = 1610612741, mod2 = 1e9 + 7, mod3 = 1e9 + 9, m = 1e9 + 9;
+    const long long p1 = 805306457, p2 = 29, p3 = 31;
+    const int mod1 = 1610612741, mod2 = 2100003221, mod3 = 1e9 + 9;
     vector<long long> p_pow1, p_pow2, p_pow3;
     vector<long long> inv_pow1, inv_pow2, inv_pow3;
     ll expo(ll base, int index, int mod)
@@ -113,17 +113,18 @@ struct Rabin_Karp
         long long a = (hashUptoIndex[endIndex].f - (startIndex ? hashUptoIndex[startIndex - 1].f : 0) + mod1) % mod1;
         long long b = (hashUptoIndex[endIndex].s.f - (startIndex ? hashUptoIndex[startIndex - 1].s.f : 0) + mod2) % mod2;
         long long c = (hashUptoIndex[endIndex].s.s - (startIndex ? hashUptoIndex[startIndex - 1].s.s : 0) + mod3) % mod3;
-        db(inv_pow1[startIndex], startIndex);
+        // db(inv_pow1[startIndex], startIndex);
         a = (a * inv_pow1[startIndex]) % mod1;
         b = (b * inv_pow2[startIndex]) % mod2;
         c = (c * inv_pow3[startIndex]) % mod3;
         auto ret = make_pair(a, make_pair(b, c));
-        auto temp = s.substr(startIndex, endIndex - startIndex + 1);
-        db(startIndex, endIndex, ret, temp);
+        // auto temp = s.substr(startIndex, endIndex - startIndex + 1);
+        // db(startIndex, endIndex, ret, temp);
         return ret;
     }
     void solve()
     {
+        db(mod1, mod2, mod3);
         pair<long long, pair<long long, long long>> hashSuffix;
         pair<long long, pair<long long, long long>> hashPrefix;
         cin >> s >> prefix >> suffix;
@@ -133,9 +134,9 @@ struct Rabin_Karp
         for (int i = 1; i < prefix.size(); ++i)
         {
             auto c = prefix[i];
-            hashPrefix.f = (hashPrefix.f + (c - 'a' + 1) * p1 % mod1) % mod1;
-            hashPrefix.s.f = (hashPrefix.s.f + (c - 'a' + 1) * p2 % mod2) % mod2;
-            hashPrefix.s.s = (hashPrefix.s.s + (c - 'a' + 1) * p3 % mod3) % mod3;
+            hashPrefix.f = (hashPrefix.f + (c - 'a' + 1) * p_pow1[i] % mod1) % mod1;
+            hashPrefix.s.f = (hashPrefix.s.f + (c - 'a' + 1) * p_pow2[i] % mod2) % mod2;
+            hashPrefix.s.s = (hashPrefix.s.s + (c - 'a' + 1) * p_pow3[i] % mod3) % mod3;
         }
         hashSuffix.f = suffix[0] - 'a' + 1;
         hashSuffix.s.f = suffix[0] - 'a' + 1;
@@ -143,9 +144,9 @@ struct Rabin_Karp
         for (int i = 1; i < suffix.size(); ++i)
         {
             auto c = suffix[i];
-            hashSuffix.f = (hashSuffix.f + (c - 'a' + 1) * p1 % mod1) % mod1;
-            hashSuffix.s.f = (hashSuffix.s.f + (c - 'a' + 1) * p2 % mod2) % mod2;
-            hashSuffix.s.s = (hashSuffix.s.s + (c - 'a' + 1) * p3 % mod3) % mod3;
+            hashSuffix.f = (hashSuffix.f + (c - 'a' + 1) * p_pow1[i] % mod1) % mod1;
+            hashSuffix.s.f = (hashSuffix.s.f + (c - 'a' + 1) * p_pow2[i] % mod2) % mod2;
+            hashSuffix.s.s = (hashSuffix.s.s + (c - 'a' + 1) * p_pow3[i] % mod3) % mod3;
         }
         int n = s.size();
         vector<int> startIndexes;
@@ -157,24 +158,29 @@ struct Rabin_Karp
         hashUptoIndex[0].s.s = s[0] - 'a' + 1;
         for (int i = 1; i < n; ++i)
         {
-            hashUptoIndex[i].f = (hashUptoIndex[i - 1].f + (s[i] - 'a' + 1) * p1 % mod1) % mod1;
-            hashUptoIndex[i].s.f = (hashUptoIndex[i - 1].s.f + (s[i] - 'a' + 1) * p2 % mod2) % mod2;
-            hashUptoIndex[i].s.s = (hashUptoIndex[i - 1].s.s + (s[i] - 'a' + 1) * p3 % mod3) % mod3;
+            hashUptoIndex[i].f = (hashUptoIndex[i - 1].f + (s[i] - 'a' + 1) * p_pow1[i] % mod1) % mod1;
+            hashUptoIndex[i].s.f = (hashUptoIndex[i - 1].s.f + (s[i] - 'a' + 1) * p_pow2[i] % mod2) % mod2;
+            hashUptoIndex[i].s.s = (hashUptoIndex[i - 1].s.s + (s[i] - 'a' + 1) * p_pow3[i] % mod3) % mod3;
         }
         for (int i = 0; i < n; ++i)
         {
-            if (i + suffix.size() - 1 >= n)
-                break;
-            if (i + prefix.size() - 1 >= n)
-                break;
-            if (getHash(i, i + prefix.size() - 1) == hashPrefix)
-                startIndexes.pb(i);
-            db(i);
-            pc(startIndexes);
-            if (getHash(i, i + suffix.size() - 1) == hashSuffix)
-                for (auto index : startIndexes)
-                    if ((i - index + 1) >= suffix.size())
-                        S.insert(getHash(index, i));
+            if ((i + prefix.size() - 1) < n)
+            {
+                db("one");
+                if (getHash(i, i + prefix.size() - 1) == hashPrefix)
+                    startIndexes.pb(i);
+            }
+        }
+        for (int i = 0; i < n; ++i)
+        {
+            if ((i + (int)suffix.size() - 1) < n)
+            {
+                db("two");
+                pc(startIndexes);
+                if (getHash(i, i + suffix.size() - 1) == hashSuffix)
+                    for (auto index : startIndexes)
+                        S.insert(getHash(index, i + suffix.size() - 1));
+            }
         }
         cout << S.size() << '\n';
     }
