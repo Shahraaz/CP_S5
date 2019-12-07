@@ -6,17 +6,34 @@ struct Rabin_Karp
     vector<long long> p_pow1, p_pow2, p_pow3;
     Rabin_Karp()
     {
-        p_pow1.resize(maxSize);
-        p_pow2.resize(maxSize);
-        p_pow3.resize(maxSize);
-        p_pow1[0] = p_pow2[0] = p_pow3[0] = 1;
-        for (int i = 1; i < (int)p_pow1.size(); i++)
-        {
-            p_pow1[i] = (p_pow1[i - 1] * p1) % mod1;
-            p_pow2[i] = (p_pow2[i - 1] * p2) % mod2;
-            p_pow3[i] = (p_pow3[i - 1] * p3) % mod3;
-        }
+        // p_pow1.resize(maxSize);
+        // p_pow2.resize(maxSize);
+        // p_pow3.resize(maxSize);
+        // p_pow1[0] = p_pow2[0] = p_pow3[0] = 1;
+        // for (int i = 1; i < (int)p_pow1.size(); i++)
+        // {
+        //     p_pow1[i] = (p_pow1[i - 1] * p1) % mod1;
+        //     p_pow2[i] = (p_pow2[i - 1] * p2) % mod2;
+        //     p_pow3[i] = (p_pow3[i - 1] * p3) % mod3;
+        // }
     }
+    vector<int> Z_function(string S)
+    {
+        int n = S.size();
+        vector<int> z(n);
+        int l = 0, r = 0;
+        for (int i = 1; i < n; ++i)
+        {
+            if (i <= r)
+                z[i] = min(r - i + 1, z[i - l]);
+            while (i + z[i] < n && S[z[i]] == S[i + z[i]])
+                ++z[i];
+            if (i + z[i] - 1 > r)
+                l = i, r = i + z[i] - 1;
+        }
+        return z;
+    }
+
     vector<int> match(string s, string t)
     {
         int S = s.size(), T = t.size();
