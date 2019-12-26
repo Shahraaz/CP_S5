@@ -5,7 +5,7 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-// #define MULTI_TEST
+#define MULTI_TEST
 #ifdef LOCAL
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -69,62 +69,34 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
-int cost[10][10], costb[10][10];
-
 void solveCase(int caseNo)
 {
-    // KHULJA
-    int n, m;
-    string a, b;
-    cin >> n >> m >> a >> b;
-    for (int i = 0; i < 10; ++i)
+    // ARMYFGT
+    int n;
+    cin >> n;
+    ll gcd;
+    cin >> gcd;
+    --n;
+    ll l, r;
+    bool b = true;
+    while (n--)
     {
-        cost[i][i] = 0;
-        cin >> cost[i][(i + 1) % 10];
+        int x;
+        cin >> x;
+        if (!b)
+            continue;
+        if (double(x) * gcd > LLONG_MAX * double(__gcd((ll)x, gcd)))
+            b = false;
+        gcd = gcd * x / __gcd((ll)x, gcd);
     }
-    for (int i = 0; i < 10; ++i)
+    cin >> l >> r;
+    if (b)
     {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
-        {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            cost[i][next] = cost[i][curr] + cost[curr][next];
-            curr = next;
-        }
+        db(gcd);
+        cout << r - l + 1 - r / gcd + (l - 1) / gcd << '\n';
     }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << cost[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    // cout << '\n';
-    for (int i = 0; i < 10; ++i)
-    {
-        costb[i][i] = 0;
-        cin >> costb[i][(i + 1) % 10];
-    }
-    for (int i = 0; i < 10; ++i)
-    {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
-        {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            costb[i][next] = costb[i][curr] + costb[curr][next];
-            curr = next;
-        }
-    }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << costb[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    
+    else
+        cout << r - l + 1 << "\n";
 }
 
 int main()

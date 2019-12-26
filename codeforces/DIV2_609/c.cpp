@@ -69,62 +69,43 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
-int cost[10][10], costb[10][10];
-
 void solveCase(int caseNo)
 {
-    // KHULJA
-    int n, m;
-    string a, b;
-    cin >> n >> m >> a >> b;
-    for (int i = 0; i < 10; ++i)
+    int n, k;
+    cin >> n >> k;
+    string s;
+    cin >> s;
+    auto prefix = s.substr(0, k);
+    while ((prefix.size() + k) < n)
+        prefix += s.substr(0, k);
+    int pos = 0;
+    while (prefix.size() < n)
+        prefix += s[pos++];
+    if (prefix >= s)
     {
-        cost[i][i] = 0;
-        cin >> cost[i][(i + 1) % 10];
+        cout << prefix.size() << '\n';
+        cout << prefix << '\n';
+        return;
     }
-    for (int i = 0; i < 10; ++i)
-    {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
+    prefix = s.substr(0, k);
+    reverse(all(prefix));
+    for (auto &c : prefix)
+        if (c == '9')
+            c = '0';
+        else
         {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            cost[i][next] = cost[i][curr] + cost[curr][next];
-            curr = next;
+            c++;
+            break;
         }
-    }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << cost[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    // cout << '\n';
-    for (int i = 0; i < 10; ++i)
-    {
-        costb[i][i] = 0;
-        cin >> costb[i][(i + 1) % 10];
-    }
-    for (int i = 0; i < 10; ++i)
-    {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
-        {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            costb[i][next] = costb[i][curr] + costb[curr][next];
-            curr = next;
-        }
-    }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << costb[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    
+    reverse(all(prefix));
+    auto res = prefix;
+    while ((res.size() + k) < n)
+        res += prefix;
+    pos = 0;
+    while (prefix.size() < n)
+        prefix += prefix[pos++];
+    cout << prefix.size() << '\n';
+    cout << prefix << '\n';
 }
 
 int main()

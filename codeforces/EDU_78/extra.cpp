@@ -67,64 +67,18 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
-
-int cost[10][10], costb[10][10];
+const int NAX = 2e9 + 5, MOD = 1000000007;
 
 void solveCase(int caseNo)
 {
-    // KHULJA
-    int n, m;
-    string a, b;
-    cin >> n >> m >> a >> b;
-    for (int i = 0; i < 10; ++i)
+    Random<int> r(0, 1);
+    vector<int> cnt(2), cnt2(2);
+    for (int i = 0; i < NAX; ++i)
     {
-        cost[i][i] = 0;
-        cin >> cost[i][(i + 1) % 10];
+        cnt[r(rng)]++;
+        cnt2[Random<int>(0, 1)(rng)]++;
     }
-    for (int i = 0; i < 10; ++i)
-    {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
-        {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            cost[i][next] = cost[i][curr] + cost[curr][next];
-            curr = next;
-        }
-    }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << cost[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    // cout << '\n';
-    for (int i = 0; i < 10; ++i)
-    {
-        costb[i][i] = 0;
-        cin >> costb[i][(i + 1) % 10];
-    }
-    for (int i = 0; i < 10; ++i)
-    {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
-        {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            costb[i][next] = costb[i][curr] + costb[curr][next];
-            curr = next;
-        }
-    }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << costb[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    
+    pc(cnt, cnt2);
 }
 
 int main()

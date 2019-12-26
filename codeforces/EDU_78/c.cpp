@@ -1,3 +1,4 @@
+
 //Optimise
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
@@ -67,64 +68,25 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
+const int NAX = 2e5 + 5, MOD = 998244353;
 
-int cost[10][10], costb[10][10];
+ll expo(ll base, int index)
+{
+    if (index == 0)
+        return 1;
+    ll temp = expo(base, index / 2);
+    temp = (temp * temp) % MOD;
+    if (index & 1)
+        temp = (base * temp) % MOD;
+    return temp;
+}
 
 void solveCase(int caseNo)
 {
-    // KHULJA
-    int n, m;
-    string a, b;
-    cin >> n >> m >> a >> b;
-    for (int i = 0; i < 10; ++i)
-    {
-        cost[i][i] = 0;
-        cin >> cost[i][(i + 1) % 10];
-    }
-    for (int i = 0; i < 10; ++i)
-    {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
-        {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            cost[i][next] = cost[i][curr] + cost[curr][next];
-            curr = next;
-        }
-    }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << cost[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    // cout << '\n';
-    for (int i = 0; i < 10; ++i)
-    {
-        costb[i][i] = 0;
-        cin >> costb[i][(i + 1) % 10];
-    }
-    for (int i = 0; i < 10; ++i)
-    {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
-        {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            costb[i][next] = costb[i][curr] + costb[curr][next];
-            curr = next;
-        }
-    }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << costb[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    
+    int n, m, k;
+    cin >> n >> m >> k;
+    auto mInv = expo(m, MOD - 2);
+    cout << expo((mInv * n) % MOD, k) << '\n';
 }
 
 int main()

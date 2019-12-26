@@ -5,7 +5,7 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-// #define MULTI_TEST
+#define MULTI_TEST
 #ifdef LOCAL
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -69,62 +69,50 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
-int cost[10][10], costb[10][10];
-
 void solveCase(int caseNo)
 {
-    // KHULJA
-    int n, m;
-    string a, b;
-    cin >> n >> m >> a >> b;
-    for (int i = 0; i < 10; ++i)
+    string p, h;
+    cin >> p >> h;
+    db("here");
+    if (p.size() > h.size())
     {
-        cost[i][i] = 0;
-        cin >> cost[i][(i + 1) % 10];
+        cout << "NO\n";
+        return;
     }
-    for (int i = 0; i < 10; ++i)
+    db("here");
+    vector<int> hash_H(26), hash_p(26);
+    for (auto c : p)
+        hash_p[c - 'a']++;
+    db("here");
+    int n = p.size(), m = h.size();
+    for (int i = 0; i < n; ++i)
+        hash_H[h[i] - 'a']++;
+    db("here");
+    bool ok = true;
+    for (int i = 0; i < 26; ++i)
+        ok = ok && (hash_p[i] == hash_H[i]);
+    db("here1");
+    if (ok)
     {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
+        cout << "YES\n";
+        return;
+    }
+    for (int i = n; i < m; ++i)
+    {
+        db(i,h[i-n],h[i]);
+        hash_H[h[i-n] - 'a']--;
+        hash_H[h[i] - 'a']++;
+        bool ok = true;
+        for (int i = 0; i < 26; ++i)
+            ok = ok && (hash_p[i] == hash_H[i]);
+        if (ok)
         {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            cost[i][next] = cost[i][curr] + cost[curr][next];
-            curr = next;
+            cout << "YES\n";
+            return;
         }
     }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << cost[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    // cout << '\n';
-    for (int i = 0; i < 10; ++i)
-    {
-        costb[i][i] = 0;
-        cin >> costb[i][(i + 1) % 10];
-    }
-    for (int i = 0; i < 10; ++i)
-    {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
-        {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            costb[i][next] = costb[i][curr] + costb[curr][next];
-            curr = next;
-        }
-    }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << costb[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    
+    cout << "NO\n";
+
 }
 
 int main()

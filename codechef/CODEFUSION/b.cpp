@@ -67,64 +67,41 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
-
-int cost[10][10], costb[10][10];
+const int NAX = 2e6 + 5, MOD = 1000000007;
 
 void solveCase(int caseNo)
 {
-    // KHULJA
-    int n, m;
-    string a, b;
-    cin >> n >> m >> a >> b;
-    for (int i = 0; i < 10; ++i)
+    // CFD021
+    int q;
+    cin >> q;
+    vector<int> UNIQ;
+    UNIQ.pb(1);
+    UNIQ.pb(2);
+    for (int num = 4; num < NAX; ++num)
     {
-        cost[i][i] = 0;
-        cin >> cost[i][(i + 1) % 10];
-    }
-    for (int i = 0; i < 10; ++i)
-    {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
+        int sum = 0, curr = 0;
+        int n;
+        n = num;
+        while (n)
         {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            cost[i][next] = cost[i][curr] + cost[curr][next];
-            curr = next;
+            db(curr, n);
+            if (n % 3 == 1)
+                sum ^= curr;
+            n /= 3;
+            curr++;
         }
+        db(num, sum);
+        if (sum == 0)
+            UNIQ.pb(num);
     }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << cost[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    // cout << '\n';
-    for (int i = 0; i < 10; ++i)
+    // pc(UNIQ);
+    while (q--)
     {
-        costb[i][i] = 0;
-        cin >> costb[i][(i + 1) % 10];
+        int x;
+        cin >> x;
+        db(x);
+        cout << *lower_bound(UNIQ.begin(), UNIQ.end(), x) << '\n';
     }
-    for (int i = 0; i < 10; ++i)
-    {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
-        {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            costb[i][next] = costb[i][curr] + costb[curr][next];
-            curr = next;
-        }
-    }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << costb[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    
 }
 
 int main()

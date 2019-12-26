@@ -69,62 +69,29 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
-int cost[10][10], costb[10][10];
-
 void solveCase(int caseNo)
 {
-    // KHULJA
     int n, m;
-    string a, b;
-    cin >> n >> m >> a >> b;
-    for (int i = 0; i < 10; ++i)
+    cin >> n >> m;
+    vector<int> a(n), b(n);
+    for (auto &x : a)
+        cin >> x;
+    for (auto &x : b)
+        cin >> x;
+    sort(all(a));
+    sort(all(b));
+    int ans = INT_MAX;
+    for (int i = 0; i < n; ++i)
     {
-        cost[i][i] = 0;
-        cin >> cost[i][(i + 1) % 10];
+        auto a1 = a;
+        int diff = (b[0] - a[i] + m) % m;
+        bool ok = true;
+        for (int j = 0; j < n; ++j)
+            ok = ok && (((a[(j + i) % n] + diff) % m) == b[j]);
+        if (ok)
+            ans = min(ans, diff);
     }
-    for (int i = 0; i < 10; ++i)
-    {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
-        {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            cost[i][next] = cost[i][curr] + cost[curr][next];
-            curr = next;
-        }
-    }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << cost[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    // cout << '\n';
-    for (int i = 0; i < 10; ++i)
-    {
-        costb[i][i] = 0;
-        cin >> costb[i][(i + 1) % 10];
-    }
-    for (int i = 0; i < 10; ++i)
-    {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
-        {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            costb[i][next] = costb[i][curr] + costb[curr][next];
-            curr = next;
-        }
-    }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << costb[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    
+    cout << ans << '\n';
 }
 
 int main()

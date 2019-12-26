@@ -5,7 +5,7 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-// #define MULTI_TEST
+#define MULTI_TEST
 #ifdef LOCAL
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -60,7 +60,7 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define f first
 #define s second
 #define pb push_back
-#define all(v) v.begin(), v.end()
+#define all(v) v.begin(),v.end()
 auto TimeStart = chrono::steady_clock::now();
 auto seed = TimeStart.time_since_epoch().count();
 std::mt19937 rng(seed);
@@ -69,62 +69,96 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
-int cost[10][10], costb[10][10];
-
 void solveCase(int caseNo)
 {
-    // KHULJA
-    int n, m;
-    string a, b;
-    cin >> n >> m >> a >> b;
-    for (int i = 0; i < 10; ++i)
+    ll n;
+    cin>>n;
+
+    ll a[n];
+    for(ll i=0;i<n;i++)
     {
-        cost[i][i] = 0;
-        cin >> cost[i][(i + 1) % 10];
+        cin>>a[i];
     }
-    for (int i = 0; i < 10; ++i)
+
+    sort(a,a+n);
+
+    if(n==1)
     {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
+        if(a[0]>=1)
         {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            cost[i][next] = cost[i][curr] + cost[curr][next];
-            curr = next;
+            cout<<-1<<endl;
+        }
+        else
+        {
+            cout<<1<<endl;
         }
     }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << cost[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    // cout << '\n';
-    for (int i = 0; i < 10; ++i)
+    else
     {
-        costb[i][i] = 0;
-        cin >> costb[i][(i + 1) % 10];
-    }
-    for (int i = 0; i < 10; ++i)
-    {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
+        if(a[0]==a[n-1])
         {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            costb[i][next] = costb[i][curr] + costb[curr][next];
-            curr = next;
+            if(a[0]==n-1)
+                cout<<0<<endl;
+            else if(a[0]==0)
+            {
+                cout<<n<<endl;
+            }
+            else
+            {
+                cout<<-1<<endl;
+            }
+            
+            
         }
+        else
+        {
+            bool f=1;
+            ll idx = a[n-1]-1;
+            for(ll i=0;i<n;i++)
+            {
+                if(idx>=i)
+                {
+                    if(a[i]==idx)
+                    {
+                        continue;   
+                    }
+                    else
+                    {
+                        f=0;
+                        break;
+                    }
+                    
+                }
+                else
+                {
+                    if(a[i]==a[n-1])
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        f=0;
+                        break;
+                    }
+                    
+                }
+                
+            }
+
+            if(f)
+            {
+                cout<<(n-a[n-1])<<endl;
+            }
+            else
+            {
+                cout<<-1<<endl;
+            }
+            
+        }
+        
     }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << costb[i][j] << ' ';
-    //     cout << '\n';
-    // }
     
+
 }
 
 int main()

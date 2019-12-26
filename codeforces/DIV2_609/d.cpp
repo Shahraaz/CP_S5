@@ -67,64 +67,40 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
+const int NAX = 3e5 + 5, MOD = 1000000007;
 
-int cost[10][10], costb[10][10];
+ll cache[2][NAX];
+int Size[NAX], n;
+
+ll dp_solve(bool connectPrev, int pos)
+{
+    if (pos == n)
+    {
+        if (connectPrev)
+            return -1;
+        return 0;
+    }
+    ll &ret = cache[connectPrev][pos];
+    if (ret >= 0)
+        return ret;
+    ret = 0;
+    int S = Size[pos];
+    if (connectPrev)
+        --S;
+    ret = S / 2 + dp_solve(0, pos + 1);
+    if (S > 0)
+        ret = max(ret, 1 + (S - 1) / 2 + dp_solve(1, pos + 1));
+    db(ret, S, connectPrev, pos);
+    return ret;
+}
 
 void solveCase(int caseNo)
 {
-    // KHULJA
-    int n, m;
-    string a, b;
-    cin >> n >> m >> a >> b;
-    for (int i = 0; i < 10; ++i)
-    {
-        cost[i][i] = 0;
-        cin >> cost[i][(i + 1) % 10];
-    }
-    for (int i = 0; i < 10; ++i)
-    {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
-        {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            cost[i][next] = cost[i][curr] + cost[curr][next];
-            curr = next;
-        }
-    }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << cost[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    // cout << '\n';
-    for (int i = 0; i < 10; ++i)
-    {
-        costb[i][i] = 0;
-        cin >> costb[i][(i + 1) % 10];
-    }
-    for (int i = 0; i < 10; ++i)
-    {
-        int curr = (i + 1) % 10;
-        for (int j = 0; j < 9; ++j)
-        {
-            int next = (curr + 1) % 10;
-            if (next == i)
-                break;
-            costb[i][next] = costb[i][curr] + costb[curr][next];
-            curr = next;
-        }
-    }
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     for (int j = 0; j < 10; ++j)
-    //         cout << costb[i][j] << ' ';
-    //     cout << '\n';
-    // }
-    
+    memset(cache, -1, sizeof cache);
+    cin >> n;
+    for (int i = 0; i < n; ++i)
+        cin >> Size[i];
+    cout << dp_solve(0, 0) << '\n';
 }
 
 int main()
