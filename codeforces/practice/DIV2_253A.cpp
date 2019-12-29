@@ -60,7 +60,7 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define f first
 #define s second
 #define pb push_back
-#define all(v) v.begin(),v.end()
+#define all(v) v.begin(), v.end()
 auto TimeStart = chrono::steady_clock::now();
 auto seed = TimeStart.time_since_epoch().count();
 std::mt19937 rng(seed);
@@ -71,6 +71,18 @@ const int NAX = 2e5 + 5, MOD = 1000000007;
 
 void solveCase(int caseNo)
 {
+    string s;
+    set<char> S;
+    getline(cin, s);
+    s = s.substr(1, s.size() - 1);
+    stringstream SS;
+    SS << s;
+    while (SS >> s)
+    {
+        if (s.size() == 2)
+            S.insert(s[0]);
+    }
+    cout << S.size() << '\n';
 }
 
 int main()

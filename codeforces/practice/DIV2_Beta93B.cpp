@@ -60,7 +60,7 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define f first
 #define s second
 #define pb push_back
-#define all(v) v.begin(),v.end()
+#define all(v) v.begin(), v.end()
 auto TimeStart = chrono::steady_clock::now();
 auto seed = TimeStart.time_since_epoch().count();
 std::mt19937 rng(seed);
@@ -69,8 +69,38 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
+vector<int> Z_function(string S)
+{
+    int n = S.size();
+    vector<int> z(n);
+    int l = -1, r = -1;
+    for (int i = 1; i < n; ++i)
+    {
+        z[i] = i >= r ? 0 : min(r - i, z[i - l]);
+        while (i + z[i] < n && S[z[i]] == S[i + z[i]])
+            ++z[i];
+        if (i + z[i] - 1 > r)
+            l = i, r = i + z[i];
+    }
+    return z;
+}
 void solveCase(int caseNo)
 {
+    string s;
+    cin >> s;
+    auto z = Z_function(s);
+    int max_so_far = 0;
+    int n = s.length();
+    for (int i = 0; i < n; ++i)
+    {
+        if ((z[i] == n - i) && (max_so_far >= n - i))
+        {
+            cout << s.substr(0, n - i);
+            return;
+        }
+        max_so_far = max(max_so_far, z[i]);
+    }
+    cout << "Just a legend\n";
 }
 
 int main()
