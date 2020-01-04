@@ -53,6 +53,58 @@ struct Rabin_Karp
         auto ret = make_pair(a, make_pair(b, c));
         return ret;
     }
+    int solve(string pattern, string text)
+    {
+        if (text.size() < pattern.size())
+            return 0;
+        int patternSize = pattern.size();
+        int textSize = text.size();
+        int cnt = 0;
+        pair<ll, pair<ll, ll>> hashPattern;
+        for (auto c : pattern)
+        {
+            hashPattern.f = (hashPattern.f * p1 + c - 'a' + 1) % mod1;
+            hashPattern.s.f = (hashPattern.s.f * p2 + c - 'a' + 1) % mod2;
+            hashPattern.s.s = (hashPattern.s.s * p3 + c - 'a' + 1) % mod3;
+        }
+        pair<ll, pair<ll, ll>> currentTextHash;
+        for (int i = 0; i < patternSize; ++i)
+        {
+            currentTextHash.f = (currentTextHash.f * p1 + text[i] - 'a' + 1) % mod1;
+            currentTextHash.s.f = (currentTextHash.s.f * p2 + text[i] - 'a' + 1) % mod2;
+            currentTextHash.s.s = (currentTextHash.s.s * p3 + text[i] - 'a' + 1) % mod3;
+        }
+        cnt += currentTextHash == hashPattern;
+        for (int i = patternSize; i < textSize; ++i)
+        {
+            currentTextHash.f = (currentTextHash.f - ((text[i - patternSize] - 'a' + 1) * p_pow1[patternSize - 1]) % mod1 + mod1) % mod1;
+            currentTextHash.s.f = (currentTextHash.s.f - ((text[i - patternSize] - 'a' + 1) * p_pow2[patternSize - 1]) % mod2 + mod2) % mod2;
+            currentTextHash.s.s = (currentTextHash.s.s - ((text[i - patternSize] - 'a' + 1) * p_pow3[patternSize - 1]) % mod3 + mod3) % mod3;
+
+            currentTextHash.f = (currentTextHash.f * p_pow1[1]) % mod1;
+            currentTextHash.s.f = (currentTextHash.s.f * p_pow2[1]) % mod2;
+            currentTextHash.s.s = (currentTextHash.s.s * p_pow3[1]) % mod3;
+
+            currentTextHash.f = (currentTextHash.f + (text[i] - 'a' + 1)) % mod1;
+            currentTextHash.s.f = (currentTextHash.s.f + (text[i] - 'a' + 1)) % mod2;
+            currentTextHash.s.s = (currentTextHash.s.s + (text[i] - 'a' + 1)) % mod3;
+
+            cnt += currentTextHash == hashPattern;
+            // db(i, currentTextHash, hashPattern);
+        }
+        return cnt;
+    }
+    void prepareString(string text)
+    {
+        int n = text.size();
+        hashUptoIndex.resize(n);
+        for (int i = 0; i < n; ++i)
+        {
+            hashUptoIndex[i].f = (((i > 0) ? (hashUptoIndex[i - 1].f) : (0)) + (text[i] - 'a' + 1) * p_pow1[i]) % mod1;
+            hashUptoIndex[i].s.f = (((i > 0) ? (hashUptoIndex[i - 1].s.f) : (0)) + (text[i] - 'a' + 1) * p_pow2[i]) % mod2;
+            hashUptoIndex[i].s.s = (((i > 0) ? (hashUptoIndex[i - 1].s.s) : (0)) + (text[i] - 'a' + 1) * p_pow3[i]) % mod3;
+        }
+    }
 };
 
 Rabin_Karp R;
