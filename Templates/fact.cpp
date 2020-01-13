@@ -1,10 +1,26 @@
-int _n = 1e5 + 10;
+const int _n = 1e5 + 10;
 vector<int> Fact(_n), Inv(_n);
 const int kmod = 1000000007;
 
 int mul(int a, int b, int mod = kmod)
 {
     return (long long)a * b % mod;
+}
+
+int add(int a, int b, int mod = kmod)
+{
+    a += b;
+    if (a >= mod)
+        a -= mod;
+    return a;
+}
+
+int sub(int a, int b, int mod = kmod)
+{
+    a -= b;
+    if (a < 0)
+        a += mod;
+    return a;
 }
 
 int power(int base, int index, int mod = kmod)
@@ -33,12 +49,4 @@ int ncr(int n, int r)
     if (n < 0 || r < 0 || n - r < 0)
         return 0;
     return mul(Fact[n], mul(Inv[r], Inv[n - r]));
-}
-
-int add(int a, int b)
-{
-    a += b;
-    if (a >= kmod)
-        a -= kmod;
-    return a;
 }
