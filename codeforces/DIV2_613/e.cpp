@@ -67,35 +67,86 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
+const int NAX = 2e5 + 5, MOD = 2000000007;
+
+map<int, int> ls;
+
+int get(vector<pair<int, int>> &a)
+{
+    int cnt = 0, l = -MOD, r = -MOD;
+    sort(all(a));
+    for (int i = 0; i < a.size(); i++)
+    {
+        if (a[i].f > r)
+        {
+            if (r != -MOD)
+                ls[l] = 0;
+            ++cnt;
+            l = a[i].f, r = a[i].s;
+        }
+        else
+            r = max(r, a[i].s);
+    }
+    ls[l] = 0;
+    return cnt;
+}
+
+void process(vector<pair<int, pair<int, int>>> &qr, vector<int> &ans)
+{
+    db("Process");
+    set<int> open;
+    for (int i = 0; i < qr.size(); i++)
+    {
+        vector<int> op, cl;
+        int j = i - 1;
+        while (j + 1 < int(qr.size()) && qr[j + 1].f == qr[i].f)
+        {
+            ++j;
+            if (qr[j].s.f == 1)
+                op.pb(qr[j].s.s);
+            else
+                cl.pb(qr[j].s.s);
+        }
+        db(i);
+        pc(op, cl, open, ls);
+        if (open.size() == 1 && !op.empty())
+            ++ans[*open.begin()];
+        for (auto &it : op)
+            open.insert(it);
+        for (auto &it : cl)
+            open.erase(it);
+        i = j;
+    }
+}
 
 void solveCase(int caseNo)
 {
     int n;
     cin >> n;
     vector<pair<int, int>> seg(n);
-    vector<int> points;
+    vector<pair<int, pair<int, int>>> qr;
     for (int i = 0; i < n; i++)
     {
         int x, y;
         cin >> x >> y;
         seg[i] = {x, y};
-        points.pb(x);
-        points.pb(y);
-        points.pb(x - 1);
-        points.pb(y - 1);
-        points.pb(x + 1);
-        points.pb(y + 1);
+        qr.pb({x, {1, i}});
+        qr.pb({y, {-1, i}});
     }
-    sort(all(points));
-    points.erase(unique(all(points)), points.end());
-    pc(seg);
+    sort(all(qr));
+
+    vector<int> ans(n);
+    ls.clear();
+    int cur = get(seg);
+    
+    process(qr, ans);
     for (int i = 0; i < n; i++)
-    {
-        seg[i].f = lower_bound(all(points), seg[i].f) - points.begin();
-        seg[i].s = lower_bound(all(points), seg[i].s) - points.begin();
-    }
-    pc(seg);
+        if (ls.count(seg[i].f))
+            ++ls[seg[i].f];
+    for (int i = 0; i < n; i++)
+        if (ls[seg[i].f] == 1)
+            --ans[i];
+    cout << *max_element(all(ans)) + cur << '\n';
 }
 
 int main()
