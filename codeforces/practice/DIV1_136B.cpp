@@ -67,34 +67,42 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
+const int NAX = 1e5 + 5, MOD = 1000000007, LIM = 501;
+
+int w[NAX], C[LIM], P[LIM][NAX];
+map<int, int> Map;
 
 void solveCase(int caseNo)
 {
-    set<string> S;
-    string str;
-    while (cin >> str)
-        S.insert(str);
-    map<string, int> BranchWise, YearWise, branchAndYearWise;
-    for (auto &Roll : S)
+    int n, m;
+    cin >> n >> m;
+    int cnt = 0;
+    for (int i = 1; i <= n; i++)
     {
-        auto roll = Roll;
-        for (int i = 0; i < roll.size(); ++i)
-            roll[i] = toupper(roll[i]);
-        // db(roll);
-        BranchWise[roll.substr(roll.size() - 2, 2)]++;
-        YearWise[roll.substr(1, 2)]++;
-        branchAndYearWise[roll.substr(roll.size() - 2, 2) + roll.substr(0, 3)]++;
+        int x;
+        cin >> x;
+        w[i] = x;
+        Map[x]++;
+        if (Map[x] == x)
+            C[++cnt] = x;
     }
-    db("branchWise");
-    for (auto &elem : BranchWise)
-        cout << elem << '\n';
-    db("YearWise");
-    for (auto &elem : YearWise)
-        cout << elem << '\n';
-    db("branchAndYearWise");
-    for (auto &elem : branchAndYearWise)
-        cout << elem << '\n';
+    // cout << cnt << '\n';
+    for (int i = 1; i <= cnt; i++)
+        for (int j = 1; j <= n; j++)
+        {
+            P[i][j] = P[i][j - 1];
+            if (w[j] == C[i])
+                P[i][j]++;
+        }
+    while (m--)
+    {
+        int a, b, r = 0;
+        cin >> a >> b;
+        for (int i = 1; i <= cnt; i++)
+            if (P[i][b] - P[i][a - 1] == C[i])
+                r++;
+        cout << r << '\n';
+    }
 }
 
 int main()

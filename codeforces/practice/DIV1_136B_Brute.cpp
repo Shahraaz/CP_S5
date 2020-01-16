@@ -71,30 +71,39 @@ const int NAX = 2e5 + 5, MOD = 1000000007;
 
 void solveCase(int caseNo)
 {
-    set<string> S;
-    string str;
-    while (cin >> str)
-        S.insert(str);
-    map<string, int> BranchWise, YearWise, branchAndYearWise;
-    for (auto &Roll : S)
+    int n, m;
+    cin >> n >> m;
+    // const int lim = ceil(sqrtl(n * 2));
+    // vector<int> positions[lim];
+    vector<int> arr(n);
+    for (int i = 0; i < n; i++)
     {
-        auto roll = Roll;
-        for (int i = 0; i < roll.size(); ++i)
-            roll[i] = toupper(roll[i]);
-        // db(roll);
-        BranchWise[roll.substr(roll.size() - 2, 2)]++;
-        YearWise[roll.substr(1, 2)]++;
-        branchAndYearWise[roll.substr(roll.size() - 2, 2) + roll.substr(0, 3)]++;
+        int x;
+        cin >> x;
+        arr[i] = x;
     }
-    db("branchWise");
-    for (auto &elem : BranchWise)
-        cout << elem << '\n';
-    db("YearWise");
-    for (auto &elem : YearWise)
-        cout << elem << '\n';
-    db("branchAndYearWise");
-    for (auto &elem : branchAndYearWise)
-        cout << elem << '\n';
+    for (int i = 0; i < m; i++)
+    {
+        // db(i);
+        int l, r, res = 0;
+        cin >> l >> r;
+        --l, --r;
+        set<int> S;
+        for (int i = l; i <= r; i++)
+        {
+            if (S.find(arr[i]) == S.end())
+            {
+                int cnt = 0;
+                for (size_t j = i; j <= r; j++)
+                    cnt += arr[i] == arr[j];
+                S.insert(arr[i]);
+                if (cnt == arr[i])
+                    res++;
+            }
+        }
+        cout << l + 1 << ' ' << r + 1 << ' ';
+        cout << res << '\n';
+    }
 }
 
 int main()

@@ -67,34 +67,44 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
+const int NAX = 2e5 + 5, MOD = 1000000007, offset = 1e5 + 5;
+
+int n, k;
+int a[101], b[101], c[101];
+
+int dp[101][2 * offset];
+
+int solve(int pos, int balance)
+{
+    if (pos == n)
+    {
+        if (balance == 0)
+            return 0;
+        else
+            return -1e7;
+    }
+    int &ret = dp[pos][balance + offset];
+    if (ret != -1)
+        return ret;
+    ret = max(a[pos] + solve(pos + 1, balance + c[pos]), solve(pos + 1, balance));
+    return ret;
+}
 
 void solveCase(int caseNo)
 {
-    set<string> S;
-    string str;
-    while (cin >> str)
-        S.insert(str);
-    map<string, int> BranchWise, YearWise, branchAndYearWise;
-    for (auto &Roll : S)
+    cin >> n >> k;
+    memset(dp, -1, sizeof dp);
+    for (int i = 0; i < n; i++)
+        cin >> a[i];
+    for (int i = 0; i < n; i++)
     {
-        auto roll = Roll;
-        for (int i = 0; i < roll.size(); ++i)
-            roll[i] = toupper(roll[i]);
-        // db(roll);
-        BranchWise[roll.substr(roll.size() - 2, 2)]++;
-        YearWise[roll.substr(1, 2)]++;
-        branchAndYearWise[roll.substr(roll.size() - 2, 2) + roll.substr(0, 3)]++;
+        cin >> b[i];
+        c[i] = a[i] - b[i] * k;
     }
-    db("branchWise");
-    for (auto &elem : BranchWise)
-        cout << elem << '\n';
-    db("YearWise");
-    for (auto &elem : YearWise)
-        cout << elem << '\n';
-    db("branchAndYearWise");
-    for (auto &elem : branchAndYearWise)
-        cout << elem << '\n';
+    if (solve(0, 0) <= 0)
+        cout << -1 << '\n';
+    else
+        cout << solve(0, 0) << '\n';
 }
 
 int main()

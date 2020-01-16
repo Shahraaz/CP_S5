@@ -69,32 +69,62 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
+struct Event
+{
+    int t, s, e, isIn;
+    Event(int t, int s, int e, int isIn) : t(t), s(s), e(e), isIn(isIn) {}
+    bool operator<(const Event &rhs) const
+    {
+        if (t == rhs.t)
+            return isIn < rhs.isIn;
+        return t < rhs.t;
+    }
+};
+
+bool check(int n, vector<int> &sa, vector<int> &ea, vector<int> &sb, vector<int> &eb)
+{
+    multiset<int> s, e;
+    vector<Event> events;
+    for (int i = 0; i < n; i++)
+    {
+        events.pb(Event(sa[i], sb[i], eb[i], 1));
+        events.pb(Event(ea[i] + 1, sb[i], eb[i], 0));
+    }
+    sort(all(events));
+    for (int i = 0; i < 2 * n; i++)
+    {
+        if (events[i].isIn)
+        {
+            if (!s.empty())
+            {
+                int maxS = *s.rbegin();
+                int minE = *e.begin();
+                if (maxS > events[i].e || minE < events[i].s)
+                    return false;
+            }
+            s.insert(events[i].s);
+            e.insert(events[i].e);
+        }
+        else
+        {
+            s.erase(s.find(events[i].s));
+            e.erase(e.find(events[i].e));
+        }
+    }
+    return true;
+}
+
 void solveCase(int caseNo)
 {
-    set<string> S;
-    string str;
-    while (cin >> str)
-        S.insert(str);
-    map<string, int> BranchWise, YearWise, branchAndYearWise;
-    for (auto &Roll : S)
-    {
-        auto roll = Roll;
-        for (int i = 0; i < roll.size(); ++i)
-            roll[i] = toupper(roll[i]);
-        // db(roll);
-        BranchWise[roll.substr(roll.size() - 2, 2)]++;
-        YearWise[roll.substr(1, 2)]++;
-        branchAndYearWise[roll.substr(roll.size() - 2, 2) + roll.substr(0, 3)]++;
-    }
-    db("branchWise");
-    for (auto &elem : BranchWise)
-        cout << elem << '\n';
-    db("YearWise");
-    for (auto &elem : YearWise)
-        cout << elem << '\n';
-    db("branchAndYearWise");
-    for (auto &elem : branchAndYearWise)
-        cout << elem << '\n';
+    int n;
+    cin >> n;
+    vector<int> sa(n), ea(n), sb(n), eb(n);
+    for (int i = 0; i < n; i++)
+        cin >> sa[i] >> ea[i] >> sb[i] >> eb[i];
+    if (check(n, sa, ea, sb, eb) && check(n, sb, eb, sa, ea))
+        cout << "YES\n";
+    else
+        cout << "NO\n";
 }
 
 int main()

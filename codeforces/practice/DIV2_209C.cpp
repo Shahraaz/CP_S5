@@ -69,32 +69,82 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
+const int _n = 1e5 + 10;
+vector<int> Fact(_n), Inv(_n);
+const int kmod = 1000000007;
+
+int mul(int a, int b, int mod = kmod)
+{
+    return (long long)a * b % mod;
+}
+
+int add(int a, int b, int mod = kmod)
+{
+    a += b;
+    if (a >= mod)
+        a -= mod;
+    return a;
+}
+
+int sub(int a, int b, int mod = kmod)
+{
+    a -= b;
+    if (a < 0)
+        a += mod;
+    return a;
+}
+
+int power(int base, ll index, int mod = kmod)
+{
+    if (index == 0)
+        return 1;
+    int temp = power(base, index / 2, mod);
+    temp = mul(temp, temp, mod);
+    if (index & 1)
+        temp = mul(temp, base, mod);
+    return temp;
+}
+
 void solveCase(int caseNo)
 {
-    set<string> S;
-    string str;
-    while (cin >> str)
-        S.insert(str);
-    map<string, int> BranchWise, YearWise, branchAndYearWise;
-    for (auto &Roll : S)
+    int n, x;
+    cin >> n >> x;
+    vector<int> a(n);
+    vector<ll> b(n);
+    ll sum = 0;
+    for (auto &x : a)
     {
-        auto roll = Roll;
-        for (int i = 0; i < roll.size(); ++i)
-            roll[i] = toupper(roll[i]);
-        // db(roll);
-        BranchWise[roll.substr(roll.size() - 2, 2)]++;
-        YearWise[roll.substr(1, 2)]++;
-        branchAndYearWise[roll.substr(roll.size() - 2, 2) + roll.substr(0, 3)]++;
+        cin >> x;
+        sum += x;
     }
-    db("branchWise");
-    for (auto &elem : BranchWise)
-        cout << elem << '\n';
-    db("YearWise");
-    for (auto &elem : YearWise)
-        cout << elem << '\n';
-    db("branchAndYearWise");
-    for (auto &elem : branchAndYearWise)
-        cout << elem << '\n';
+    for (int i = 0; i < n; i++)
+        b[i] = sum - a[i];
+    sort(all(b));
+    reverse(all(b));
+    while (true)
+    {
+        db(sum, x);
+        pc(b);
+        ll v = b.back();
+        int cnt = 0;
+        while (b.size() > 0 && b.back() == v)
+        {
+            cnt++;
+            b.pop_back();
+        }
+        db(cnt);
+        if (cnt % x != 0)
+        {
+            cout << power(x, min(v, sum)) << '\n';
+            return;
+        }
+        else
+        {
+            cnt /= x;
+            while (cnt--)
+                b.pb(v + 1);
+        }
+    }
 }
 
 int main()

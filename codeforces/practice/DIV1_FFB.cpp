@@ -69,32 +69,47 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
+vector<ll> solve(vector<ll> &a, int p, int k, int alter)
+{
+    priority_queue<ll> Q;
+    for (auto &elem : a)
+        Q.push(elem);
+    vector<ll> t;
+    ll sum = 0;
+    t.pb(0);
+    for (int i = 0; i < k; i++)
+    {
+        ll val = Q.top();
+        Q.pop();
+        sum += val;
+        t.pb(sum);
+        Q.push(val - alter * p);
+    }
+    return t;
+}
+
 void solveCase(int caseNo)
 {
-    set<string> S;
-    string str;
-    while (cin >> str)
-        S.insert(str);
-    map<string, int> BranchWise, YearWise, branchAndYearWise;
-    for (auto &Roll : S)
+    int n, m, k, p;
+    cin >> n >> m >> k >> p;
+    vector<ll> rowSum(n), colSum(m);
+    for (int i = 0; i < n; i++)
     {
-        auto roll = Roll;
-        for (int i = 0; i < roll.size(); ++i)
-            roll[i] = toupper(roll[i]);
-        // db(roll);
-        BranchWise[roll.substr(roll.size() - 2, 2)]++;
-        YearWise[roll.substr(1, 2)]++;
-        branchAndYearWise[roll.substr(roll.size() - 2, 2) + roll.substr(0, 3)]++;
+        for (int j = 0; j < m; j++)
+        {
+            int x;
+            cin >> x;
+            rowSum[i] += x;
+            colSum[j] += x;
+        }
     }
-    db("branchWise");
-    for (auto &elem : BranchWise)
-        cout << elem << '\n';
-    db("YearWise");
-    for (auto &elem : YearWise)
-        cout << elem << '\n';
-    db("branchAndYearWise");
-    for (auto &elem : branchAndYearWise)
-        cout << elem << '\n';
+    ll res = LLONG_MIN;
+    auto res1 = solve(rowSum, p, k, m);
+    auto res2 = solve(colSum, p, k, n);
+    pc(res1, res2);
+    for (int i = 0; i <= k; i++)
+        res = max(res, res1[i] + res2[k - i] - (ll)p * i * (k - i));
+    cout << res << '\n';
 }
 
 int main()
