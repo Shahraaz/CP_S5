@@ -84,8 +84,9 @@ void solveCase(int caseNo)
         // db(roll);
         BranchWise[roll.substr(roll.size() - 2, 2)]++;
         YearWise[roll.substr(1, 2)]++;
-        branchAndYearWise[roll.substr(0, 3) + roll.substr(roll.size() - 2, 2)]++;
+        branchAndYearWise[roll.substr(1, 2) + roll.substr(0, 1) + roll.substr(roll.size() - 2, 2)]++;
     }
+    db(S.size());
     db("branchWise");
     for (auto &elem : BranchWise)
         cout << elem << '\n';
