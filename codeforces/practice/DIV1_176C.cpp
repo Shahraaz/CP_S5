@@ -71,64 +71,54 @@ const int NAX = 2e5 + 5, MOD = 1000000007;
 
 void solveCase(int caseNo)
 {
-    string str;
-    cin >> str;
-    char prv = '$';
-    int cnt = 0;
-    string something;
-    vector<int> Count;
-    for (auto &c : str)
+    int n;
+    cin >> n;
+    vector<int> p(n);
+    for (auto &x : p)
+        cin >> x;
+    reverse(all(p)); // reversing the bracket sequence
+    vector<bool> isOpening(n);
+    int t, x;
+    cin >> t;
+    while (t--)
     {
-        if (c == prv)
-        {
-            cnt += 1;
-        }
+        cin >> x;
+        db(x);
+        x = n - x;
+        db(x);
+        isOpening[x] = true;
+    }
+    stack<int> Stk;
+    for (int i = 0; i < n; i++)
+    {
+        if (isOpening[i])
+            Stk.push(p[i]);
         else
         {
-            if (prv != '$')
+            if (Stk.empty())
             {
-                something += prv;
-                Count.pb(cnt);
+                isOpening[i] = true;
+                Stk.push(p[i]);
             }
-            prv = c;
-            cnt = 1;
-        }
-    }
-    if (prv != '$')
-    {
-        something += prv;
-        Count.pb(cnt);
-    }
-    db(something);
-    pc(Count);
-    // cout << something << '\n';
-    if (something.size() & 1)
-    {
-        auto rev = something;
-        reverse(all(rev));
-        if (something == rev)
-        {
-            int sz = something.size();
-            for (int i = 0; i < sz / 2; i++)
+            else if (Stk.top() == p[i])
             {
-                if (Count[i] + Count[sz - 1 - i] < 3)
-                {
-                    cout << 0 << '\n';
-                    return;
-                }
-            }
-            if (Count[sz / 2] >= 2)
-            {
-                cout << Count[sz / 2] + 1 << '\n';
+                Stk.pop();
             }
             else
-                cout << 0 << '\n';
+            {
+                Stk.push(p[i]);
+                isOpening[i] = true;
+            }
         }
-        else
-            cout << 0 << '\n';
+    }
+    if (Stk.empty())
+    {
+        cout << "YES\n";
+        for (int i = n - 1; i >= 0; i--)
+            cout << (isOpening[i] ? -1 : 1) * p[i] << ' ';
     }
     else
-        cout << 0 << '\n';
+        cout << "NO\n";
 }
 
 int main()

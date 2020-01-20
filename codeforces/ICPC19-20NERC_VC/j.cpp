@@ -5,7 +5,7 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-// #define MULTI_TEST
+#define MULTI_TEST
 #ifdef LOCAL
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -71,64 +71,35 @@ const int NAX = 2e5 + 5, MOD = 1000000007;
 
 void solveCase(int caseNo)
 {
-    string str;
-    cin >> str;
-    char prv = '$';
-    int cnt = 0;
-    string something;
-    vector<int> Count;
-    for (auto &c : str)
+    int n;
+    cin >> n;
+    map<int, int> cnt;
+    for (int i = 0; i < n; i++)
     {
-        if (c == prv)
-        {
-            cnt += 1;
-        }
-        else
-        {
-            if (prv != '$')
-            {
-                something += prv;
-                Count.pb(cnt);
-            }
-            prv = c;
-            cnt = 1;
-        }
+        int x;
+        cin >> x;
+        cnt[x]++;
     }
-    if (prv != '$')
+    int minFreq = INT_MAX;
+    for (auto &ellem : cnt)
+        minFreq = min(minFreq, ellem.s);
+    int res = INT_MAX;
+    for (int sz = 1; sz <= minFreq + 1; sz++)
     {
-        something += prv;
-        Count.pb(cnt);
-    }
-    db(something);
-    pc(Count);
-    // cout << something << '\n';
-    if (something.size() & 1)
-    {
-        auto rev = something;
-        reverse(all(rev));
-        if (something == rev)
+        int curr = 0;
+        for (auto &elem : cnt)
         {
-            int sz = something.size();
-            for (int i = 0; i < sz / 2; i++)
+            ll qj = ceil((double)elem.s / sz);
+            if (qj * (sz - 1) > elem.s)
             {
-                if (Count[i] + Count[sz - 1 - i] < 3)
-                {
-                    cout << 0 << '\n';
-                    return;
-                }
+                curr = INT_MAX;
+                break;
             }
-            if (Count[sz / 2] >= 2)
-            {
-                cout << Count[sz / 2] + 1 << '\n';
-            }
-            else
-                cout << 0 << '\n';
+            curr += qj;
         }
-        else
-            cout << 0 << '\n';
+        res = min(res, curr);
     }
-    else
-        cout << 0 << '\n';
+    cout << res << '\n';
 }
 
 int main()

@@ -71,64 +71,58 @@ const int NAX = 2e5 + 5, MOD = 1000000007;
 
 void solveCase(int caseNo)
 {
+    int n, l, k;
+    cin >> n >> l >> k;
+    --k;
     string str;
     cin >> str;
-    char prv = '$';
-    int cnt = 0;
-    string something;
-    vector<int> Count;
+    vector<int> cnt(26);
     for (auto &c : str)
+        cnt[c - 'a']++;
+    int t = 0, curChar = 0;
+    vector<string> res(n);
+    db("Start");
+    while (res[k].size() != l)
     {
-        if (c == prv)
+        pc(res);
+        if (cnt[curChar] <= 0)
         {
-            cnt += 1;
+            curChar++;
+            continue;
+        }
+        if (cnt[curChar] > k - t)
+        {
+            for (int i = t; i <= k; i++)
+            {
+                res[i].pb(curChar + 'a');
+                cnt[curChar]--;
+            }
         }
         else
         {
-            if (prv != '$')
-            {
-                something += prv;
-                Count.pb(cnt);
-            }
-            prv = c;
-            cnt = 1;
+            for (int i = t; i < t + cnt[curChar]; i++)
+                res[i].pb(curChar + 'a');
+            t += cnt[curChar];
+            cnt[curChar] = 0;
+            curChar++;
         }
     }
-    if (prv != '$')
+    curChar = 0;
+    db("Printing");
+    for (int i = 0; i < n; i++)
     {
-        something += prv;
-        Count.pb(cnt);
-    }
-    db(something);
-    pc(Count);
-    // cout << something << '\n';
-    if (something.size() & 1)
-    {
-        auto rev = something;
-        reverse(all(rev));
-        if (something == rev)
+        while (res[i].size() < l)
         {
-            int sz = something.size();
-            for (int i = 0; i < sz / 2; i++)
-            {
-                if (Count[i] + Count[sz - 1 - i] < 3)
-                {
-                    cout << 0 << '\n';
-                    return;
-                }
-            }
-            if (Count[sz / 2] >= 2)
-            {
-                cout << Count[sz / 2] + 1 << '\n';
-            }
+            if (cnt[curChar] == 0)
+                curChar++;
             else
-                cout << 0 << '\n';
+            {
+                res[i] += 'a' + curChar;
+                cnt[curChar]--;
+            }
         }
-        else
-            cout << 0 << '\n';
+        cout << res[i] << '\n';
     }
-    else
-        cout << 0 << '\n';
 }
 
 int main()

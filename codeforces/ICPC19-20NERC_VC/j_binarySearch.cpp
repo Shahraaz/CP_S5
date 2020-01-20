@@ -5,7 +5,7 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-// #define MULTI_TEST
+#define MULTI_TEST
 #ifdef LOCAL
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -68,67 +68,67 @@ template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
+vector<int> cnt;
+
+int Try(int sz)
+{
+    int screenCount = 0;
+    for (int i = 0; i < cnt.size(); i++)
+    {
+        if (cnt[i])
+        {
+            if (sz == 1)
+            {
+                screenCount += cnt[i];
+                continue;
+            }
+            if (cnt[i] < sz - 1)
+                return MOD;
+            int a = cnt[i] / (sz - 1), rem = cnt[i] % (sz - 1);
+            if (cnt[i] % sz == 0)
+                screenCount += cnt[i] / sz;
+            else
+            {
+                if (rem < a)
+                {
+                    screenCount += a;
+                }
+                else
+                    return MOD;
+            }
+        }
+    }
+    db(sz, screenCount);
+    return screenCount;
+}
 
 void solveCase(int caseNo)
 {
-    string str;
-    cin >> str;
-    char prv = '$';
-    int cnt = 0;
-    string something;
-    vector<int> Count;
-    for (auto &c : str)
+    int n;
+    cin >> n;
+    cnt.assign(n, 0);
+    for (int i = 0; i < n; i++)
     {
-        if (c == prv)
+        int x;
+        cin >> x;
+        --x;
+        cnt[x]++;
+    }
+    int res = MOD;
+    int low = 1, high = n + 1, ans = 1;
+    while (low <= high)
+    {
+        ll mid = (ll)low + high;
+        mid /= 2;
+        if (Try(mid) < MOD)
         {
-            cnt += 1;
+            low = mid + 1;
+            ans = max(ans, (int)mid);
         }
         else
-        {
-            if (prv != '$')
-            {
-                something += prv;
-                Count.pb(cnt);
-            }
-            prv = c;
-            cnt = 1;
-        }
+            high = mid - 1;
     }
-    if (prv != '$')
-    {
-        something += prv;
-        Count.pb(cnt);
-    }
-    db(something);
-    pc(Count);
-    // cout << something << '\n';
-    if (something.size() & 1)
-    {
-        auto rev = something;
-        reverse(all(rev));
-        if (something == rev)
-        {
-            int sz = something.size();
-            for (int i = 0; i < sz / 2; i++)
-            {
-                if (Count[i] + Count[sz - 1 - i] < 3)
-                {
-                    cout << 0 << '\n';
-                    return;
-                }
-            }
-            if (Count[sz / 2] >= 2)
-            {
-                cout << Count[sz / 2] + 1 << '\n';
-            }
-            else
-                cout << 0 << '\n';
-        }
-        else
-            cout << 0 << '\n';
-    }
-    else
-        cout << 0 << '\n';
+    cout << Try(ans) << '\n';
 }
 
 int main()

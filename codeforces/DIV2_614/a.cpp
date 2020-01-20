@@ -5,7 +5,7 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-// #define MULTI_TEST
+#define MULTI_TEST
 #ifdef LOCAL
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -71,64 +71,29 @@ const int NAX = 2e5 + 5, MOD = 1000000007;
 
 void solveCase(int caseNo)
 {
-    string str;
-    cin >> str;
-    char prv = '$';
-    int cnt = 0;
-    string something;
-    vector<int> Count;
-    for (auto &c : str)
+    int n, s, k;
+    cin >> n >> s >> k;
+    set<int> elems;
+    for (int i = 0; i <= 2 * k; i++)
+        elems.insert(min(s + i, n));
+    for (int i = 0; i <= 2 * k; i++)
+        elems.insert(max(s - i, 1));
+    vector<int> forbid(k);
+    for (auto &i : forbid)
     {
-        if (c == prv)
-        {
-            cnt += 1;
-        }
-        else
-        {
-            if (prv != '$')
-            {
-                something += prv;
-                Count.pb(cnt);
-            }
-            prv = c;
-            cnt = 1;
-        }
+        cin >> i;
+        elems.erase(i);
     }
-    if (prv != '$')
+    auto it = elems.lower_bound(s);
+    int res = INT_MAX;
+    if (it != elems.end())
+        res = *it - s;
+    if (it != elems.begin())
     {
-        something += prv;
-        Count.pb(cnt);
+        --it;
+        res = min(res,s - *it);
     }
-    db(something);
-    pc(Count);
-    // cout << something << '\n';
-    if (something.size() & 1)
-    {
-        auto rev = something;
-        reverse(all(rev));
-        if (something == rev)
-        {
-            int sz = something.size();
-            for (int i = 0; i < sz / 2; i++)
-            {
-                if (Count[i] + Count[sz - 1 - i] < 3)
-                {
-                    cout << 0 << '\n';
-                    return;
-                }
-            }
-            if (Count[sz / 2] >= 2)
-            {
-                cout << Count[sz / 2] + 1 << '\n';
-            }
-            else
-                cout << 0 << '\n';
-        }
-        else
-            cout << 0 << '\n';
-    }
-    else
-        cout << 0 << '\n';
+    cout << res << '\n';
 }
 
 int main()

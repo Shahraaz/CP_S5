@@ -68,67 +68,33 @@ template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
+using ld = long double;
+ld solve(int n)
+{
+    if (n == 0)
+        return 0;
+    ld ret = 0;
+    int idx = -1;
+    for (int i = 1; i <= 1; i++)
+    {
+        ld temp = (ld)i / n;
+        temp += solve(n - i);
+        if (ret < temp)
+        {
+            ret = temp;
+            idx = i;
+        }
+    }
+    db(idx, ret, n);
+    return ret;
+}
 
 void solveCase(int caseNo)
 {
-    string str;
-    cin >> str;
-    char prv = '$';
-    int cnt = 0;
-    string something;
-    vector<int> Count;
-    for (auto &c : str)
-    {
-        if (c == prv)
-        {
-            cnt += 1;
-        }
-        else
-        {
-            if (prv != '$')
-            {
-                something += prv;
-                Count.pb(cnt);
-            }
-            prv = c;
-            cnt = 1;
-        }
-    }
-    if (prv != '$')
-    {
-        something += prv;
-        Count.pb(cnt);
-    }
-    db(something);
-    pc(Count);
-    // cout << something << '\n';
-    if (something.size() & 1)
-    {
-        auto rev = something;
-        reverse(all(rev));
-        if (something == rev)
-        {
-            int sz = something.size();
-            for (int i = 0; i < sz / 2; i++)
-            {
-                if (Count[i] + Count[sz - 1 - i] < 3)
-                {
-                    cout << 0 << '\n';
-                    return;
-                }
-            }
-            if (Count[sz / 2] >= 2)
-            {
-                cout << Count[sz / 2] + 1 << '\n';
-            }
-            else
-                cout << 0 << '\n';
-        }
-        else
-            cout << 0 << '\n';
-    }
-    else
-        cout << 0 << '\n';
+    int n;
+    cin >> n;
+    ld res = solve(n);
+    cout << fixed << setprecision(10) << res << '\n';
 }
 
 int main()

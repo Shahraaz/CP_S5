@@ -60,7 +60,7 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define f first
 #define s second
 #define pb push_back
-#define all(v) v.begin(),v.end()
+#define all(v) v.begin(), v.end()
 auto TimeStart = chrono::steady_clock::now();
 auto seed = TimeStart.time_since_epoch().count();
 std::mt19937 rng(seed);
@@ -71,6 +71,45 @@ const int NAX = 2e5 + 5, MOD = 1000000007;
 
 void solveCase(int caseNo)
 {
+    int n, m;
+    cin >> n >> m;
+    int a[m][n];
+    vector<int> res;
+    db("Start ININ");
+    for (int i = 0; i < m; i++)
+    {
+        res.pb(i);
+        for (int j = 0; j < n; j++)
+            cin >> a[i][j];
+    }
+    db("End ININ");
+    for (int j = 0; j < n - 1; j++)
+    {
+        db("Try Start", j);
+        pc(res);
+        vector<pair<int, int>> diff;
+        for (int i = 0; i < m; i++)
+            diff.pb({a[i][j] - a[i][n - 1], i});
+        sort(diff.rbegin(), diff.rend());
+        pc(diff);
+        ll ourLead = 0;
+        int idx = 0;
+        for (; idx < m; ++idx)
+            if (ourLead + diff[idx].f >= 0)
+                ourLead += diff[idx].f;
+            else
+                break;
+        vector<int> tempRes;
+        for (; idx < m; ++idx)
+            tempRes.pb(diff[idx].s);
+        if (res.size() > tempRes.size())
+            res = tempRes;
+        db("Try End", j);
+        pc(res);
+    }
+    cout << res.size() << '\n';
+    for (auto &elem : res)
+        cout << elem + 1 << ' ';
 }
 
 int main()

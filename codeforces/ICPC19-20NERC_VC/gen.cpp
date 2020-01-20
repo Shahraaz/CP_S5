@@ -71,64 +71,16 @@ const int NAX = 2e5 + 5, MOD = 1000000007;
 
 void solveCase(int caseNo)
 {
-    string str;
-    cin >> str;
-    char prv = '$';
-    int cnt = 0;
-    string something;
-    vector<int> Count;
-    for (auto &c : str)
+    int t = 100;
+    cout << t << '\n';
+    while (t--)
     {
-        if (c == prv)
-        {
-            cnt += 1;
-        }
-        else
-        {
-            if (prv != '$')
-            {
-                something += prv;
-                Count.pb(cnt);
-            }
-            prv = c;
-            cnt = 1;
-        }
+        int n = Random<int>{1, 10}(rng);
+        cout << n << '\n';
+        for (int i = 0; i < n; i++)
+            cout << Random<int>{1, n}(rng) << ' ';
+        cout << '\n';
     }
-    if (prv != '$')
-    {
-        something += prv;
-        Count.pb(cnt);
-    }
-    db(something);
-    pc(Count);
-    // cout << something << '\n';
-    if (something.size() & 1)
-    {
-        auto rev = something;
-        reverse(all(rev));
-        if (something == rev)
-        {
-            int sz = something.size();
-            for (int i = 0; i < sz / 2; i++)
-            {
-                if (Count[i] + Count[sz - 1 - i] < 3)
-                {
-                    cout << 0 << '\n';
-                    return;
-                }
-            }
-            if (Count[sz / 2] >= 2)
-            {
-                cout << Count[sz / 2] + 1 << '\n';
-            }
-            else
-                cout << 0 << '\n';
-        }
-        else
-            cout << 0 << '\n';
-    }
-    else
-        cout << 0 << '\n';
 }
 
 int main()

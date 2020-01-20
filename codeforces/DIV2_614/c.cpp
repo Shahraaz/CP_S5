@@ -69,66 +69,71 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
-void solveCase(int caseNo)
+bool isBlocked[2][NAX];
+int cnt = 0;
+
+void toggle(int x, int y, int n)
 {
-    string str;
-    cin >> str;
-    char prv = '$';
-    int cnt = 0;
-    string something;
-    vector<int> Count;
-    for (auto &c : str)
+    int Knt = 0;
+    if (isBlocked[x][y])
     {
-        if (c == prv)
+        if (x == 0)
         {
-            cnt += 1;
+            Knt = isBlocked[x + 1][y];
+            if (y > 1)
+                Knt += isBlocked[x + 1][y - 1];
+            if (y < n)
+                Knt += isBlocked[x + 1][y + 1];
         }
         else
         {
-            if (prv != '$')
-            {
-                something += prv;
-                Count.pb(cnt);
-            }
-            prv = c;
-            cnt = 1;
+            Knt = isBlocked[x - 1][y];
+            if (y > 1)
+                Knt += isBlocked[x - 1][y - 1];
+            if (y < n)
+                Knt += isBlocked[x - 1][y + 1];
         }
-    }
-    if (prv != '$')
-    {
-        something += prv;
-        Count.pb(cnt);
-    }
-    db(something);
-    pc(Count);
-    // cout << something << '\n';
-    if (something.size() & 1)
-    {
-        auto rev = something;
-        reverse(all(rev));
-        if (something == rev)
-        {
-            int sz = something.size();
-            for (int i = 0; i < sz / 2; i++)
-            {
-                if (Count[i] + Count[sz - 1 - i] < 3)
-                {
-                    cout << 0 << '\n';
-                    return;
-                }
-            }
-            if (Count[sz / 2] >= 2)
-            {
-                cout << Count[sz / 2] + 1 << '\n';
-            }
-            else
-                cout << 0 << '\n';
-        }
-        else
-            cout << 0 << '\n';
+        cnt -= Knt;
     }
     else
-        cout << 0 << '\n';
+    {
+        if (x == 0)
+        {
+            Knt = isBlocked[x + 1][y];
+            if (y > 1)
+                Knt += isBlocked[x + 1][y - 1];
+            if (y < n)
+                Knt += isBlocked[x + 1][y + 1];
+        }
+        else
+        {
+            Knt = isBlocked[x - 1][y];
+            if (y > 1)
+                Knt += isBlocked[x - 1][y - 1];
+            if (y < n)
+                Knt += isBlocked[x - 1][y + 1];
+        }
+        cnt += Knt;
+    }
+    db(x, y, cnt);
+    isBlocked[x][y] = !isBlocked[x][y];
+}
+
+void solveCase(int caseNo)
+{
+    int n, q;
+    cin >> n >> q;
+    for (int i = 0; i < q; i++)
+    {
+        int x, y;
+        cin >> x >> y;
+        --x;
+        toggle(x, y, n);
+        if (cnt == 0)
+            cout << "Yes\n";
+        else
+            cout << "No\n";
+    }
 }
 
 int main()

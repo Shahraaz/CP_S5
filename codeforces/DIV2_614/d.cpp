@@ -69,66 +69,72 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
-void solveCase(int caseNo)
+vector<pair<ll, ll>> points;
+ll xs, ys, t;
+
+ll Abs(ll x)
 {
-    string str;
-    cin >> str;
-    char prv = '$';
-    int cnt = 0;
-    string something;
-    vector<int> Count;
-    for (auto &c : str)
+    return x < 0 ? -x : x;
+}
+
+int Try(int idx)
+{
+    int down = idx;
+    int up = points.size() - idx;
+    int res = 0;
+    for (int start = 0; start < points.size(); start++)
     {
-        if (c == prv)
+        for (int end = start; end < points.size(); end++)
         {
-            cnt += 1;
-        }
-        else
-        {
-            if (prv != '$')
+            ll xCum = points[end].f - points[start].f;
+            ll yCum = points[end].s - points[start].s;
+            ll upCostx = Abs(points[end].f - xs);
+            ll upCosty = Abs(points[end].s - ys);
+            ll downCostx = Abs(points[start].f - xs);
+            ll downCosty = Abs(points[start].s - ys);
+            ll totalup = upCostx + upCosty;
+            ll totaldown = downCostx + downCosty;
+            if (totalup < totaldown)
             {
-                something += prv;
-                Count.pb(cnt);
-            }
-            prv = c;
-            cnt = 1;
-        }
-    }
-    if (prv != '$')
-    {
-        something += prv;
-        Count.pb(cnt);
-    }
-    db(something);
-    pc(Count);
-    // cout << something << '\n';
-    if (something.size() & 1)
-    {
-        auto rev = something;
-        reverse(all(rev));
-        if (something == rev)
-        {
-            int sz = something.size();
-            for (int i = 0; i < sz / 2; i++)
-            {
-                if (Count[i] + Count[sz - 1 - i] < 3)
-                {
-                    cout << 0 << '\n';
-                    return;
-                }
-            }
-            if (Count[sz / 2] >= 2)
-            {
-                cout << Count[sz / 2] + 1 << '\n';
+                ll T = totalup + xCum + yCum;
+                if (T <= t)
+                    res = max(res, end - start + 1);
             }
             else
-                cout << 0 << '\n';
+            {
+                ll T = totaldown + xCum + yCum;
+                if (T <= t)
+                    res = max(res, end - start + 1);
+            }
         }
-        else
-            cout << 0 << '\n';
+        db(start, res);
     }
-    else
-        cout << 0 << '\n';
+
+    return res;
+}
+
+void solveCase(int caseNo)
+{
+    ll x0, y0, ax, ay, bx, by;
+    cin >> x0 >> y0 >> ax >> ay >> bx >> by;
+    cin >> xs >> ys >> t;
+    points.pb({x0, y0});
+    for (int i = 0; i < 60; i++)
+    {
+        using ld = long double;
+        ld xnext = (ld)x0 * ax + bx;
+        ld ynext = (ld)y0 * ay + by;
+        db(xnext, ynext);
+        db(xnext > 1e17, ynext > 1e17);
+        if (xnext > (1e17) || ynext > (1e17))
+            break;
+        x0 = x0 * ax + bx;
+        y0 = y0 * ay + by;
+        points.push_back({x0, y0});
+        db(points.back());
+    }
+    int idx = lower_bound(all(points), make_pair(xs, ys)) - points.begin();
+    cout << Try(idx) << '\n';
 }
 
 int main()

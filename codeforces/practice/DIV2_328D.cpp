@@ -69,66 +69,69 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
+vector<int> adj[NAX];
+int d[NAX], Size[NAX];
+bool mark[NAX];
+
+void dfs(int p, int node)
+{
+    Size[node] = 0;
+    if (mark[node])
+        Size[node] = 1;
+    for (auto &child : adj[node])
+        if (child != p)
+        {
+            d[child] = d[node] + 1;
+            dfs(node, child);
+            Size[node] += Size[child];
+        }
+    db(node, p, Size[node]);
+}
+
 void solveCase(int caseNo)
 {
-    string str;
-    cin >> str;
-    char prv = '$';
-    int cnt = 0;
-    string something;
-    vector<int> Count;
-    for (auto &c : str)
+    int n, m;
+    cin >> n >> m;
+    for (int i = 1; i < n; i++)
     {
-        if (c == prv)
-        {
-            cnt += 1;
-        }
-        else
-        {
-            if (prv != '$')
-            {
-                something += prv;
-                Count.pb(cnt);
-            }
-            prv = c;
-            cnt = 1;
-        }
+        int u, v;
+        cin >> u >> v;
+        --u, --v;
+        adj[u].pb(v);
+        adj[v].pb(u);
     }
-    if (prv != '$')
+    for (int i = 0; i < m; i++)
     {
-        something += prv;
-        Count.pb(cnt);
+        int u;
+        cin >> u;
+        --u;
+        mark[u] = true;
     }
-    db(something);
-    pc(Count);
-    // cout << something << '\n';
-    if (something.size() & 1)
+    dfs(-1, 0);
+    db("End Debug");
+    int v = -1;
+    for (int i = 0; i < n; i++)
+        if (mark[i] && (v == -1 || d[v] < d[i]))
+            v = i;
+    memset(d, 0, sizeof d);
+    dfs(-1, v);
+    int sum = 0, mx = 0;
+    for (int i = 0; i < n; i++)
     {
-        auto rev = something;
-        reverse(all(rev));
-        if (something == rev)
-        {
-            int sz = something.size();
-            for (int i = 0; i < sz / 2; i++)
-            {
-                if (Count[i] + Count[sz - 1 - i] < 3)
-                {
-                    cout << 0 << '\n';
-                    return;
-                }
-            }
-            if (Count[sz / 2] >= 2)
-            {
-                cout << Count[sz / 2] + 1 << '\n';
-            }
-            else
-                cout << 0 << '\n';
-        }
-        else
-            cout << 0 << '\n';
+
+        if (Size[i] > 0 && m - Size[i] > 0)
+            sum += 2;
+        if (mark[i])
+            mx = max(mx, d[i]);
     }
-    else
-        cout << 0 << '\n';
+    for (int i = 0; i < n; i++)
+        if (mark[i] && i < v && d[i] == mx)
+        {
+            v = i;
+            break;
+        }
+    cout << v + 1 << '\n'
+         << sum - mx << '\n';
 }
 
 int main()
