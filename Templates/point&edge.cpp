@@ -115,6 +115,58 @@ public:
     }
 };
 
+typeone dotproduct(point a, point b)
+{
+    return a.x * b.x + a.y * b.y;
+}
+
+typeone Area2(point a, point b, point c)
+{
+    return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
+}
+
+bool left(point a, point b, point c)
+{
+    return Area2(a, b, c) > 0;
+}
+
+bool left2(point a, point b, point c)
+{
+    return Area2(a, b, c) >= 0;
+}
+
+bool collinear(point a, point b, point c)
+{
+    return Area2(a, b, c) == 0;
+}
+
+bool Xor(bool x, bool y)
+{
+    return (!x) ^ (!y);
+}
+
+bool IntersectProp(point a, point b, point c, point d)
+{
+    if (collinear(a, b, c) || collinear(a, b, d) || collinear(c, d, a) || collinear(c, d, b))
+        return true;
+    return (Xor(left(a, b, c), left(a, b, d)) && Xor(left(c, d, a), left(c, d, b)));
+}
+
+bool between(point a, point b, point c)
+{
+    if (!collinear(a, b, c))
+        return false;
+    if (a.x != b.x)
+        return ((a.x <= c.x) && (c.x <= b.x)) || ((a.x >= c.x) && (c.x >= b.x));
+    return ((a.y <= c.y) && (c.y <= b.y)) || ((a.y >= c.y) && (c.y >= b.y));
+}
+
+bool Intersect(point a, point b, point c, point d)
+{
+    return IntersectProp(a, b, c, d) || between(a, b, c) || between(a, b, d) || between(c, d, a) || between(c, d, b);
+}
+
+
 ///////////////////////////////////
 
 typedef int typeone;

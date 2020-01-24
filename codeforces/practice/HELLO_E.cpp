@@ -67,12 +67,9 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
+const int NAX = 1e5 + 5, MOD = 1000000007;
 
-/*reference https://github.com/Ashishgup1/Competitive-Coding/blob/master/Convex%20Hull%20(Graham's%20Scan).cpp
-COmputational Geometry and Computational Graphics in C++ by Michael J.Laszlo*/
-
-/////////////////////////////////
+using point = complex<long long>;
 
 typedef long long typeone;
 typedef long double typetwo;
@@ -186,123 +183,12 @@ public:
     }
 };
 
-// typeone dotproduct(point a, point b)
-// {
-//     return a.x * b.x + a.y * b.y;
-// }
-
-typeone Area2(point a, point b, point c)
-{
-    return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
-}
-
-bool left(point a, point b, point c)
-{
-    return Area2(a, b, c) > 0;
-}
-
-bool left2(point a, point b, point c)
-{
-    return Area2(a, b, c) >= 0;
-}
-
-bool collinear(point a, point b, point c)
-{
-    return Area2(a, b, c) == 0;
-}
-
-bool Xor(bool x, bool y)
-{
-    return (!x) ^ (!y);
-}
-
-bool IntersectProp(point a, point b, point c, point d)
-{
-    if (collinear(a, b, c) || collinear(a, b, d) || collinear(c, d, a) || collinear(c, d, b))
-        return true;
-    return (Xor(left(a, b, c), left(a, b, d)) && Xor(left(c, d, a), left(c, d, b)));
-}
-
-bool between(point a, point b, point c)
-{
-    if (!collinear(a, b, c))
-        return false;
-    if (a.x != b.x)
-        return ((a.x <= c.x) && (c.x <= b.x)) || ((a.x >= c.x) && (c.x >= b.x));
-    return ((a.y <= c.y) && (c.y <= b.y)) || ((a.y >= c.y) && (c.y >= b.y));
-}
-
-bool Intersect(point a, point b, point c, point d)
-{
-    return IntersectProp(a, b, c, d) || between(a, b, c) || between(a, b, d) || between(c, d, a) || between(c, d, b);
-}
-
 point a[NAX], b[NAX];
-
-ll cross(point a, point b)
-{
-    return a.x * b.y - a.y * b.x;
-}
-
-bool where(point a)
-{
-    return a.y > 0 || (a.y == 0 && a.x > 0);
-}
-
-bool cmp(point a, point b)
-{
-    if (where(a) == where(b))
-        return cross(a, b) > 0;
-    return where(a) < where(b);
-}
-
-ll binom(ll x, int y)
-{
-    ll ans = 1;
-    for (int i = 1; i <= y; i++)
-    {
-        ans *= x - i + 1;
-        ans /= i;
-    }
-    return ans;
-}
-
-ll sol(int n)
-{
-    sort(a + 1, a + 1 + n, cmp);
-    int tmp = n, pos = 0;
-    ll ans = binom(n, 4);
-    for (int i = 1; i <= n; i++)
-    {
-        a[++tmp] = a[i];
-        pos = max(pos, i);
-        while (cross(a[i], a[pos + 1]) > 0)
-            ++pos;
-        ans -= binom(pos - i, 3);
-    }
-    return ans;
-}
 
 void solveCase(int caseNo)
 {
     int n;
     cin >> n;
-    for (int i = 1; i <= n; i++)
-    {
-        int x, y;
-        cin >> x >> y;
-        b[i] = point(x, y);
-    }
-    ll ans = 0;
-    for (int i = 1; i <= n; i++)
-    {
-        int m = 1;
-        for (int j = 1; j <= n; j++)
-            if (i != j)
-                a[m++] = b[j] - b[i];
-        ans += sol(n - 1);
-    }
-    cout << ans << '\n';
 }
 
 int main()
