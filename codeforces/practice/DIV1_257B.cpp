@@ -67,29 +67,87 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 1e3 + 5, MOD = 1000000007;
+const int NAX = 2e5 + 5, MOD = 1000000007;
 
-bool bad[2][NAX];
 void solveCase()
 {
-    int n, m;
-    cin >> n >> m;
+    int n, m, k;
+    cin >> n >> m >> k;
+    map<pair<int, int>, int> Map;
+    vector<pair<long long, pair<int, int>>> adj[n];
     for (int i = 0; i < m; i++)
     {
-        int x, y;
-        cin >> x >> y;
-        bad[0][x - 1] = true;
-        bad[1][y - 1] = true;
+        int x, y, w;
+        cin >> x >> y >> w;
+        --x, --y;
+        if (x > y)
+            swap(x, y);
+        if (Map.find({x, y}) == Map.end())
+            Map[{x, y}] = w;
+        else
+            Map[{x, y}] = min(Map[{x, y}], w);
+    }
+    map<int, int> trains;
+    for (int i = 0; i < k; i++)
+    {
+        int s, x;
+        cin >> s >> x;
+        --s;
+        if (trains.find(s) == trains.end())
+            trains[s] = x;
+        else
+            trains[s] = min(trains[s], x);
+    }
+    for (auto &elem : Map)
+    {
+        adj[elem.f.f].pb({elem.s, {elem.f.s, -1}});
+        adj[elem.f.s].pb({elem.s, {elem.f.f, -1}});
+    }
+    int cnt = 0;
+    for (auto &t : trains)
+        adj[0].pb({t.s, {t.f, cnt++}});
+    db("GraphPrepared");
+    priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> Q;
+    vector<int> Token(n, -1), visToken(k);
+    vector<bool> vis(n);
+    const long long MAX = 1e15;
+    vector<ll> dist(n, MAX);
+    dist[0] = 0;
+    Q.push({0, 0});
+    db("GraphPrepared");
+    while (!Q.empty())
+    {
+        auto top = Q.top();
+        db(top);
+        Q.pop();
+        if (vis[top.s])
+            continue;
+        vis[top.s] = true;
+        for (auto &child : adj[top.s])
+        {
+            ll currWt = child.f;
+            int Tkn = child.s.s;
+            int next = child.s.f;
+            db(currWt, Tkn, next);
+            if (vis[next])
+                continue;
+            if (top.f + currWt < dist[next] || (top.f + currWt == dist[next] && Token[next] != -1 && Tkn == -1))
+            {
+                dist[next] = top.f + currWt;
+                if (Token[next] > -1)
+                    visToken[Token[next]]--;
+                Token[next] = Tkn;
+                if (Token[next] > -1)
+                    visToken[Token[next]]++;
+                Q.push({dist[next], next});
+            }
+        }
     }
     int ans = 0;
-    for (int i = 1; i < n - 1; i++)
+    for (auto &x : visToken)
     {
-        ans += !bad[0][i];
-        ans += !bad[1][i];
+        ans += x == 0;
     }
-    if (n % 2 == 1)
-        if (!bad[0][n / 2] && !bad[1][n / 2])
-            ans--;
     cout << ans << '\n';
 }
 

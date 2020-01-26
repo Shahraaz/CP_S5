@@ -67,29 +67,38 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 1e3 + 5, MOD = 1000000007;
+const int NAX = 2e5 + 5, MOD = 1000000007;
 
-bool bad[2][NAX];
 void solveCase()
 {
     int n, m;
     cin >> n >> m;
-    for (int i = 0; i < m; i++)
+    vector<vector<int>> maxRight(n, vector<int>(m + 1));
+    vector<string> mat(n);
+    for (int i = 0; i < n; i++)
     {
-        int x, y;
-        cin >> x >> y;
-        bad[0][x - 1] = true;
-        bad[1][y - 1] = true;
+        string str;
+        cin >> str;
+        mat[i] = str;
+        for (int j = m - 1; j >= 0; j--)
+        {
+            if (str[j] == '0')
+                maxRight[i][j] = 0;
+            else
+                maxRight[i][j] = maxRight[i][j + 1] + 1;
+        }
     }
     int ans = 0;
-    for (int i = 1; i < n - 1; i++)
+    for (int j = 0; j < m; j++)
     {
-        ans += !bad[0][i];
-        ans += !bad[1][i];
+        vector<int> temp;
+        for (int i = 0; i < n; i++)
+            temp.pb(maxRight[i][j]);
+        sort(all(temp));
+        reverse(all(temp));
+        for (int i = 0; i < n; i++)
+            ans = max(ans, temp[i] * (i + 1));
     }
-    if (n % 2 == 1)
-        if (!bad[0][n / 2] && !bad[1][n / 2])
-            ans--;
     cout << ans << '\n';
 }
 
