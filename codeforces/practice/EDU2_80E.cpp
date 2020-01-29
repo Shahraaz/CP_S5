@@ -73,6 +73,7 @@ vector<pair<int, pair<int, int>>> q;
 int n, m, a[NAX], mnvl[NAX], mxvl[NAX];
 int st[4 * NAX], used[NAX];
 
+<<<<<<< HEAD
 // void update(int node, int l, int r, int pos, int val)
 // {
 //     if (l == r)
@@ -99,6 +100,8 @@ int st[4 * NAX], used[NAX];
 //            find(2 * node + 1, mid + 1, end, qstart, qend);
 // };
 
+=======
+>>>>>>> ae0281531f0385f53aecdbe7901c4318c3025b80
 void solveCase()
 {
     cin >> n >> m;
@@ -133,6 +136,7 @@ void solveCase()
     s.clear();
     for (int i = m; i >= 1; i--)
     {
+<<<<<<< HEAD
         if (idv[a[i]].back() == i)
         {
             int sz = s.size();
@@ -197,6 +201,15 @@ void solveCase()
     }
     for (size_t i = 1; i <= n; i++)
         cout << mnvl[i] << ' ' << mxvl[i] << '\n';
+=======
+        if(idv[a[i]].back() == i)
+        {
+            int sz = s.size();
+            mxvl[a[i]] = max(mxvla)
+        }
+        
+    }
+>>>>>>> ae0281531f0385f53aecdbe7901c4318c3025b80
 }
 
 int32_t main()
