@@ -5,7 +5,7 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-// #define MULTI_TEST
+#define MULTI_TEST
 #ifdef LOCAL
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -67,94 +67,27 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 5, MOD = 1000000007, max_N = 3e5 + 10, max_B = 1e3 + 10, B = 1e3;
-
-ll T[max_B], X[max_B];
-set<pair<int, int>> block[max_B];
-
-void fix_up(int id)
-{
-    ll prev = id * B;
-    ll x = 0;
-    for (auto &knight : block[id])
-    {
-        if (knight.first > prev)
-        {
-            x += (knight.first - prev);
-        }
-        prev = max(prev + knight.second, (ll)knight.first + knight.second);
-    }
-
-    T[id] = prev;
-    X[id] = x;
-}
-
-void insert(int t, int d)
-{
-    int id = t / B;
-    block[id].insert({t, d});
-    fix_up(id);
-}
-
-void remove(int t, int d)
-{
-    int id = t / B;
-    block[id].erase({t, d});
-    fix_up(id);
-}
-
-ll query(int t)
-{
-    int id = t / B;
-    ll prev = 0;
-    for (size_t i = 0; i < id; i++)
-    {
-        ll bstart = B * i;
-        if (T[i] == 0)
-            continue;
-        if (prev > bstart + X[i])
-            prev = T[i] + (prev - bstart - X[i]);
-        else
-            prev = T[i];
-    }
-    for (auto &k : block[id])
-    {
-        if (k.first > t)
-            break;
-        prev = max(prev + k.second, (ll)k.f + k.s);
-    }
-    return max(prev - t, 0LL);
-}
+const int NAX = 2e5 + 5, MOD = 1000000007;
 
 void solveCase()
 {
-    int q;
-    cin >> q;
-    vector<int> ent(q + 1), dur(q + 1);
-    for (size_t i = 1; i <= q; i++)
+    ll n, x;
+    string str;
+    cin >> n >> x >> str;
+    ll total = count(all(str), '0') - count(all(str), '1');
+    ll curr = 0, ans = 0;
+    for (size_t i = 0; i < str.length(); i++)
     {
-        char type;
-        cin >> type;
-        if (type == '?')
+        if (total == 0 && curr == x)
         {
-            int t;
-            cin >> t;
-            cout << query(t) << '\n';
+            cout << -1 << '\n';
+            return;
         }
-        else if (type == '+')
-        {
-            int t, d;
-            cin >> t >> d;
-            ent[i] = t, dur[i] = d;
-            insert(t, d);
-        }
-        else
-        {
-            int id;
-            cin >> id;
-            remove(ent[id], dur[id]);
-        }
+        else if (total != 0 && abs(x - curr) % abs(total) == 0)
+            ans += ((x - curr) / total) >= 0;
+        curr += str[i] == '0' ? 1 : -1;
     }
+    cout << ans << '\n';
 }
 
 int32_t main()

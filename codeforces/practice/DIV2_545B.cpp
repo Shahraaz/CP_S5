@@ -67,94 +67,50 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 5, MOD = 1000000007, max_N = 3e5 + 10, max_B = 1e3 + 10, B = 1e3;
-
-ll T[max_B], X[max_B];
-set<pair<int, int>> block[max_B];
-
-void fix_up(int id)
-{
-    ll prev = id * B;
-    ll x = 0;
-    for (auto &knight : block[id])
-    {
-        if (knight.first > prev)
-        {
-            x += (knight.first - prev);
-        }
-        prev = max(prev + knight.second, (ll)knight.first + knight.second);
-    }
-
-    T[id] = prev;
-    X[id] = x;
-}
-
-void insert(int t, int d)
-{
-    int id = t / B;
-    block[id].insert({t, d});
-    fix_up(id);
-}
-
-void remove(int t, int d)
-{
-    int id = t / B;
-    block[id].erase({t, d});
-    fix_up(id);
-}
-
-ll query(int t)
-{
-    int id = t / B;
-    ll prev = 0;
-    for (size_t i = 0; i < id; i++)
-    {
-        ll bstart = B * i;
-        if (T[i] == 0)
-            continue;
-        if (prev > bstart + X[i])
-            prev = T[i] + (prev - bstart - X[i]);
-        else
-            prev = T[i];
-    }
-    for (auto &k : block[id])
-    {
-        if (k.first > t)
-            break;
-        prev = max(prev + k.second, (ll)k.f + k.s);
-    }
-    return max(prev - t, 0LL);
-}
+const int NAX = 2e5 + 5, MOD = 1000000007;
 
 void solveCase()
 {
-    int q;
-    cin >> q;
-    vector<int> ent(q + 1), dur(q + 1);
-    for (size_t i = 1; i <= q; i++)
+    vector<vector<int>> indicesOfTypes(4);
+    int n;
+    cin >> n;
+    string s, b;
+    cin >> s >> b;
+    for (size_t i = 0; i < n; i++)
+        indicesOfTypes[((s[i] - '0') << 1) + (b[i] - '0')].pb(i + 1);
+    int na = indicesOfTypes[0].size();
+    int nb = indicesOfTypes[1].size();
+    int nc = indicesOfTypes[2].size();
+    int nd = indicesOfTypes[3].size();
+    for (int b = 0; b <= nb; b++)
     {
-        char type;
-        cin >> type;
-        if (type == '?')
+        for (int c = 0; c <= nc; c++)
         {
-            int t;
-            cin >> t;
-            cout << query(t) << '\n';
-        }
-        else if (type == '+')
-        {
-            int t, d;
-            cin >> t >> d;
-            ent[i] = t, dur[i] = d;
-            insert(t, d);
-        }
-        else
-        {
-            int id;
-            cin >> id;
-            remove(ent[id], dur[id]);
+            int temp = nb + nd - c - b;
+            if (temp >= 0)
+                if (temp % 2 == 0)
+                {
+                    int d = temp / 2;
+                    int a = n / 2 - b - c - d;
+                    auto isValid = [](int a, int lim) -> bool {
+                        return 0 <= a && a <= lim;
+                    };
+                    if (isValid(a, na) && isValid(b, nb) && isValid(c, nc) && isValid(d, nd))
+                    {
+                        for (size_t i = 0; i < a; i++)
+                            cout << indicesOfTypes[0][i] << ' ';
+                        for (size_t i = 0; i < b; i++)
+                            cout << indicesOfTypes[1][i] << ' ';
+                        for (size_t i = 0; i < c; i++)
+                            cout << indicesOfTypes[2][i] << ' ';
+                        for (size_t i = 0; i < d; i++)
+                            cout << indicesOfTypes[3][i] << ' ';
+                        return;
+                    }
+                }
         }
     }
+    cout << -1 << '\n';
 }
 
 int32_t main()
