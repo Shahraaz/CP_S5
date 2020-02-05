@@ -71,6 +71,29 @@ const int NAX = 2e5 + 5, MOD = 1000000007;
 
 void solveCase()
 {
+    ll n, p, w, d;
+    cin >> n >> p >> w >> d;
+    for (long long y = 0; y < w; y++)
+    {
+        ll curr = y * d;
+        if (p - curr >= 0)
+        {
+            if ((p - curr) % w == 0)
+            {
+                ll x = (p - curr) / w;
+                ll z = n - x - y;
+                if (x >= 0 && x <= n)
+                    if (y >= 0 && y <= n)
+                        if (z >= 0 && z <= n)
+                            if (x + y + z <= n)
+                            {
+                                cout << x << ' ' << y << ' ' << z << '\n';
+                                return;
+                            }
+            }
+        }
+    }
+    cout << -1 << '\n';
 }
 
 int32_t main()

@@ -69,8 +69,71 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
+int n;
+vector<int> cost[3];
+vector<int> adj[NAX];
+
 void solveCase()
 {
+    cin >> n;
+    for (int i = 0; i < 3; i++)
+    {
+        cost[i] = vector<int>(n);
+        for (size_t j = 0; j < n; j++)
+            cin >> cost[i][j];
+    }
+    for (int i = 1; i < n; i++)
+    {
+        int u, v;
+        cin >> u >> v;
+        --u, --v;
+        adj[u].pb(v);
+        adj[v].pb(u);
+    }
+    int start = -1;
+    for (int i = 0; i < n; i++)
+    {
+        if (adj[i].size() > 2)
+        {
+            cout << -1 << '\n';
+            return;
+        }
+        else if (adj[i].size() == 1)
+            start = i;
+    }
+    vector<int> order = {start};
+    while (order.size() < n)
+    {
+        int current = order.back();
+        for (auto &child : adj[current])
+            if (order.size() == 1 || child != order[order.size() - 2])
+            {
+                order.pb(child);
+                break;
+            }
+    }
+    vector<int> perm = {0, 1, 2};
+    vector<int> bestPerm;
+    ll best = LLONG_MAX;
+    do
+    {
+        ll score = 0;
+        for (size_t i = 0; i < n; i++)
+            score += cost[perm[i % 3]][order[i]];
+        if (score < best)
+        {
+            best = score;
+            bestPerm = perm;
+        }
+    } while (next_permutation(all(perm)));
+    cout << best << '\n';
+    vector<int> answer(n);
+    for (int i = 0; i < n; i++)
+        answer[order[i]] = bestPerm[i % 3];
+    for (size_t i = 0; i < n; i++)
+    {
+        cout << answer[i] + 1 << ' ';
+    }
 }
 
 int32_t main()
