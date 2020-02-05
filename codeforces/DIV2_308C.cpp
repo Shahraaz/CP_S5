@@ -1,18 +1,10 @@
-/*
-Problem Name: Pick Chocolates
-Problem Code: CHOCOPI
-Problem Link: https://www.codechef.com/COFW2020/problems/CHOCOPI
-
-Author Name: Mohammed Shahraaz Hussain
-Author Link: https://www.codechef.com/users/shahraaz
-*/
 // Optimise
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
 using namespace std;
 using namespace __gnu_pbds;
- 
+
 // #define MULTI_TEST
 #ifdef LOCAL
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
@@ -61,7 +53,7 @@ void ZZ(const char *names, Arg1 &&arg1, Args &&... args)
 #define db(...)
 #define pc(...)
 #endif
- 
+
 using ll = long long;
 template <typename T>
 using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
@@ -74,91 +66,36 @@ auto seed = TimeStart.time_since_epoch().count();
 std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
- 
+
 const int NAX = 2e5 + 5, MOD = 1000000007;
- 
-struct median
-{
-    int Sz;
-    ll lmed, rmed, suml, sumr;
-    priority_queue<int> Left;
-    priority_queue<int, vector<int>, greater<int>> Right;
-    median()
-    {
-        Sz = 0;
-        lmed = rmed = suml = sumr = 0;
-    }
-    void insert(int elem)
-    {
-        if (Sz & 1)
-        {
-            Right.push(elem);
-            sumr += elem;
-        }
-        else
-        {
-            Left.push(elem);
-            suml += elem;
-        }
-        Sz++;
-        if (Sz > 1)
-        {
-            db("Start", Left.top(), Right.top());
-            while (Left.top() > Right.top())
-            {
-                db(Left.top(), Right.top());
-                auto a = Left.top();
-                Left.pop();
-                suml -= a;
-                auto b = Right.top();
-                Right.pop();
-                sumr -= b;
-                Left.push(b);
-                suml += b;
-                Right.push(a);
-                sumr += a;
-            }
-            db("End", Left.top(), Right.top());
-        }
-        if (Sz & 1)
-        {
-            lmed = rmed = Left.top();
-        }
-        else
-        {
-            lmed = Left.top();
-            rmed = Right.top();
-        }
-    }
-    ll getAns()
-    {
-        if (Sz & 1)
-        {
-            db(lmed, suml, sumr, Left.size(), Right.size());
-            return 2 * (lmed * (Left.size() - Right.size()) + sumr - suml);
-        }
-        else
-        {
-            db(lmed, rmed, suml, sumr, Left.size(), Right.size());
-            return min(2 * (lmed * (Left.size() - Right.size()) + sumr - suml), 2 * (rmed * (Left.size() - Right.size()) + sumr - suml));
-        }
-    }
-};
- 
+
 void solveCase()
 {
-    int q;
-    cin >> q;
-    median M;
-    while (q--)
+    int w, m;
+    cin >> w >> m;
+    vector<int> a;
+    while (m)
     {
-        int a = 0;
-        cin >> a;
-        M.insert(a);
-        cout << M.getAns() << '\n';
+        a.pb(m % w);
+        m /= w;
     }
+    for (size_t i = 0; i < a.size(); i++)
+    {
+        if (a[i] == 0 || a[i] == 1 || a[i] == w || a[i] == (w - 1))
+        {
+            if (a[i] == (w - 1) || a[i] == w)
+                if (i + 1 < a.size())
+                    a[i + 1]++;
+        }
+        else
+        {
+            cout << "NO\n";
+            return;
+        }
+    }
+    cout << "YES\n";
 }
- 
+
 int32_t main()
 {
 #ifndef LOCAL
@@ -179,4 +116,3 @@ int32_t main()
     }
     return 0;
 }
- 
