@@ -5,7 +5,7 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-#define MULTI_TEST
+// #define MULTI_TEST
 #ifdef LOCAL
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -67,27 +67,78 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
+const int NAX = 1e5 + 5, MOD = 1000000007;
+
+vector<pair<int, int>> adj[NAX];
+vector<int> blockers[NAX];
+vector<int> freeTimes[NAX];
+bool vis[NAX];
 
 void solveCase()
 {
-    int n;
-    // cin >> n;
-    n = Random<int>(1, 1000)(rng);
-    for (ll i = 0; i <= n; i++)
+    int n, m;
+    cin >> n >> m;
+    for (size_t i = 0; i < m; i++)
     {
-        ll first = i * (i + 1) / 2;
-        for (ll j = 0; j <= n; j++)
+        int u, v, w;
+        cin >> u >> v >> w;
+        adj[u].pb({v, w});
+        adj[v].pb({u, w});
+    }
+    for (int i = 1; i <= n; i++)
+    {
+        int k, t;
+        cin >> k;
+        while (k--)
         {
-            ll second = (i + j) * (i + j + 1) / 2;
-            if (first + second == n)
-            {
-                cout << "Success " << n << ' ' << i << ' ' << j << '\n';
-                return;
-            }
+            cin >> t;
+            blockers[i].pb(t);
         }
     }
-    cout << "Failure " << n << '\n';
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> Q;
+    auto getTime = [](int node, int startTime) -> int {
+        db(node, startTime);
+        pc(blockers[node]);
+        for (size_t i = 0; i < blockers[node].size(); i++)
+        {
+            if (blockers[node][i] < startTime)
+                continue;
+            int idx = i;
+            while (idx != blockers[node].size() && blockers[node][idx] == startTime)
+                idx++, startTime++;
+            db(idx);
+            break;
+        }
+        db(startTime);
+        return startTime;
+    };
+    Q.push({0, 1});
+    int answer = INT_MAX;
+    while (!Q.empty())
+    {
+        int node = Q.top().second;
+        int time = Q.top().first;
+        Q.pop();
+        if (node == n)
+        {
+            answer = min(answer, time);
+            continue;
+        }
+        if (vis[node])
+            continue;
+        vis[node] = true;
+        time = getTime(node, time);
+        for (auto &child : adj[node])
+        {
+            if (vis[child.f])
+                continue;
+            Q.push({time + child.s, child.f});
+        }
+    }
+    if (answer == INT_MAX)
+        cout << -1 << '\n';
+    else
+        cout << answer << '\n';
 }
 
 int32_t main()
