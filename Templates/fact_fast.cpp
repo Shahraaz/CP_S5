@@ -1,41 +1,26 @@
-const int _n = 1e5 + 10;
-vector<int> Fact(_n), Inv(_n);
-const int kmod = 1000000007;
+#define ll long long
+inline ll add(ll a, ll b, ll m) { return (((a % m + b % m) % m + m) % m); }
+inline ll mul(ll a, ll b, ll m) { return (((a % m * b % m) % m + m) % m); }
+const ll MOD = 1e9 + 7;
 
-int mul(int a, int b, int mod = kmod)
-{
-    return (long long)a * b % mod;
-}
-
-int add(int a, int b, int mod = kmod)
-{
-    a += b;
-    if (a >= mod)
-        a -= mod;
-    return a;
-}
-
-int sub(int a, int b, int mod = kmod)
-{
-    a -= b;
-    if (a < 0)
-        a += mod;
-    return a;
-}
+const int N = 3e5 + 5;
+ll fact[N], ifact[N], inv[N];
 
 void pre()
 {
-    Inv[0] = Fact[0] = 1;
-    for (int i = 1; i < _n; ++i)
+    inv[1] = fact[0] = fact[1] = ifact[0] = ifact[1] = 1;
+    for (ll i = 2; i < N; i++)
     {
-        Fact[i] = mul(Fact[i - 1], i);
-        Inv[i] = mul(Inv[kmod % i], i - 1);
+        inv[i] = mul(MOD - MOD / i, inv[MOD % i], MOD);
+        fact[i] = mul(i, fact[i - 1], MOD);
+        ifact[i] = mul(inv[i], ifact[i - 1], MOD);
     }
+    return;
 }
 
-int ncr(int n, int r)
+ll nCr(ll n, ll r)
 {
-    if (n < 0 || r < 0 || n - r < 0)
+    if (n < 0 || n < r)
         return 0;
-    return mul(Fact[n], mul(Inv[r], Inv[n - r]));
+    return mul(fact[n], mul(ifact[r], ifact[n - r], MOD), MOD);
 }
