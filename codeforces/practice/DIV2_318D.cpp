@@ -69,18 +69,51 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
-void solveCase(int caseNo)
+void solveCase()
 {
-    cout << 100 << '\n';
-    for (int i = -5; i <= 5; i++)
+    int n;
+    cin >> n;
+    using ld = long long;
+    vector<pair<ld, ld>> polygon(n);
+    for (auto &point : polygon)
+        cin >> point.f >> point.s;
+    if (n & 1)
     {
-        for (int j = -5; j < 5; j++)
-            cout << i << ' ' << j << '\n';
-        /* code */
+        db("a");
+        cout << "NO\n";
+        return;
     }
+    int curr = 0, next = n / 2;
+    pair<ld, ld> centre;
+    bool comp = false;
+    for (curr = 0; curr < n; curr++)
+    {
+        if (comp)
+        {
+            if (centre.f == polygon[curr].f + polygon[next].f && centre.s == polygon[curr].s + polygon[next].s)
+            {
+                // Chill
+            }
+            else
+            {
+                db("b", curr, next);
+                cout << "NO\n";
+                return;
+            }
+        }
+        else
+        {
+            comp = true;
+            centre.f = polygon[curr].f + polygon[next].f;
+            centre.s = polygon[curr].s + polygon[next].s;
+        }
+        next++;
+        next %= n;
+    }
+    cout << "YES\n";
 }
 
-int main()
+int32_t main()
 {
 #ifndef LOCAL
     ios_base::sync_with_stdio(0);
@@ -92,7 +125,7 @@ int main()
 #endif
     for (int i = 1; i <= t; ++i)
     {
-        solveCase(i);
+        solveCase();
 #ifdef TIME
         cerr << "Case #" << i << ": Time " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " s.\n";
         TimeStart = chrono::steady_clock::now();

@@ -69,18 +69,11 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
-void solveCase(int caseNo)
+void solveCase()
 {
-    cout << 100 << '\n';
-    for (int i = -5; i <= 5; i++)
-    {
-        for (int j = -5; j < 5; j++)
-            cout << i << ' ' << j << '\n';
-        /* code */
-    }
 }
 
-int main()
+int32_t main()
 {
 #ifndef LOCAL
     ios_base::sync_with_stdio(0);
@@ -92,7 +85,7 @@ int main()
 #endif
     for (int i = 1; i <= t; ++i)
     {
-        solveCase(i);
+        solveCase();
 #ifdef TIME
         cerr << "Case #" << i << ": Time " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " s.\n";
         TimeStart = chrono::steady_clock::now();

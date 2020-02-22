@@ -69,18 +69,70 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
-void solveCase(int caseNo)
+void solveCase()
 {
-    cout << 100 << '\n';
-    for (int i = -5; i <= 5; i++)
+    using point = complex<long long>;
+    int n;
+    cin >> n;
+    vector<point> polygon(n);
+    for (int i = 0; i < n; i++)
     {
-        for (int j = -5; j < 5; j++)
-            cout << i << ' ' << j << '\n';
-        /* code */
+        int x, y;
+        cin >> x >> y;
+        polygon[i] = point(x, y);
     }
+    if (n == 1)
+    {
+        cout << 0 << '\n';
+        return;
+    }
+    ll ans = 0;
+    auto getPhase = [](point &a, point &b) -> pair<ll, ll> {
+        ll dx = a.real() - b.real();
+        ll dy = a.imag() - b.imag();
+        ll gcd = __gcd(abs(dx), abs(dy));
+        // if (dx == 0 || dy == 0)
+        //     db(dx, dy, gcd);
+        dx /= gcd;
+        dy /= gcd;
+        if (dy < 0)
+        {
+            dx *= -1;
+            dy *= -1;
+        }
+        else if (dy == 0)
+        {
+            if (dx < 0)
+                dx *= -1;
+        }
+        // if (dx == 0 || dy == 0)
+        //     db(dx, dy, gcd);
+        return make_pair(dx, dy);
+    };
+    for (int i = 0; i < n; i++)
+    {
+        vector<pair<ll, ll>> angles;
+        for (int j = 0; j < n; j++)
+        {
+            if (i == j)
+                continue;
+            angles.pb(getPhase(polygon[j], polygon[i]));
+        }
+        // db(i);
+        sort(all(angles));
+        // pc(angles);
+        for (auto it = angles.begin(); it != angles.end();)
+        {
+            auto up = upper_bound(all(angles), *it);
+            ll cnt = up - it;
+            ans += cnt * (n - cnt - 1);
+            it = up;
+        }
+    }
+    cout << ans / 6 << '\n';
 }
 
-int main()
+int32_t main()
 {
 #ifndef LOCAL
     ios_base::sync_with_stdio(0);
@@ -92,7 +144,7 @@ int main()
 #endif
     for (int i = 1; i <= t; ++i)
     {
-        solveCase(i);
+        solveCase();
 #ifdef TIME
         cerr << "Case #" << i << ": Time " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " s.\n";
         TimeStart = chrono::steady_clock::now();
