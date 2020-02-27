@@ -1,4 +1,4 @@
-//Optimise
+// Optimise
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
@@ -60,12 +60,17 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define f first
 #define s second
 #define pb push_back
+#define all(v) v.begin(), v.end()
 auto TimeStart = chrono::steady_clock::now();
+auto seed = TimeStart.time_since_epoch().count();
+std::mt19937 rng(seed);
+template <typename T>
+using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 10, MOD = 1000000007;
+const int NAX = 2e5 + 5, MOD = 1000000007;
 
 using u64 = uint64_t;
-using u128 = __uint128_t;
+using u128 = uint64_t;
 
 u64 binaryPower(u64 base, u64 e, u64 mod)
 {
@@ -146,57 +151,77 @@ bool MillerRabin(u64 n)
     return true;
 }
 
-// bool MillerRabin3(u64 n)
-// {
-//     const int iter = 16;
-//     if (n < 4)
-//         return n == 2 || n == 3;
-//     int s = 0;
-//     u64 d = n - 1;
-//     while ((d & 1) == 0)
-//     {
-//         d >>= 1;
-//         s++;
-//     }
-//     // for (int i = 0; i < iter; ++i)
-//     // {
-//     //     int a = 2 + rand() % (n - 3);
-//     //     if (checkComposite(n, a, d, s))
-//     //         return false;
-//     // }
-//     for (int a : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37})
-//     {
-//         if (n == a)
-//             return true;
-//         if (checkComposite(n, a, d, s))
-//             return false;
-//     }
-//     return true;
-// }
-
-void solveCase(int caseNo)
+class Solution
 {
-    int cnt = 0;
-    for (int i = 1; i < 1000000; ++i)
-        cnt += MillerRabin(i);
-    cout << cnt << '\n';
-    cout << 50847534 << '\n';
-    while (true)
+    int cache[17];
+
+private:
+    int solve(int x)
     {
-        ll n;
-        cin >> n;
-        if (n == 0)
+        if (x < 17)
+            return cache[x];
+        int ret = -1;
+        switch (x % 4)
+        {
+        case 0:
+            ret = x / 4;
             break;
-        cout << MillerRabin(n) << '\n';
+        case 1:
+            ret = 1 + (x - 9) / 4;
+            break;
+        case 2:
+            ret = 1 + (x - 6) / 4;
+            break;
+        case 3:
+            ret = 2 + (x - 15) / 4;
+            break;
+        default:
+            break;
+        }
+        return ret;
     }
 
-    // All three versions pass the test
-    // If both deterministic and non deterministic are used time 1997.46s
-    // If only deterministic is used time 1333.03 s
-    // If only non-deterministic is used time 1509.77 s
-}
+public:
+    Solution() {}
+    ~Solution() {}
+    void solveCase()
+    {
+        cache[0] = 0;
+        cache[1] = -1;
+        cache[2] = -1;
+        cache[3] = -1;
+        cache[4] = 1;
+        cache[5] = -1;
+        cache[6] = 1;
+        cache[7] = -1;
+        cache[8] = 2;
+        cache[9] = 1;
+        cache[10] = 2;
+        cache[11] = -1;
+        cache[12] = 3;
+        cache[13] = 2;
+        cache[14] = 3;
+        cache[15] = 2;
+        cache[16] = 4;
+        int q;
+        cin >> q;
+        while (q--)
+        {
+            int x;
+            cin >> x;
+            db(x);
+            cout << solve(x) << ' ';
+#ifdef LOCAL
+            // cout << x << '\n';
+            cout << '\n';
+#else
+            cout << '\n';
+#endif
+        }
+    }
+};
 
-int main()
+int32_t main()
 {
 #ifndef LOCAL
     ios_base::sync_with_stdio(0);
@@ -206,11 +231,12 @@ int main()
 #ifdef MULTI_TEST
     cin >> t;
 #endif
+    Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {
-        solveCase(i);
+        mySolver.solveCase();
 #ifdef TIME
-        cout << "Case #" << i << ": Time " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " s.\n";
+        cerr << "Case #" << i << ": Time " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " s.\n";
         TimeStart = chrono::steady_clock::now();
 #endif
     }
