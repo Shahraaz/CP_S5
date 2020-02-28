@@ -74,45 +74,6 @@ class Solution
 private:
     vector<vector<pair<int, int>>> adj;
     vector<pair<pair<int, int>, int>> edges;
-    vector<int> vis, disc, low, P;
-    set<pair<int, int>> bridges;
-    int _tm;
-    void dfs(int c)
-    {
-        vis[c] = true;
-        disc[c] = low[c] = ++_tm;
-        for (auto &child : adj[c])
-        {
-            if (vis[child.f])
-            {
-                if (P[c] != child.f)
-                    low[c] = min(low[c], low[child.f]);
-                continue;
-            }
-            P[child.f] = c;
-            dfs(child.f);
-            low[c] = min(low[c], low[child.f]);
-            if (low[child.f] > disc[c])
-            {
-                bridges.insert({c, child.f});
-                bridges.insert({child.f, c});
-            }
-        }
-    }
-
-    bool dfs1(int node)
-    {
-        if (vis[node])
-            return false;
-        vis[node] = true;
-        bool res = false;
-        for (auto &child : adj[node])
-        {
-            res |= child.s;
-            res |= dfs1(child.f);
-        }
-        return res;
-    }
 
 public:
     Solution() {}
@@ -121,66 +82,16 @@ public:
     {
         int n, m;
         cin >> n >> m;
-        adj.assign(n + 1, vector<pair<int, int>>());
-        vis.assign(n + 1, false);
-        disc.assign(n + 1, 0);
-        low.assign(n + 1, 0);
-        P.assign(n + 1, 0);
-        _tm = 0;
+        adj.assign(n, vector<pair<int, int>>());
         for (int i = 0; i < m; i++)
         {
             int u, v, w;
             cin >> u >> v >> w;
+            --u, --v;
             adj[u].pb({v, w});
             adj[v].pb({u, w});
             edges.pb(make_pair(make_pair(u, v), w));
         }
-        int a, b;
-        cin >> a >> b;
-        queue<int> Q;
-        Q.push(a);
-        vector<int> from(n + 1, -1), D(n + 1, n + 1);
-        from[a] = -1;
-        D[a] = 0;
-        while (!Q.empty())
-        {
-            auto u = Q.front();
-            Q.pop();
-            for (auto &child : adj[u])
-            {
-                if (D[child.f] > D[u] + 1)
-                {
-                    D[child.f] = D[u] + 1;
-                    from[child.f] = u;
-                    Q.push(child.f);
-                }
-            }
-        }
-        int tmp = b;
-        set<pair<int, int>> shortest;
-        while (from[tmp] != -1)
-        {
-            shortest.insert({tmp, from[tmp]});
-            shortest.insert({from[tmp], tmp});
-            tmp = from[tmp];
-        }
-        dfs(a);
-        adj.assign(n + 1, vector<pair<int, int>>());
-        for (int i = 0; i < m; i++)
-        {
-            int x = edges[i].f.f;
-            int y = edges[i].f.s;
-            int z = edges[i].s;
-            if (bridges.find({x, y}) != bridges.end() && shortest.find({x, y}) == shortest.end())
-                continue;
-            adj[x].pb({y, z});
-            adj[y].pb({x, z});
-        }
-        fill(all(vis), false);
-        if (dfs1(a))
-            cout << "YES\n";
-        else
-            cout << "NO\n";
     }
 };
 
