@@ -67,24 +67,83 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
+const int NAX = 5e3 + 5, MOD = 1000000007;
 
+int answer[NAX][NAX];
 class Solution
 {
 private:
+    // int n;
+    int que(int x, int y)
+    {
+        if (answer[x][y] >= 0)
+            return answer[x][y];
+        cout << "? " << x << ' ' << y << endl;
+        int res;
+        cin >> res;
+        return answer[x][y] = res;
+    }
+    bool smart_test(vector<int> p)
+    {
+        int n = p.size();
+        vector<int> b(n);
+        for (size_t i = 0; i < n; i++)
+            b[p[i]] = i;
+        for (int i = 0; i < n; i++)
+            if (que(0, i) != (p[0] ^ b[i]))
+                return false;
+        for (int i = 0; i < n; i++)
+            if (que(i, 0) != (p[i] ^ b[0]))
+                return false;
+        return true;
+    }
+
 public:
     Solution() {}
     ~Solution() {}
     void solveCase()
     {
+        int n;
+        cin >> n;
+        int answer_cnt = 0;
+        memset(answer, -1, sizeof answer);
+        vector<int> ans;
+        vector<int> p(n), t(n);
+        for (int b0 = 0; b0 < n; b0++)
+        {
+            int flag = 1;
+            fill(all(t), 0);
+            for (int i = 0; i < n; i++)
+            {
+                p[i] = que(i, 0) ^ b0;
+                if (p[i] > n || t[p[i]])
+                {
+                    flag = 0;
+                    break;
+                }
+                t[p[i]] = 1;
+            }
+            if (flag && smart_test(p))
+            {
+                ++answer_cnt;
+                if (ans.size() == 0)
+                    ans = p;
+            }
+        }
+
+        cout << "!" << '\n';
+        cout << answer_cnt << '\n';
+        for (auto &x : ans)
+            cout << x << ' ';
+        cout << endl;
     }
 };
 
 int32_t main()
 {
 #ifndef LOCAL
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
+    // ios_base::sync_with_stdio(0);
+    // cin.tie(0);
 #endif
     int t = 1;
 #ifdef MULTI_TEST
