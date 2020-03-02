@@ -67,9 +67,7 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 1e3 + 5, MOD = 1000000007;
-
-int res[NAX][NAX];
+const int NAX = 2e5 + 5, MOD = 1000000007;
 
 class Solution
 {
@@ -79,42 +77,46 @@ public:
     ~Solution() {}
     void solveCase()
     {
-        ll n, k, d;
-        cin >> n >> k >> d;
-        bool check = false;
-        ll ways = 1;
-        for (int i = 0; i < d; i++)
+        int n;
+        cin >> n;
+        vector<int> a(n), b(n);
+        for (auto &x : a)
+            cin >> x;
+        for (auto &x : b)
+            cin >> x;
+        int cnta, cntb;
+        cnta = cntb = 0;
+        for (int i = 0; i < n; i++)
         {
-            ways *= k;
-            if (ways >= n)
+            if (a[i] == b[i])
             {
-                check = true;
-                break;
+            }
+            else if (a[i])
+            {
+                cnta++;
+            }
+            else
+            {
+                cntb++;
             }
         }
-        if (!check)
+        db(cnta, cntb);
+        if (cnta == 0)
         {
             cout << -1 << '\n';
             return;
         }
-        for (int i = 1; i < n; i++)
+        if (cnta > cntb)
         {
-            for (int j = 0; j < d; j++)
-                res[i][j] = res[i - 1][j];
-            for (int j = d - 1; j >= 0; j--)
-            {
-                res[i][j] = (res[i][j] + 1) % k;
-                if (res[i][j])
-                    break;
-            }
+            cout << 1 << '\n';
         }
-        for (int i = 0; i < d; i++)
+        else if (cnta == cntb)
         {
-            for (int j = 0; j < n; j++)
-            {
-                cout << res[j][i] + 1 << ' ';
-            }
-            cout << '\n';
+            cout << 2 << '\n';
+        }
+        else if (cntb > cnta)
+        {
+            cout << ceil((cntb + 1) / (1.0 * cnta)) << '\n';
         }
     }
 };

@@ -67,9 +67,7 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 1e3 + 5, MOD = 1000000007;
-
-int res[NAX][NAX];
+const int NAX = 2e5 + 5, MOD = 1000000007;
 
 class Solution
 {
@@ -79,43 +77,6 @@ public:
     ~Solution() {}
     void solveCase()
     {
-        ll n, k, d;
-        cin >> n >> k >> d;
-        bool check = false;
-        ll ways = 1;
-        for (int i = 0; i < d; i++)
-        {
-            ways *= k;
-            if (ways >= n)
-            {
-                check = true;
-                break;
-            }
-        }
-        if (!check)
-        {
-            cout << -1 << '\n';
-            return;
-        }
-        for (int i = 1; i < n; i++)
-        {
-            for (int j = 0; j < d; j++)
-                res[i][j] = res[i - 1][j];
-            for (int j = d - 1; j >= 0; j--)
-            {
-                res[i][j] = (res[i][j] + 1) % k;
-                if (res[i][j])
-                    break;
-            }
-        }
-        for (int i = 0; i < d; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                cout << res[j][i] + 1 << ' ';
-            }
-            cout << '\n';
-        }
     }
 };
 

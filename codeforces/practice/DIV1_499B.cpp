@@ -67,63 +67,72 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 1e3 + 5, MOD = 1000000007;
-
-int res[NAX][NAX];
+const int NAX = 2e5 + 5, MOD = 1000000007;
 
 class Solution
 {
 private:
+    void terminate(int x)
+    {
+        if (x == 0)
+            exit(0);
+    }
+
 public:
     Solution() {}
     ~Solution() {}
     void solveCase()
     {
-        ll n, k, d;
-        cin >> n >> k >> d;
-        bool check = false;
-        ll ways = 1;
-        for (int i = 0; i < d; i++)
+        int m, n;
+        cin >> m >> n;
+        vector<bool> isCorrect(n);
+        for (int i = 0; i < n; i++)
         {
-            ways *= k;
-            if (ways >= n)
+            cout << 1 << endl;
+            int x;
+            cin >> x;
+            terminate(x);
+            if (x < 0)
+                isCorrect[i] = false;
+            else
+                isCorrect[i] = true;
+        }
+        pc(isCorrect);
+        ll low = 1, high = m, ans = 0;
+        int cnt = 0;
+        while (low <= high)
+        {
+            ll mid = (low + high) / 2;
+            cout << mid << endl;
+            int x;
+            cin >> x;
+            terminate(x);
+            if (isCorrect[cnt])
             {
-                check = true;
-                break;
+                if (x < 0)
+                    high = mid - 1;
+                else
+                    low = mid + 1;
             }
-        }
-        if (!check)
-        {
-            cout << -1 << '\n';
-            return;
-        }
-        for (int i = 1; i < n; i++)
-        {
-            for (int j = 0; j < d; j++)
-                res[i][j] = res[i - 1][j];
-            for (int j = d - 1; j >= 0; j--)
+            else
             {
-                res[i][j] = (res[i][j] + 1) % k;
-                if (res[i][j])
-                    break;
+                if (x > 0)
+                    high = mid - 1;
+                else
+                    low = mid + 1;
             }
+            cnt++;
+            cnt %= n;
         }
-        for (int i = 0; i < d; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                cout << res[j][i] + 1 << ' ';
-            }
-            cout << '\n';
-        }
+        cout << (low + high) / 2 << endl;
     }
 };
 
 int32_t main()
 {
 #ifndef LOCAL
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
+    // ios_base::sync_with_stdio(0);
+    // cin.tie(0);
 #endif
     int t = 1;
 #ifdef MULTI_TEST

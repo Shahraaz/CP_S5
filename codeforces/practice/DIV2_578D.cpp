@@ -67,9 +67,13 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 1e3 + 5, MOD = 1000000007;
+const int NAX = 2e3 + 5, MOD = 1000000007;
 
-int res[NAX][NAX];
+int dpHor[NAX][NAX];
+int dpVer[NAX][NAX];
+int dpHorLeft[NAX][NAX], dpHorRight[NAX][NAX];
+int dpVerUp[NAX][NAX], dpVerDown[NAX][NAX];
+string cell[NAX];
 
 class Solution
 {
@@ -79,43 +83,35 @@ public:
     ~Solution() {}
     void solveCase()
     {
-        ll n, k, d;
-        cin >> n >> k >> d;
-        bool check = false;
-        ll ways = 1;
-        for (int i = 0; i < d; i++)
+        int n, k;
+        cin >> n >> k;
+        for (int i = 0; i < NAX; i++)
+            cell[0][i] = 'W';
+        for (size_t i = 1; i <= n; i++)
         {
-            ways *= k;
-            if (ways >= n)
-            {
-                check = true;
-                break;
-            }
+            cin >> cell[i];
+            cell[i] = 'W' + cell[i] + 'W';
         }
-        if (!check)
-        {
-            cout << -1 << '\n';
-            return;
-        }
-        for (int i = 1; i < n; i++)
-        {
-            for (int j = 0; j < d; j++)
-                res[i][j] = res[i - 1][j];
-            for (int j = d - 1; j >= 0; j--)
-            {
-                res[i][j] = (res[i][j] + 1) % k;
-                if (res[i][j])
-                    break;
-            }
-        }
-        for (int i = 0; i < d; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                cout << res[j][i] + 1 << ' ';
-            }
-            cout << '\n';
-        }
+        for (int i = 0; i < NAX; i++)
+            cell[n + 1][i] = 'W';
+
+        for (int i = 1; i <= n; i++)
+            for (int j = 1; j <= n; j++)
+                dpHorLeft[i][j] = dpHorLeft[i][j - 1] + (cell[i][j] == 'W');
+
+        for (int i = 1; i <= n; i++)
+            for (int j = n; j >= 1; j--)
+                dpHorRight[i][j] = dpHorRight[i][j + 1] + (cell[i][j] == 'W');
+
+        for (int j = 1; j <= n; j++)
+            for (int i = 1; i <= n; i++)
+                dpVerUp[i][j] = dpVerUp[i - 1][j] + (cell[i][j] == 'W');
+
+        for (int j = 1; j <= n; j++)
+            for (int i = n; i >= 1; i--)
+                dpVerDown[i][j] = dpVerDown[i + 1][j] + (cell[i][j] == 'W');
+
+        
     }
 };
 

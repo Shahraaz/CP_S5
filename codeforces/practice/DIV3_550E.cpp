@@ -67,9 +67,7 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 1e3 + 5, MOD = 1000000007;
-
-int res[NAX][NAX];
+const int NAX = 2e5 + 5, MOD = 1000000007;
 
 class Solution
 {
@@ -79,43 +77,59 @@ public:
     ~Solution() {}
     void solveCase()
     {
-        ll n, k, d;
-        cin >> n >> k >> d;
-        bool check = false;
-        ll ways = 1;
-        for (int i = 0; i < d; i++)
+        int k;
+        cin >> k;
+        string s, t;
+        cin >> s >> t;
+#ifdef LOCAL
+        for (int i = 0; i < s.length(); i++)
         {
-            ways *= k;
-            if (ways >= n)
-            {
-                check = true;
-                break;
-            }
+            cout << int(s[i] - 'a' + 1) << ' ';
         }
-        if (!check)
+        cout << '\n';
+        for (int i = 0; i < t.length(); i++)
         {
-            cout << -1 << '\n';
-            return;
+            cout << int(t[i] - 'a' + 1) << ' ';
         }
-        for (int i = 1; i < n; i++)
+        cout << '\n';
+#else
+
+#endif
+        int carry = 0;
+        string res;
+        vector<int> v;
+        for (int i = 0; i < t.length(); i++)
         {
-            for (int j = 0; j < d; j++)
-                res[i][j] = res[i - 1][j];
-            for (int j = d - 1; j >= 0; j--)
-            {
-                res[i][j] = (res[i][j] + 1) % k;
-                if (res[i][j])
-                    break;
-            }
+            int temp = int(t[i] - 'a') + int(s[i] - 'a');
+            v.pb(temp);
+            // db(temp, carry, i);
+            // temp += carry;
+            // carry = 0;
+            // res += char('a' + temp / 2 - 1);
+            // carry = (temp % 2) * 26;
         }
-        for (int i = 0; i < d; i++)
+        cout << '\n';
+        pc(v);
+        carry = 0;
+        for (int i = v.size() - 1; i >= 0; i--)
         {
-            for (int j = 0; j < n; j++)
-            {
-                cout << res[j][i] + 1 << ' ';
-            }
-            cout << '\n';
+            v[i] += carry;
+            carry = 0;
+            if (i > 0)
+                while (v[i] >= 26)
+                {
+                    v[i] -= 26;
+                    carry++;
+                }
         }
+        carry = 0;
+        for (int i = 0; i < v.size(); i++)
+        {
+            v[i] += carry;
+            cout << char('a' + v[i] / 2);
+            carry = (v[i] % 2) * 26;
+        }
+        cout << '\n';
     }
 };
 

@@ -5,7 +5,7 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-// #define MULTI_TEST
+#define MULTI_TEST
 #ifdef LOCAL
 #define db(...) ZZ(#__VA_ARGS__, __VA_ARGS__);
 #define pc(...) PC(#__VA_ARGS__, __VA_ARGS__);
@@ -67,9 +67,13 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 1e3 + 5, MOD = 1000000007;
+const int NAX = 2e2 + 5, MOD = 1000000007;
 
 int res[NAX][NAX];
+int isBlocked[NAX][NAX];
+int vis[NAX][NAX];
+int a[] = {0, 0, 1, -1};
+int b[] = {1, -1, 0, 0};
 
 class Solution
 {
@@ -79,40 +83,78 @@ public:
     ~Solution() {}
     void solveCase()
     {
-        ll n, k, d;
-        cin >> n >> k >> d;
-        bool check = false;
-        ll ways = 1;
-        for (int i = 0; i < d; i++)
-        {
-            ways *= k;
-            if (ways >= n)
+        int n, m;
+        cin >> n >> m;
+
+        for (int i = 0; i < n; i++)
+            for (size_t j = 0; j < m; j++)
             {
-                check = true;
-                break;
+                res[i][j] = MOD;
+                vis[i][j] = false;
+                isBlocked[i][j] = false;
+            }
+        int x;
+        cin >> x;
+        queue<pair<int, int>> Q;
+        for (int i = 0; i < x; i++)
+        {
+            int a, b;
+            cin >> a >> b;
+            Q.push({a - 1, b - 1});
+            res[a - 1][b - 1] = 0;
+            vis[a - 1][b - 1] = true;
+        }
+        int y;
+        cin >> y;
+        for (int i = 0; i < y; i++)
+        {
+            int a, b;
+            cin >> a >> b;
+            // Q.push({a - 1, b - 1});
+            isBlocked[a - 1][b - 1] = true;
+        }
+        while (!Q.empty())
+        {
+            auto top = Q.front();
+            Q.pop();
+            db(top);
+            for (int i = 0; i < 4; i++)
+            {
+                int x1 = top.f + a[i];
+                int y1 = top.s + b[i];
+                db(x1, y1);
+                if (0 <= x1 && x1 < n)
+                    if (0 <= y1 && y1 < m)
+                    {
+                        db(x1, y1);
+                        if (!isBlocked[x1][y1])
+                            if (!vis[x1][y1])
+                            {
+                                vis[x1][y1] = true;
+                                db(x1, y1);
+                                res[x1][y1] = res[top.f][top.s] + 1;
+                                Q.push({x1, y1});
+                            }
+                    }
             }
         }
-        if (!check)
+        for (int i = 0; i < n; i++)
         {
-            cout << -1 << '\n';
-            return;
-        }
-        for (int i = 1; i < n; i++)
-        {
-            for (int j = 0; j < d; j++)
-                res[i][j] = res[i - 1][j];
-            for (int j = d - 1; j >= 0; j--)
+            for (size_t j = 0; j < m; j++)
             {
-                res[i][j] = (res[i][j] + 1) % k;
-                if (res[i][j])
-                    break;
-            }
-        }
-        for (int i = 0; i < d; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                cout << res[j][i] + 1 << ' ';
+                if (isBlocked[i][j])
+                    cout << "X ";
+                else
+                {
+                    if (res[i][j] == MOD)
+                    {
+                        cout << -1 << ' ';
+                    }
+                    else
+                    {
+                        cout << res[i][j] << ' ';
+                    }
+                }
             }
             cout << '\n';
         }

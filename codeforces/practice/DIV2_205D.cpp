@@ -79,8 +79,48 @@ public:
     {
         string str;
         cin >> str;
-        int n = str.length();
-        
+        while (str.size() && str.back() == 'M')
+        {
+            str.pop_back();
+            /* code */
+        }
+        reverse(all(str));
+        while (str.size() && str.back() == 'F')
+        {
+            str.pop_back();
+            /* code */
+        }
+        reverse(all(str));
+        int n = str.size();
+        if (n == 0)
+        {
+            cout << 0 << '\n';
+            return;
+        }
+        vector<int> Start, End;
+        for (int i = 0; i < n; i++)
+        {
+            if (str[i] == 'F')
+            {
+                Start.pb(i);
+                int sz = End.size();
+                End.pb(sz);
+            }
+        }
+        n = Start.size();
+        if (n == 0)
+        {
+            cout << 0 << '\n';
+            return;
+        }
+        vector<int> t(n, MOD);
+        for (int i = 0; i < n; i++)
+        {
+            t[i] = Start[i] - End[i];
+            if (i > 0)
+                t[i] = max(t[i], t[i - 1] + 1);
+        }
+        cout << t.back() << '\n';
     }
 };
 
