@@ -63,17 +63,14 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define all(v) v.begin(), v.end()
 auto TimeStart = chrono::steady_clock::now();
 auto seed = TimeStart.time_since_epoch().count();
-std::mt19937 rng(seed);
-template <typename T>
-using Random = std::uniform_int_distribution<T>;
+// std::mt19937 rng(seed);
+// template <typename T>
+// using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e3 + 5, MOD = 1000000007;
 
-int dpHor[NAX][NAX];
-int dpVer[NAX][NAX];
-int dpHorLeft[NAX][NAX], dpHorRight[NAX][NAX];
-int dpVerUp[NAX][NAX], dpVerDown[NAX][NAX];
-string cell[NAX];
+int b[NAX][NAX];
+string s[NAX];
 
 class Solution
 {
@@ -85,33 +82,64 @@ public:
     {
         int n, k;
         cin >> n >> k;
-        for (int i = 0; i < NAX; i++)
-            cell[0][i] = 'W';
-        for (size_t i = 1; i <= n; i++)
+        for (int i = 0; i < n; i++)
+            cin >> s[i];
+        for (int i = 0; i < n; i++)
         {
-            cin >> cell[i];
-            cell[i] = 'W' + cell[i] + 'W';
+            int l = 0;
+            while (l < n && s[i][l] == 'W')
+                ++l;
+            if (l >= n)
+            {
+                ++b[0][0];
+                continue;
+            }
+            int r = n - 1;
+            while (r >= 0 && s[i][r] == 'W')
+            {
+                --r;
+            }
+            if (r - l + 1 > k)
+                continue;
+            ++b[max(i - k + 1, 0)][max(r - k + 1, 0)];
+            --b[max(i - k + 1, 0)][l + 1];
+            --b[i + 1][max(r - k + 1, 0)];
+            ++b[i + 1][l + 1];
         }
-        for (int i = 0; i < NAX; i++)
-            cell[n + 1][i] = 'W';
+        for (int j = 0; j < n; j++)
+        {
+            int l = 0;
+            while (l < n && s[l][j] == 'W')
+                ++l;
+            if (l >= n)
+            {
+                ++b[0][0];
+                continue;
+            }
+            int r = n - 1;
+            while (r >= 0 && s[r][j] == 'W')
+                --r;
+            if (r - l + 1 > k)
+                continue;
+            ++b[max(r - k + 1, 0)][max(j - k + 1, 0)];
 
-        for (int i = 1; i <= n; i++)
-            for (int j = 1; j <= n; j++)
-                dpHorLeft[i][j] = dpHorLeft[i][j - 1] + (cell[i][j] == 'W');
+            --b[max(r - k + 1, 0)][j + 1];
 
-        for (int i = 1; i <= n; i++)
-            for (int j = n; j >= 1; j--)
-                dpHorRight[i][j] = dpHorRight[i][j + 1] + (cell[i][j] == 'W');
+            --b[l + 1][max(j - k + 1, 0)];
 
-        for (int j = 1; j <= n; j++)
-            for (int i = 1; i <= n; i++)
-                dpVerUp[i][j] = dpVerUp[i - 1][j] + (cell[i][j] == 'W');
-
-        for (int j = 1; j <= n; j++)
-            for (int i = n; i >= 1; i--)
-                dpVerDown[i][j] = dpVerDown[i + 1][j] + (cell[i][j] == 'W');
-
-        
+            ++b[l + 1][j + 1];
+        }
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; ++j)
+                b[i][j + 1] += b[i][j];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; ++j)
+                b[i + 1][j] += b[i][j];
+        int ans = 0;
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; ++j)
+                ans = max(ans, b[i][j]);
+        cout << ans;
     }
 };
 
