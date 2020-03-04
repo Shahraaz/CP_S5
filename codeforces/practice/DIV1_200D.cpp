@@ -1,4 +1,4 @@
-//Optimise
+// Optimise
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
@@ -60,132 +60,244 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 #define f first
 #define s second
 #define pb push_back
+#define all(v) v.begin(), v.end()
 auto TimeStart = chrono::steady_clock::now();
+auto seed = TimeStart.time_since_epoch().count();
+std::mt19937 rng(seed);
+template <typename T>
+using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 5e5 + 10, MOD = 1000000007;
+const int NAX = 500000 + 5, MOD = 1000000007;
+
+struct Node
+{
+    long long val;
+    Node(long long one = 0) : val(one) {}
+    Node operator+(const Node &rhs)
+    {
+        Node a = *this;
+        a.val = max(a.val, rhs.val);
+        return a;
+    }
+};
+ostream &operator<<(ostream &out, const Node &p)
+{
+    out << p.val;
+    return out;
+}
+istream &operator>>(istream &in, Node &p)
+{
+    in >> p.val;
+    return in;
+}
+
+struct Segtree
+{
+    vector<Node> Seg, Lazy;
+    vector<Node> Base;
+    vector<bool> isLazy;
+    int n;
+    Segtree(int n = 2e5)
+    {
+        this->n = n;
+        Seg.resize(4 * n + 10);
+        Lazy.resize(4 * n + 10);
+        isLazy.resize(4 * n + 10);
+    }
+    void merge(Node &curr, Node &l, Node &r)
+    {
+        curr = l + r;
+    }
+    void propagate(int node, int L, int R)
+    {
+        if (isLazy[node])
+        {
+            isLazy[node] = false;
+            Seg[node] = Lazy[node];
+            if (L != R)
+            {
+                Lazy[2 * node] = Lazy[node];
+                Lazy[2 * node + 1] = Lazy[node];
+                isLazy[2 * node] = true;
+                isLazy[2 * node + 1] = true;
+            }
+            Lazy[node] = Node();
+        }
+    }
+    void build(int node, int start, int end)
+    {
+        if (start == end)
+        {
+            Seg[node] = Base[start];
+            return;
+        }
+        int mid = (start + end) / 2;
+        build(2 * node, start, mid);
+        build(2 * node + 1, mid + 1, end);
+        merge(Seg[node], Seg[2 * node], Seg[2 * node + 1]);
+    }
+    void build(vector<Node> &Arr)
+    {
+        Base = Arr;
+        n = Arr.size();
+        Seg.resize(4 * n + 10);
+        Lazy.resize(4 * n + 10);
+        isLazy.resize(4 * n + 10);
+        build(1, 0, n - 1);
+    }
+    Node Query(int node, int start, int end, int qstart, int qend)
+    {
+        propagate(node, start, end);
+        if (qend < start || qstart > end || start > end)
+            return Node();
+        if (qstart <= start && end <= qend)
+            return Seg[node];
+        int mid = (start + end) / 2;
+        Node l = Query(2 * node, start, mid, qstart, qend);
+        Node r = Query(2 * node + 1, mid + 1, end, qstart, qend);
+        Node ret;
+        merge(ret, l, r);
+        return ret;
+    }
+    Node qQuery(int node, int start, int end, int pos)
+    {
+        propagate(node, start, end);
+        if (start == end)
+            return Seg[node];
+        int mid = (start + end) / 2;
+        if (pos <= mid)
+            return qQuery(2 * node, start, mid, pos);
+        return qQuery(2 * node + 1, mid + 1, end, pos);
+    }
+    void Update(int node, int start, int end, int qstart, int qend, Node val)
+    {
+        propagate(node, start, end);
+        if (qend < start || qstart > end || start > end)
+            return;
+        if (qstart <= start && end <= qend)
+        {
+            isLazy[node] = true;
+            Lazy[node] = val;
+            propagate(node, start, end);
+            return;
+        }
+        int mid = (start + end) / 2;
+        Update(2 * node, start, mid, qstart, qend, val);
+        Update(2 * node + 1, mid + 1, end, qstart, qend, val);
+        merge(Seg[node], Seg[2 * node], Seg[2 * node + 1]);
+    }
+    void pUpdate(int node, int start, int end, int pos, Node val)
+    {
+        propagate(node, start, end);
+        if (start == end)
+        {
+            isLazy[node] = true;
+            Seg[node] = Node();
+            Lazy[node] = val;
+            propagate(node, start, end);
+            return;
+        }
+        int mid = (start + end) / 2;
+        if (pos <= mid)
+            pUpdate(2 * node, start, mid, pos, val);
+        else
+            pUpdate(2 * node + 1, mid + 1, end, pos, val);
+        merge(Seg[node], Seg[2 * node], Seg[2 * node + 1]);
+    }
+    Node query(int pos)
+    {
+        return qQuery(1, 0, n - 1, pos);
+    }
+    Node query(int left, int right)
+    {
+        return Query(1, 0, n - 1, left, right);
+    }
+    void update(int pos, Node val)
+    {
+        pUpdate(1, 0, n - 1, pos, val);
+    }
+    void update(int start, int end, Node val)
+    {
+        Update(1, 0, n - 1, start, end, val);
+    }
+};
+
 vector<int> adj[NAX];
-int startSegment[NAX], endSegment[NAX], idx[NAX], timer;
+int entry[NAX], ext[NAX], tim;
 
 void dfs(int node, int par)
 {
-    startSegment[node] = ++timer;
-    for (auto child : adj[node])
+    entry[node] = ++tim;
+    for (auto &child : adj[node])
         if (child != par)
             dfs(child, node);
-    endSegment[node] = timer;
-    // db(node, startSegment[node], endSegment[node]);
+    ext[node] = tim;
+    db(node, entry[node], ext[node]);
 }
 
-int Tree[NAX * 4];
-bool isLazy[4 * NAX], ToSet[4 * NAX];
-int NodeSet[NAX];
-
-void propagate(int node, int start, int end)
+class Solution
 {
-    if (isLazy[node])
+private:
+public:
+    Solution() {}
+    ~Solution() {}
+    void solveCase()
     {
-        if (ToSet[node])
+        int n;
+        cin >> n;
+        for (int i = 1; i < n; i++)
         {
-            NodeSet[start] = true;
-            Tree[node] = end - start + 1;
+            int u, v;
+            cin >> u >> v;
+            adj[u].pb(v);
+            adj[v].pb(u);
         }
-        else
-            Tree[node] = 0;
-        if (start != end)
+        dfs(1, 1);
+        int q;
+        cin >> q;
+        Segtree s(tim + 1);
+        s.update(1, tim, Node(1));
+        while (q--)
         {
-            ToSet[2 * node + 1] = ToSet[2 * node] = ToSet[node];
-            isLazy[2 * node + 1] = isLazy[2 * node] = isLazy[node];
-        }
-        isLazy[node] = false;
-        ToSet[node] = false;
-    }
-}
+            int c, v;
+            cin >> c >> v;
+            switch (c)
+            {
+            case 1:
+                db(entry[v], ext[v], Node(0));
+                s.update(entry[v], ext[v], Node(0));
+#ifdef LOCAL
+                for (int v = 1; v <= n; v++)
+                    cout << s.query(v) << ' ';
+                cout << '\n';
+#else
 
-void update(int node, int start, int end, int qstart, int qend, bool set)
-{
-    if (qend < start || qstart > end || start > end)
-        return;
-    propagate(node, start, end);
-    if (qstart <= start && end <= qend)
-    {
-        isLazy[node] = true;
-        ToSet[node] = set;
-        propagate(node, start, end);
-        return;
-    }
-    int mid = (start + end) / 2;
-    update(2 * node, start, mid, qstart, qend, set);
-    update(2 * node + 1, mid + 1, end, qstart, qend, set);
-    Tree[node] = Tree[2 * node] + Tree[2 * node + 1];
-}
+#endif
+                break;
+            case 2:
+                db(entry[v], Node(1));
+                if (s.query(entry[v]).val == 0)
+                    s.update(entry[v], Node(1));
+#ifdef LOCAL
+                for (int v = 1; v <= n; v++)
+                    cout << s.query(v) << ' ';
+                cout << '\n';
+#else
 
-void update2(int node, int start, int end, int pos)
-{
-    if (start > end)
-        return;
-    propagate(node, start, end);
-    if (start == end)
-    {
-        if (NodeSet[start])
-            Tree[node]--;
-        NodeSet[start] = false;
-        return;
-    }
-    int mid = (start + end) / 2;
-    if (pos <= mid)
-        update2(2 * node, start, mid, pos);
-    else
-        update2(2 * node + 1, mid + 1, end, pos);
-    Tree[node] = Tree[2 * node] + Tree[2 * node + 1];
-}
-
-int query(int node, int start, int end, int qstart, int qend)
-{
-    if (qend < start || qstart > end || start > end)
-        return 0;
-    propagate(node, start, end);
-    if (qstart <= start && end <= qend)
-        return Tree[node];
-    int mid = (start + end) / 2;
-    return query(2 * node, start, mid, qstart, qend) + query(2 * node + 1, mid + 1, end, qstart, qend);
-}
-
-void solveCase(int caseNo)
-{
-    int n, u, v;
-    cin >> n;
-    for (int i = 1; i < n; ++i)
-    {
-        cin >> u >> v;
-        adj[u].pb(v);
-        adj[v].pb(u);
-    }
-    dfs(1, 0);
-    int q, type, node;
-    cin >> q;
-    while (q--)
-    {
-        cin >> type >> node;
-        switch (type)
-        {
-        case 1:
-            db("Fill", node);
-            update(1, startSegment[1], endSegment[1], startSegment[node], endSegment[node], 1);
-            break;
-        case 2:
-            db("UNFill", node);
-            update2(1, startSegment[1], endSegment[1], startSegment[node]);
-            break;
-        case 3:
-            int Q = query(1, startSegment[1], endSegment[1], startSegment[node], endSegment[node]);
-            db(Q, node);
-            cout << (Q == (endSegment[node] - startSegment[node] + 1)) << '\n';
-            break;
+#endif
+                break;
+            case 3:
+                db(v, entry[v], ext[v], s.query(entry[v], ext[v]));
+                cout << (s.query(entry[v], ext[v]).val == 0) << '\n';
+                break;
+            default:
+                break;
+            }
         }
     }
-}
+};
 
-int main()
+int32_t main()
 {
 #ifndef LOCAL
     ios_base::sync_with_stdio(0);
@@ -195,9 +307,10 @@ int main()
 #ifdef MULTI_TEST
     cin >> t;
 #endif
+    Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {
-        solveCase(i);
+        mySolver.solveCase();
 #ifdef TIME
         cerr << "Case #" << i << ": Time " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " s.\n";
         TimeStart = chrono::steady_clock::now();

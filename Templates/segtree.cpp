@@ -1,7 +1,7 @@
 struct Node
 {
 	long long val;
-	Node(int one = 0) : val(one) {}
+	Node(long long one = 0) : val(one) {}
 	Node operator+(const Node &rhs)
 	{
 		Node a = *this;
