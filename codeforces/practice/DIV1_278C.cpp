@@ -67,7 +67,7 @@ std::mt19937 rng(seed);
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 10000 * 2 + 5, MOD = 1000000007;
+const int NAX = 2e5 + 5, MOD = 1000000007;
 
 const int _n = 1e5 + 10;
 vector<int> Fact(_n), Inv(_n);
@@ -132,23 +132,47 @@ public:
     {
         int n;
         cin >> n;
-        vector<int> a(NAX), b(NAX);
-        int res = 0;
-        for (int i = 0; i < n; i++)
+#ifdef LOCAL
+        // vector<int> a(n);
+        // for (size_t i = 0; i < n; i++)
+        // {
+        //     a[i] = i + 1;
+        // }
+        for (int i = 1; i <= n; i++)
         {
-            int x;
-            cin >> x;
-            fill(all(b), 0);
-            a[10000]++;
-            for (int j = x; j <= 10000 * 2 - x; j++)
+            cout << i << '\n';
+            for (int j = 1; j <= n; j++)
             {
-                b[j + x] = add(b[j + x], a[j]);
-                b[j - x] = add(b[j - x], a[j]);
+                if ((i * j) % n == 1)
+                    cout << j << ' ';
             }
-            res = add(res, b[10000]);
-            a.swap(b);
+            cout << '\n';
         }
-        cout << res << '\n';
+#else
+#endif
+        if (n == 4)
+        {
+            cout << "YES\n";
+            cout << 1 << '\n'
+                 << 3 << '\n'
+                 << 2 << '\n'
+                 << 4 << '\n';
+            return;
+        }
+        for (ll i = 2; i * i <= n; i++)
+        {
+            if (n % i == 0)
+            {
+                cout << "NO\n";
+                return;
+            }
+        }
+        cout << "YES\n";
+        cout << 1 << '\n';
+        for (int i = 2; i < n; i++)
+            cout << mul(i, power(i - 1, n - 2, n), n) << '\n';
+        if (n != 1)
+            cout << n << '\n';
     }
 };
 
