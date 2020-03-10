@@ -13,9 +13,6 @@ using namespace __gnu_pbds;
 #define pc(...)
 #endif
 
-using ll = long long;
-template <typename T>
-using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
 #define f first
 #define s second
 #define pb push_back
@@ -23,6 +20,9 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 auto TimeStart = chrono::steady_clock::now();
 auto seed = TimeStart.time_since_epoch().count();
 std::mt19937 rng(seed);
+using ll = long long;
+template <typename T>
+using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
@@ -36,7 +36,7 @@ public:
     ~Solution() {}
     void solveCase()
     {
-        //I dont want to solve this
+        
     }
 };
 

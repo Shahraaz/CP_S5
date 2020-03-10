@@ -5,7 +5,7 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-// #define MULTI_TEST
+#define MULTI_TEST
 #ifdef LOCAL
 #include "/home/shahraaz/bin/debug.h"
 #else
@@ -13,9 +13,6 @@ using namespace __gnu_pbds;
 #define pc(...)
 #endif
 
-using ll = long long;
-template <typename T>
-using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
 #define f first
 #define s second
 #define pb push_back
@@ -23,6 +20,9 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 auto TimeStart = chrono::steady_clock::now();
 auto seed = TimeStart.time_since_epoch().count();
 std::mt19937 rng(seed);
+using ll = long long;
+template <typename T>
+using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
@@ -36,7 +36,30 @@ public:
     ~Solution() {}
     void solveCase()
     {
-        //I dont want to solve this
+        int n, m;
+        cin >> n >> m;
+        int res = 0;
+        for (int i = 0; i < n; i++)
+        {
+            vector<int> temp(m);
+            for (auto &x : temp)
+                cin >> x;
+            int grundyOfCurrentRow = 0;
+            for (int i = m - 1; i >= 0; i--)
+            {
+                if (i == (m - 1))
+                    grundyOfCurrentRow = temp[i];
+                else
+                {
+                    if (temp[i] <= grundyOfCurrentRow)
+                        grundyOfCurrentRow = temp[i] - 1;
+                    else
+                        grundyOfCurrentRow = temp[i];
+                }
+            }
+            res ^= grundyOfCurrentRow;
+        }
+        cout << (res == 0 ? "SECOND" : "FIRST") << '\n';
     }
 };
 
