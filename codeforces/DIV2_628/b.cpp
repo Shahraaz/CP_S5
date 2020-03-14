@@ -1,4 +1,3 @@
-//https://codeforces.com/problemset/problem/1323/A
 // Optimise
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
@@ -6,7 +5,7 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-// #define MULTI_TEST
+#define MULTI_TEST
 #ifdef LOCAL
 #include "/home/shahraaz/bin/debug.h"
 #else
@@ -29,44 +28,24 @@ using Random = std::uniform_int_distribution<T>;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
-bool used[1 << 18];
 class Solution
 {
 private:
+    int n;
+    vector<int> v;
+
 public:
     Solution() {}
     ~Solution() {}
     void solveCase()
     {
-        int n, x;
-        cin >> n >> x;
-        vector<int> b;
-        b.pb(0);
-        used[x] = true;
-        used[0] = true;
-        for (int i = 1; i < (1 << n); i++)
-        {
-            if (used[i] || used[i ^ x])
-                continue;
-            used[i] = used[i ^ x] = true;
-            b.pb(i);
-#ifdef LOCAL
-            cout << i << '\n';
-#else
-
-#endif
-        }
-#ifdef LOCAL
-        for (auto &x : b)
-            cout << x << ' ';
-        cout << '\n';
-#else
-
-#endif
-        cout << b.size() - 1 << '\n';
-        for (size_t i = 1; i < b.size(); i++)
-            cout << (b[i] ^ b[i - 1]) << ' ';
-        cout << '\n';
+        cin >> n;
+        v.resize(n);
+        for (auto &x : v)
+            cin >> x;
+        sort(all(v));
+        v.erase(unique(all(v)), v.end());
+        cout << v.size() << '\n';
     }
 };
 
