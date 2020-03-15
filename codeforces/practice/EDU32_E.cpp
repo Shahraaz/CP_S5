@@ -47,22 +47,14 @@ private:
             res = max(res, prevSum);
             if (type && firstHalf.size())
             {
-                int temp = (m - prevSum) % m;
-                auto it = lower_bound(all(firstHalf), temp);
-                if (it == firstHalf.end())
+                int temp = (m - prevSum - 1);
+                db(prevSum, temp);
+                auto it = upper_bound(all(firstHalf), temp);
+                if (it != firstHalf.begin())
                 {
                     --it;
-                    res = max(res, add(prevSum, temp));
-                }
-                else
-                {
-                    if (*it == temp)
-                        res = max(res, add(prevSum, temp));
-                    else
-                    {
-                        --it;
-                        res = max(res, add(prevSum, *it));
-                    }
+                    db(*it, temp, add(prevSum, *it));
+                    res = max(res, add(prevSum, *it));
                 }
             }
             else
@@ -83,15 +75,11 @@ public:
         for (auto &x : a)
             cin >> x;
         res = 0;
-        if (n > 18)
-        {
-            solve(0, n / 2, 0);
-            sort(all(firstHalf));
-            pc(firstHalf);
-            solve(n / 2 + 1, n - 1, 1);
-        }
-        else
-            solve(0, n - 1, 0);
+        solve(0, n / 2, 0);
+        sort(all(firstHalf));
+        pc(firstHalf);
+        firstHalf.pb(MOD);
+        solve(n / 2 + 1, n - 1, 1);
         cout << res << '\n';
     }
 };

@@ -12,22 +12,34 @@ struct Bit
         while (i < size)
         {
             table[i] += delta;
-            i += i & (-i);
+            i = i | (1 + i);
         }
     }
-    void sum(int i)
+    int sum(int i)
     {
         int ret = 0;
-        while (i > 0)
+        while (i >= 0)
         {
-            sum += table[i];
-            i -= i & (-i);
+            ret += table[i];
+            i = (i & (i + 1)) - 1;
         }
         return ret;
     }
     int rangeSum(int i, int j)
     {
-        return sum(j) - sum(i);
+        if (i == 0)
+            return sum(j);
+        return sum(j) - sum(i - 1);
+    }
+    void print()
+    {
+#ifdef LOCAL
+        for (int i = 0; i < size; i++)
+            cout << rangeSum(i, i) << ' ';
+        cout << '\n';
+#else
+
+#endif
     }
 };
 
