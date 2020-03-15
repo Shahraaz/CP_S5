@@ -26,66 +26,69 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
-#define int long long
+const int NAX = 1e6 + 5, MOD = 1000000007;
+
+bool vis[NAX];
 
 class Solution
 {
 private:
+    int n;
+    int getSym(int x)
+    {
+        return 1e6 + 1 - x;
+    }
+
 public:
     Solution() {}
     ~Solution() {}
     void solveCase()
     {
-        int n;
         cin >> n;
-        vector<int> d(n + 2, 0);
-        vector<int> u(n + 2, 0);
-        for (size_t i = 2; i <= n; i++)
+        for (size_t i = 0; i < n; i++)
         {
-            int k = 2;
-            while (true)
-            {
-                int x = i - (k * (k - 1)) / 2;
-                if (x < 0)
-                    break;
-                if (x % k == 0)
-                {
-                    x /= k;
-                    int t = 0;
-                    for (size_t j = 0; j < k; j++)
-                        t ^= d[x + j];
-                    u[t] = i;
-                }
-                ++k;
-            }
-            int r = 0;
-            while (u[r] == i)
-                ++r;
-            d[i] = r;
-            db(i, r);
+            int x;
+            cin >> x;
+            vis[x] = true;
         }
-        if (d[n] == 0)
-            cout << -1 << '\n';
-        else
+        int cat = 0;
+        vector<int> res;
+        for (size_t i = 1; 2 * i <= 1e6; i++)
         {
-            int k = 2;
-            while (true)
+            if (vis[i])
             {
-                int x = n - (k * (k - 1) / 2);
-                if (x % k == 0)
+                if (!vis[getSym(i)])
                 {
-                    x /= k;
-                    int t = 0;
-                    for (size_t j = 0; j < k; j++)
-                        t ^= d[x + j];
-                    if (t == 0)
-                        break;
+                    res.pb(getSym(i));
+                    vis[getSym(i)] = true;
                 }
-                ++k;
+                else
+                    ++cat;
             }
-            cout << k << '\n';
+            else
+            {
+                if (vis[getSym(i)])
+                {
+                    res.pb(i);
+                    vis[i] = true;
+                }
+            }
         }
+        for (size_t i = 1; (2 * i <= 1e6) && cat; i++)
+        {
+            if (cat && !vis[i])
+            {
+                cat--;
+                res.pb(getSym(i));
+                vis[getSym(i)] = true;
+                res.pb(i);
+                vis[i] = true;
+            }
+        }
+        cout << res.size() << '\n';
+        for (auto &x : res)
+            cout << x << ' ';
+        cout << '\n';
     }
 };
 
