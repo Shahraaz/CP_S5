@@ -26,7 +26,10 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
+const int NAX = 5005 + 5, MOD = 1000000007;
+
+int dist[NAX][NAX];
+vector<int> adj[NAX];
 
 class Solution
 {
@@ -36,7 +39,67 @@ public:
     ~Solution() {}
     void solveCase()
     {
-        
+        int n, m;
+        cin >> n >> m;
+        memset(dist, -1, sizeof dist);
+        for (size_t i = 0; i < m; i++)
+        {
+            int u, v;
+            cin >> u >> v;
+            --u, --v;
+            adj[u].pb(v);
+            adj[v].pb(u);
+        }
+        for (size_t i = 0; i < n; i++)
+        {
+            queue<int> q;
+            dist[i][i] = 0;
+            q.push(i);
+            while (!q.empty())
+            {
+                auto s = q.front();
+                q.pop();
+                for (auto &child : adj[s])
+                    if (dist[i][child] == -1)
+                    {
+                        dist[i][child] = dist[i][s] + 1;
+                        q.push(child);
+                    }
+            }
+            // #ifdef LOCAL
+            //             db(i);
+            //             for (size_t j = 0; j < n; j++)
+            //                 cout << dist[i][j] << ' ';
+            //             cout << '\n';
+            // #else
+
+            // #endif
+        }
+        int s[2], t[2], l[2];
+        cin >> s[0] >> t[0] >> l[0];
+        cin >> s[1] >> t[1] >> l[1];
+        s[0]--, t[0]--;
+        s[1]--, t[1]--;
+        int ans = m + 1;
+
+        for (size_t iter = 0; iter < 2; iter++)
+        {
+            swap(s[0], t[0]);
+            for (size_t i = 0; i < n; i++)
+                for (size_t j = 0; j < n; j++)
+                {
+                    int v[] = {dist[s[0]][i] + dist[i][j] + dist[j][t[0]], dist[s[1]][i] + dist[i][j] + dist[j][t[1]]};
+                    if (v[0] <= l[0] && v[1] <= l[1])
+                        ans = min(ans, v[0] + v[1] - dist[i][j]);
+                    db(iter, i, j, ans);
+                }
+        }
+        if (dist[s[0]][t[0]] <= l[0] && dist[s[1]][t[1]] <= l[1])
+            ans = min(ans, dist[s[0]][t[0]] + dist[s[1]][t[1]]);
+        if (ans > m)
+            cout << -1 << '\n';
+        else
+            cout << m - ans << '\n';
     }
 };
 
