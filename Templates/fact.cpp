@@ -34,12 +34,17 @@ int power(int base, int index, int mod = kmod)
     return temp;
 }
 
+int mod_inv(int x, int mod = kmod)
+{
+    return power(x, kmod - 2)
+}
+
 void pre()
 {
     Fact[0] = 1;
     for (int i = 1; i < _n; ++i)
         Fact[i] = mul(Fact[i - 1], i);
-    Inv[_n - 1] = power(Fact[_n - 1], kmod - 2);
+    Inv[_n - 1] = mod_inv(Fact[_n - 1]);
     for (int i = _n - 2; i >= 0; --i)
         Inv[i] = mul(Inv[i + 1], (1 + i));
 }
