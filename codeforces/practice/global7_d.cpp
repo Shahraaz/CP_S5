@@ -1,8 +1,32 @@
+// Optimise
 #include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
 using namespace std;
+using namespace __gnu_pbds;
+
+#define MULTI_TEST
+#ifdef LOCAL
+#include "/home/shahraaz/bin/debug.h"
+#else
+#define db(...)
+#define pc(...)
+#endif
+
 #define f first
 #define s second
+#define pb push_back
+#define all(v) v.begin(), v.end()
+auto TimeStart = chrono::steady_clock::now();
+auto seed = TimeStart.time_since_epoch().count();
+std::mt19937 rng(seed);
 using ll = long long;
+template <typename T>
+using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+template <typename T>
+using Random = std::uniform_int_distribution<T>;
+
+const int NAX = 2e5 + 5, MOD = 1000000007;
 
 struct Hash_RabinKarp
 {
@@ -87,9 +111,82 @@ struct Rabin_Karp
     }
 };
 
-Rabin_Karp R;
-
-int main()
+class Solution
 {
+private:
+public:
+    Solution() {}
+    ~Solution() {}
+    void solveCase()
+    {
+        string str, srev;
+        cin >> str;
+        srev = str;
+        reverse(all(srev));
+        Rabin_Karp R(str);
+        Rabin_Karp Rrev(srev);
+        int fptr = 0, rptr = str.size() - 1;
+        while (fptr <= rptr && str[fptr] == str[rptr])
+            ++fptr, --rptr;
+        if (rptr <= fptr)
+        {
+            cout << str << '\n';
+        }
+        else
+        {
+            int rrptr = fptr, n = str.size();
+            int frontLen = 0, backLen = 0;
+            auto getRIdx = [&n](int pos) -> int {
+                return n - 1 - pos;
+            };
+            while (rrptr <= rptr)
+            {
+                if (R.getHash(fptr, rrptr) == Rrev.getHash(getRIdx(rrptr), getRIdx(fptr)))
+                    frontLen = rrptr - fptr + 1;
+                ++rrptr;
+            }
+            int ffptr = rptr;
+            while (fptr <= ffptr)
+            {
+                if (R.getHash(ffptr, rptr) == Rrev.getHash(getRIdx(rptr), getRIdx(ffptr)))
+                    backLen = rptr - ffptr + 1;
+                --ffptr;
+            }
+            --rrptr;
+            ++ffptr;
+            db(fptr, frontLen);
+            db(rptr, backLen);
+            if (frontLen > backLen)
+                cout << str.substr(0, fptr + frontLen);
+            else
+                cout << srev.substr(0, getRIdx(rptr) + backLen);
+            // db("\na\n");
+            if (fptr)
+                cout << srev.substr(n - fptr, fptr) << '\n';
+            else
+                cout << '\n';
+        }
+    }
+};
+
+int32_t main()
+{
+#ifndef LOCAL
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+#endif
+    int t = 1;
+#ifdef MULTI_TEST
+    cin >> t;
+#endif
+    Solution mySolver;
+    for (int i = 1; i <= t; ++i)
+    {
+        mySolver.solveCase();
+#ifdef TIME
+        cerr << "Case #" << i << ": Time " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " s.\n";
+        TimeStart = chrono::steady_clock::now();
+#endif
+    }
     return 0;
 }

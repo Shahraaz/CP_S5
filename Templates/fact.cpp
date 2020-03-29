@@ -36,7 +36,7 @@ int power(int base, int index, int mod = kmod)
 
 int mod_inv(int x, int mod = kmod)
 {
-    return power(x, kmod - 2)
+    return power(x, kmod - 2);
 }
 
 void pre()
