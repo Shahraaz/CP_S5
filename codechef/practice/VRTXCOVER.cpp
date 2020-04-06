@@ -29,6 +29,7 @@ using Random = std::uniform_int_distribution<T>;
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
 //Add Dummy Comment
+//Add Dummy Comment
 //https://github.com/Shahraaz/CP/blob/master/SCC.cpp
 
 typedef vector<int> _vi;
@@ -40,8 +41,7 @@ public:
     int _n, _m, CompC;
     _graph G, RevG, SccG;
     stack<int> St;
-    _vi Vis, Comp, Ht;
-    int myClock;
+    _vi Vis, Comp;
     SCC()
     {
     }
@@ -57,7 +57,6 @@ public:
     {
         Vis[u] = true;
         Comp[u] = c;
-        Ht[u] = myClock;
         for (int x : RevG[u])
             if (!Vis[x])
                 Dfs(x, c);
@@ -68,19 +67,13 @@ public:
             if (!Vis[i])
                 fillOrder(i);
         fill(Vis.begin(), Vis.end(), false);
-        // pc(St);
         CompC = 0;
-        myClock = 0;
         while (!St.empty())
         {
             auto v = St.top();
-            db(v);
             St.pop();
             if (!Vis[v])
-            {
-                myClock++;
                 Dfs(v, CompC++);
-            }
         }
         SccG.resize(CompC);
         for (int i = 0; i < _n; ++i)
@@ -99,7 +92,6 @@ public:
         _n = G.size();
         _m = 0;
         Vis.resize(_n);
-        Ht.resize(_n);
         Comp.resize(_n);
         RevG.resize(_n);
         for (int i = 0; i < _n; ++i)
@@ -141,7 +133,6 @@ public:
             add(getConj(a), b);
         };
         auto addOr = [&](int a, int b) {
-            add(a, getConj(b));
             add(getConj(a), b);
         };
         for (size_t id = 0; id < n / 2; id += 1)
@@ -159,32 +150,10 @@ public:
             y += y;
             addOr(x, y);
         }
-#ifdef LOCAL
-        for (size_t i = 0; i < adj.size(); i++)
-        {
-            db(i);
-            pc(adj[i]);
-        }
-#else
-
-#endif
         auto myScc = SCC(adj);
         auto mySccDetails = myScc.GetScc();
-#ifdef LOCAL
-        for (size_t i = 0; i < mySccDetails.f.size(); i++)
-        {
-            db(i);
-            pc(mySccDetails.f[i]);
-        }
-        for (size_t i = 0; i < mySccDetails.s.size(); i++)
-            db(i, mySccDetails.s[i]);
-#else
-
-#endif
         for (size_t i = 0; i < 2 * n; i++)
         {
-            db(i, getConj(i), mySccDetails.s[i], mySccDetails.s[getConj(i)]);
-            db(myScc.Ht[i]);
             if (mySccDetails.s[i] == mySccDetails.s[getConj(i)])
             {
                 cout << "impossible\n";
@@ -194,7 +163,7 @@ public:
         cout << "possible" << '\n';
         for (size_t i = 0; i < 2 * n; i += 2)
         {
-            cout << (myScc.Ht[mySccDetails.s[i]] > myScc.Ht[mySccDetails.s[getConj(i)]]);
+            cout << (mySccDetails.s[i] > mySccDetails.s[getConj(i)]);
         }
         cout << '\n';
     }

@@ -3,6 +3,26 @@
 
 typedef vector<int> _vi;
 typedef vector<_vi> _graph;
+int getConj(int x)
+{
+    return x ^ 1;
+}
+auto add = [&](int a, int b) {
+    adj[a].pb(b);
+    adj[getConj(b)].pb(getConj(a));
+};
+auto addXor = [&](int a, int b) {
+    add(a, getConj(b));
+    add(getConj(a), b);
+};
+auto addOr = [&](int a, int b) {
+    add(getConj(a), b);
+};
+
+auto addand = [&](int u, int v) {
+    add(getConj(u), u);
+    add(getConj(v), v);
+};
 
 class SCC
 {
