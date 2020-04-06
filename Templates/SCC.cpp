@@ -73,6 +73,6 @@ public:
     }
     pair<_graph, _vi> GetScc()
     {
-        return mp(SccG, Comp);
+        return {SccG, Comp};
     }
 };
