@@ -36,6 +36,34 @@ public:
     ~Solution() {}
     void solveCase()
     {
+        string str;
+        int n;
+        cin >> n;
+        cin >> str;
+        vector<char> aplha;
+        vector<bool> occ(26);
+        for (char i = 'a'; i <= 'z'; i++)
+        {
+            if (count(all(str), i))
+            {
+                occ[i - 'a'] = true;
+                // cout << "NO";
+                // return;
+            }
+        }
+        for (char i = 'A'; i <= 'Z'; i++)
+        {
+            if (count(all(str), i))
+            {
+                occ[i - 'A'] = true;
+                // cout << "NO";
+                // return;
+            }
+        }
+        if (count(all(occ), true) == 26)
+            cout << "YES";
+        else
+            cout << "NO";
     }
 };
 

@@ -5,7 +5,7 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-// #define MULTI_TEST
+#define MULTI_TEST
 #ifdef LOCAL
 #include "/home/shahraaz/bin/debug.h"
 #else
@@ -36,6 +36,10 @@ public:
     ~Solution() {}
     void solveCase()
     {
+        int n, x, a, b;
+        cin >> n >> x >> a >> b;
+        a = abs(a - b);
+        cout << min(n - 1, a + x) << '\n';
     }
 };
 

@@ -26,7 +26,10 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 template <typename T>
 using Random = std::uniform_int_distribution<T>;
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
+const int NAX = 1e5 + 5, MOD = 1000000007;
+
+ll suffix_sz[NAX];
+int len[NAX];
 
 class Solution
 {
@@ -36,6 +39,28 @@ public:
     ~Solution() {}
     void solveCase()
     {
+        int n, m;
+        cin >> n >> m;
+        for (size_t i = 1; i <= m; i++)
+        {
+            cin >> len[i];
+            if (len[i] + i - 1 > n)
+            {
+                cout << -1;
+                return;
+            }
+        }
+        for (int i = n; i >= 1; i--)
+            suffix_sz[i] = suffix_sz[i + 1] + len[i];
+        if (suffix_sz[1] < n)
+        {
+            cout << -1 << '\n';
+            return;
+        }
+        for (int i = 1; i <= m; i++)
+        {
+            cout << max(i + 0LL, n - suffix_sz[i] + 1) << ' ';
+        }
     }
 };
 

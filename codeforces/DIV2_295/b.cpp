@@ -36,6 +36,32 @@ public:
     ~Solution() {}
     void solveCase()
     {
+        int n, m;
+        cin >> n >> m;
+        vector<int> dist(1e6, MOD);
+        auto isVal = [&](int x) -> bool {
+            return x >= 1 && x < 1e6 && dist[x] == MOD;
+        };
+        dist[n] = 0;
+        queue<int> Q;
+        Q.push(n);
+        while (Q.size())
+        {
+            auto n = Q.front();
+            Q.pop();
+            db(n, dist[n]);
+            if (isVal(n - 1))
+            {
+                dist[n - 1] = dist[n] + 1;
+                Q.push(n - 1);
+            }
+            if (isVal(n * 2))
+            {
+                dist[n * 2] = dist[n] + 1;
+                Q.push(n * 2);
+            }
+        }
+        cout << dist[m] << '\n';
     }
 };
 

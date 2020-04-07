@@ -5,7 +5,7 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-// #define MULTI_TEST
+#define MULTI_TEST
 #ifdef LOCAL
 #include "/home/shahraaz/bin/debug.h"
 #else
@@ -36,6 +36,33 @@ public:
     ~Solution() {}
     void solveCase()
     {
+        int n;
+        cin >> n;
+        vector<int> a(n);
+        deque<int> adj[n + 1];
+        for (size_t i = 0; i < n; i++)
+        {
+            cin >> a[i];
+            adj[a[i]].push_front(i);
+        }
+        int res = MOD;
+        int maxNext = n + 2;
+        for (int i = n - 1; i >= 0; i--)
+        {
+            adj[a[i]].pop_front();
+            if (adj[a[i]].size())
+            {
+                auto curr = i;
+                auto next = adj[a[i]].front();
+                if (next <= maxNext)
+                    res = min(res, next - curr + 1);
+                maxNext = max(maxNext, next);
+            }
+        }
+        if (res >= 10 * n)
+            cout << -1 << '\n';
+        else
+            cout << res << '\n;'
     }
 };
 

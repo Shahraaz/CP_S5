@@ -36,6 +36,47 @@ public:
     ~Solution() {}
     void solveCase()
     {
+        vector<int> cnt(4);
+        for (auto &x : cnt)
+            cin >> x;
+        int n = accumulate(all(cnt), 0);
+        for (int i = 0; i < 4; i++)
+        {
+            auto cnt2 = cnt;
+            if (cnt2[i] > 0)
+            {
+                vector<int> res = {i};
+                cnt2[i]--;
+                auto check = [&](int x) {
+                    return x >= 0 && x < 4 && cnt2[x];
+                };
+                for (size_t i = 1; i < n; i++)
+                {
+                    int back = res.back();
+                    if (check(back - 1))
+                    {
+                        cnt2[back - 1]--;
+                        res.pb(back - 1);
+                    }
+                    else if (check(back + 1))
+                    {
+                        cnt2[back + 1]--;
+                        res.pb(back + 1);
+                    }
+                    else
+                        break;
+                }
+                if (res.size() == n)
+                {
+                    cout << "YES\n";
+                    for (auto &x : res)
+                        cout << x << ' ';
+                    cout << '\n';
+                    return;
+                }
+            }
+        }
+        cout << "NO\n";
     }
 };
 

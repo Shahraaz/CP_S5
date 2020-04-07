@@ -5,7 +5,7 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-// #define MULTI_TEST
+#define MULTI_TEST
 #ifdef LOCAL
 #include "/home/shahraaz/bin/debug.h"
 #else
@@ -36,6 +36,25 @@ public:
     ~Solution() {}
     void solveCase()
     {
+        int x, y;
+        cin >> x >> y;
+        set<ll> s;
+        function<bool(ll)> find = [&](ll i) -> bool {
+            if (i >= y)
+                return true;
+            if (i < 0)
+                return false;
+            if (s.count(i))
+                return false;
+            s.insert(i);
+            if (i & 1)
+                return find(i - 1);
+            return find(3 * i / 2);
+        };
+        if (find(x))
+            cout << "YES\n";
+        else
+            cout << "NO\n";
     }
 };
 
