@@ -96,3 +96,91 @@ struct MaxFlow
         return ans;
     }
 };
+
+//Weighted flow
+// https://cp-algorithms.com/graph/min_cost_flow.html
+
+struct Edge
+{
+    int from, to, capacity, cost;
+};
+
+struct MyFlow
+{
+
+    vector<vector<int>> adj, cost, capacity;
+    const int INF = 1e9;
+    pair<int, int> doIt(int N, vector<Edge> edges, int K, int s, int t)
+    {
+        adj.resize(N);
+        cost.assign(N, vector<int>(N));
+        capacity.assign(N, vector<int>(N));
+        for (auto &e : edges)
+        {
+            adj[e.from].pb(e.to);
+            adj[e.to].pb(e.from);
+            cost[e.from][e.to] = e.cost;
+            cost[e.to][e.from] = -e.cost;
+            capacity[e.from][e.to] = e.capacity;
+        }
+        int flow = 0;
+        int cost = 0;
+        d.clear(), p.clear();
+        while (flow < K)
+        {
+            shortest_path(N, s);
+            pc(d);
+            pc(p);
+            if (d[t] == INF)
+                break;
+            int f = K - flow;
+            int cur = t;
+            while (cur != s)
+            {
+                f = min(f, capacity[p[cur]][cur]);
+                cur = p[cur];
+            }
+            flow += f;
+            cost += f * d[t];
+            cur = t;
+            while (cur != s)
+            {
+                capacity[p[cur]][cur] -= f;
+                capacity[cur][p[cur]] += f;
+                cur = p[cur];
+            }
+        }
+        if (flow < K)
+            return {-1, cost};
+        return {flow, cost};
+    }
+    vector<int> d, p;
+    void shortest_path(int N, int v0)
+    {
+        d.assign(N, INF);
+        d[v0] = 0;
+        vector<bool> inq(N, false);
+        queue<int> q;
+        q.push(v0);
+        p.assign(N, -1);
+        while (!q.empty())
+        {
+            int u = q.front();
+            q.pop();
+            inq[u] = false;
+            for (auto &v : adj[u])
+            {
+                if (capacity[u][v] > 0 && d[v] > d[u] + cost[u][v])
+                {
+                    d[v] = d[u] + cost[u][v];
+                    p[v] = u;
+                    if (!inq[v])
+                    {
+                        inq[v] = true;
+                        q.push(v);
+                    }
+                }
+            }
+        }
+    }
+};
