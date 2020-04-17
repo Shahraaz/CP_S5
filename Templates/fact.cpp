@@ -1,4 +1,4 @@
-const int _n = 1e5 + 10;
+const int _n = 2e5 + 10;
 vector<int> Fact(_n), Inv(_n);
 const int kmod = 1000000007;
 
