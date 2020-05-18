@@ -24,6 +24,25 @@ public:
     ~Solution() {}
     void solveCase()
     {
+        int n;
+        cin >> n;
+        vector<int> a(n);
+        for (auto &x : a)
+            cin >> x;
+        sort(all(a));
+        int res = 0;
+        int currCap = 0, currSize = 0;
+        for (size_t i = 0; i < n; i++)
+        {
+            currCap = max(currCap, a[i]);
+            currSize++;
+            if (currCap == currSize)
+            {
+                res++;
+                currSize = 0;
+            }
+        }
+        cout << res << '\n';
     }
 };
 
@@ -34,7 +53,7 @@ int32_t main()
     cin.tie(0);
 #endif
     int t = 1;
-    // cin >> t;
+    cin >> t;
     Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {
