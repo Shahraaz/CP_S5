@@ -24,6 +24,30 @@ public:
     ~Solution() {}
     void solveCase()
     {
+        int n = 10, m = 10;
+        vector<vector<int>> vec(n, vector<int>(m));
+        int ctr = 1;
+        for (size_t i = 0; i < 20; i++)
+        {
+            int x = 0, y = i;
+            while (y >= 0)
+            {
+                if (0 <= x && x < 10 && 0 <= y && y < 10)
+                    vec[x][y] = ctr++;
+                x++,
+                    y--;
+            }
+        }
+        db(vec);
+        int x1, y1, x2, y2;
+        cin >> x1 >> y1 >> x2 >> y2;
+        x2 -= x1, y2 -= y1;
+        if (x1 == 0 || y1 == 0)
+            cout << 1 << '\n';
+        else
+        {
+            
+        }
     }
 };
 

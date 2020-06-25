@@ -24,6 +24,9 @@ public:
     ~Solution() {}
     void solveCase()
     {
+        int n, m;
+        cin >> n >> m;
+        
     }
 };
 
@@ -34,7 +37,7 @@ int32_t main()
     cin.tie(0);
 #endif
     int t = 1;
-    // cin >> t;
+    cin >> t;
     Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {

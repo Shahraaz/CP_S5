@@ -24,6 +24,24 @@ public:
     ~Solution() {}
     void solveCase()
     {
+        int n;
+        cin >> n;
+        vector<int> a(n);
+        for (auto &x : a)
+        {
+            cin >> x;
+        }
+        sort(all(a));
+        int res = 1;
+        db(a);
+        for (size_t i = 0; i < n; i++)
+        {
+            if ((i + 1) >= a[i])
+            {
+                res = i + 2;
+            }
+        }
+        cout << res << '\n';
     }
 };
 
@@ -34,7 +52,7 @@ int32_t main()
     cin.tie(0);
 #endif
     int t = 1;
-    // cin >> t;
+    cin >> t;
     Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {
