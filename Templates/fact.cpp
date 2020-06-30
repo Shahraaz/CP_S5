@@ -36,7 +36,7 @@ int power(int base, int index, int mod = kmod)
 
 int mod_inv(int x, int mod = kmod)
 {
-    return power(x, kmod - 2);
+    return power(x, mod - 2, mod);
 }
 
 void pre()
@@ -54,4 +54,11 @@ int ncr(int n, int r)
     if (n < 0 || r < 0 || n - r < 0)
         return 0;
     return mul(Fact[n], mul(Inv[r], Inv[n - r]));
+}
+
+int npr(int n, int r)
+{
+    if (n < 0 || r < 0 || n - r < 0)
+        return 0;
+    return mul(Fact[n], Inv[n - r]);
 }
