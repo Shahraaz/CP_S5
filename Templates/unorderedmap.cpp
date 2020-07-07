@@ -83,8 +83,8 @@ void insert_numbers_gp(long long x)
 
 int main()
 {
-    insert_numbers(1078970);
-    insert_numbers(1262710);
+    insert_numbers(107890070);
+    insert_numbers(126271000);
     // insert_numbers_gp(107897);
     // insert_numbers_gp(126271);
 }
