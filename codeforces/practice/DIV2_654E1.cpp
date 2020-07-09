@@ -24,6 +24,63 @@ public:
     ~Solution() {}
     void solveCase()
     {
+        int n, p;
+        cin >> n >> p;
+        map<int, int> cnt;
+        for (size_t i = 0; i < n; i++)
+        {
+            int x;
+            cin >> x;
+            cnt[x]++;
+        }
+        vector<pair<int, int>> num;
+        for (auto &x : cnt)
+            num.pb(x);
+        reverse(all(num));
+        vector<int> res;
+        const int LIM = 2e3 + 5;
+        function<int(int, int)> f = [](int n, int p) -> int {
+            int ans = 0;
+            while (n)
+            {
+                n = n / p;
+                ans += n;
+            }
+            return ans;
+        };
+        auto calc = [&](int n, int r, int p) -> int {
+            return f(n, p) - f(n - r, p);
+        };
+        for (int i = 1; i < LIM; i++)
+        {
+            int c = 0, flag = 1, done = 0;
+            for (auto &j : num)
+            {
+                int avail = 0;
+                if (j.f > i + n - 1)
+                {
+                    flag = 0;
+                    break;
+                }
+                avail = min(n, i + n - j.f) - done;
+                db(i, j, avail);
+                if (avail < j.s)
+                {
+                    flag = 0;
+                    break;
+                }
+                done += j.s;
+                c += calc(avail, j.s, p);
+            }
+            if (!c && flag)
+                res.pb(i);
+        }
+        cout << res.size() << '\n';
+        for (auto &&x : res)
+        {
+            cout << x << ' ';
+        }
+        cout << '\n';
     }
 };
 
