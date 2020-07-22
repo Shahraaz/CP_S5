@@ -24,39 +24,46 @@ struct Solution
         int n;
         cin >> n;
         vector<int> a(n);
-        set<int> l, r;
-        for (auto &x : a)
+        for (size_t i = 0; i < n; i++)
         {
-            cin >> x;
-            r.insert(x);
+            cin >> a[i];
         }
-        if (is_sorted(all(a)))
-            cout << "NO\n";
-        else
+        vector<int> canWin(n);
+        canWin[n - 1] = true;
+        for (int i = n - 2; i >= 0; i--)
         {
-            db("stage2");
-            for (size_t i = 0; i < n; i++)
+            if (a[i] == 1)
             {
-                r.erase(a[i]);
-                auto itr = r.lower_bound(a[i]);
-                if (itr != r.begin())
+                canWin[i] = 1 - canWin[i + 1];
+            }
+            else if (a[i] == 2)
+            {
+                canWin[i] = 1;
+            }
+            else
+            {
+                if (canWin[i + 1])
                 {
-                    --itr;
-                    auto itl = l.lower_bound(a[i]);
-                    if (itl != l.begin())
+                    canWin[i] = 1;
+                }
+                else
+                {
+                    if (a[i] == 3)
                     {
-                        itl--;
-                        cout << "YES\n";
-                        cout << find(all(a), *itl) - a.begin() + 1 << ' ';
-                        cout << i + 1 << ' ';
-                        cout << find(all(a), *itr) - a.begin() + 1 << '\n';
-                        return;
+                        canWin[i] = 0;
+                    }
+                    else
+                    {
+                        canWin[i] = 1;
                     }
                 }
-                l.insert(a[i]);
             }
-            cout << "NO\n";
         }
+        db(canWin);
+        if (canWin[0])
+            cout << "First\n";
+        else
+            cout << "Second\n";
     }
 };
 
