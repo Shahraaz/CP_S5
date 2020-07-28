@@ -26,26 +26,30 @@ struct Solution
         deque<int> p(2 * n);
         for (size_t i = 0; i < 2 * n; i++)
             cin >> p[i];
-        vector<vector<vector<int>>> dp(n + 1, vector<vector<int>>(n + 1, vector<int>(2, -1)));
-        function<int(int, int, int)> solve = [&](int s1, int s2, int state) -> int {
-            int idx = 2 * n - s1 - s2;
-            if (idx <= 0)
-                return 1;
-            if (s1 == 0 || s2 == 0)
-                return true;
-            int &ret = dp[s1][s2][state];
-            if (ret >= 0)
-                return ret;
-            ret = false;
-            if (state == 0)
+        p.pb(INT_MAX);
+        vector<int> batch;
+        int mx = p[0];
+        batch.pb(0);
+        db(p);
+        for (size_t i = 0; i <= 2 * n; i++)
+            if (p[i] > mx)
             {
+                batch.pb(i);
+                mx = p[i];
             }
-            else
-            {
-            }
-            return ret;
-        };
-        if (solve(n, n, 0))
+        db(batch);
+        vector<int> setSizes;
+        for (size_t i = 1; i < batch.size(); i++)
+            setSizes.pb(batch[i] - batch[i - 1]);
+        db(setSizes);
+        sort(all(setSizes));
+        vector<bool> dp(n + 1);
+        dp[0] = 1;
+        for (size_t i = 0; i < setSizes.size(); i++)
+            for (int j = n; j >= 0; j--)
+                if (j - setSizes[i] >= 0 && dp[j - setSizes[i]])
+                    dp[j] = 1;
+        if (dp[n])
             cout << "YES\n";
         else
             cout << "NO\n";

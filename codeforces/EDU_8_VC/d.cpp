@@ -49,7 +49,7 @@ struct Solution
             int res = 0;
             int solve_dp(int pos, int rem, int hogya, int chance)
             {
-                if (pos == s.size())
+                if (pos >= s.size())
                     return rem % m == 0;
                 int &ret = dp[pos][rem][hogya][chance];
                 if (ret >= 0)
@@ -61,13 +61,13 @@ struct Solution
                 if (chance)
                 {
                     if (d <= start)
-                        ret = add(ret, solve_dp(pos + 1, (rem * 10 + d) % m, hogya || (d < start), chance));
+                        ret = add(ret, solve_dp(pos + 1, (rem * 10 + d) % m, hogya && (d == start), 1 - chance));
                 }
                 else
                 {
                     for (int i = start; i >= 0; i--)
                         if (i != d)
-                            ret = add(ret, solve_dp(pos + 1, (rem * 10 + i) % m, hogya || (i < start), 1 - chance));
+                            ret = add(ret, solve_dp(pos + 1, (rem * 10 + i) % m, hogya && (i == start), 1 - chance));
                 }
                 return ret;
             }
