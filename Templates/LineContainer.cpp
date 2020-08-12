@@ -47,14 +47,12 @@ struct lineContainer : multiset<Line, less<>>
         if (bad(y))
         {
             erase(y);
-            pc(*this);
             return;
         }
         while (next(y) != end() && bad(next(y)))
             erase(next(y));
         while (y != begin() && bad(prev(y)))
             erase(prev(y));
-        pc(*this);
     }
     long long query(long long x)
     {
