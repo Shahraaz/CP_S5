@@ -21,24 +21,6 @@ struct Solution
     Solution() {}
     void solveCase()
     {
-        string s;
-        cin >> s;
-        int row, col;
-        row = s[0] - 'a';
-        col = s[1] - '1';
-        int ret = 0;
-        for (int i = -1; i <= 1; i++)
-        {
-            for (int j = -1; j <= 1; j++)
-            {
-                if (i == 0 && j == 0)
-                    continue;
-                int x = row + i, y = col + j;
-                if (0 <= x && x <= 7 && 0 <= y && y <= 7)
-                    ret++;
-            }
-        }
-        cout << ret << '\n';
     }
 };
 

@@ -14,31 +14,34 @@ using ll = long long;
 #define pb push_back
 #define all(v) v.begin(), v.end()
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
+const int NAX = 16777216 + 5, MOD = 1000000007;
 
+bool vis[NAX];
+ll cost[NAX];
 struct Solution
 {
     Solution() {}
     void solveCase()
     {
-        string s;
-        cin >> s;
-        int row, col;
-        row = s[0] - 'a';
-        col = s[1] - '1';
-        int ret = 0;
-        for (int i = -1; i <= 1; i++)
+        int n, x, y;
+        cin >> n >> x >> y;
+        set<pair<ll, int>> Q;
+        // for (size_t i = 0; i < NAX; i++)
+        //     cost[i] = LLONG_MAX;
+        cost[1] = x;
+        for (size_t i = 2; i <= n; i++)
         {
-            for (int j = -1; j <= 1; j++)
+            cost[i] = cost[i - 1] + x;
+            if (i & 1)
             {
-                if (i == 0 && j == 0)
-                    continue;
-                int x = row + i, y = col + j;
-                if (0 <= x && x <= 7 && 0 <= y && y <= 7)
-                    ret++;
+                cost[i] = min(cost[i], x + y + cost[(i + 1) / 2]);
+            }
+            else
+            {
+                cost[i] = min(cost[i], cost[i / 2] + y);
             }
         }
-        cout << ret << '\n';
+        cout << cost[n] << '\n';
     }
 };
 

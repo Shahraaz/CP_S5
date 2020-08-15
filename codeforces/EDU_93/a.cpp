@@ -23,38 +23,18 @@ struct Solution
     {
         int n;
         cin >> n;
-        ll sum = 0;
-        vector<ll> y(n);
-        for (size_t i = 0; i < n; i++)
+        vector<pair<ll, int>> a(n);
+        int ptr = 0;
+        for (auto &x : a)
         {
-            int x;
-            cin >> x;
-            y[i] = x;
-            sum += x;
+            cin >> x.f;
+            x.s = ++ptr;
         }
-        // cout << sum << '\n';
-        // return;
-        ll suml = 0;
-        ll minVal = 0;
-        ll minCost = LLONG_MAX;
-        sort(all(y));
-        for (size_t i = 0; i < n; i++)
-        {
-            ll temp = i * y[i] - suml;
-            temp += sum - (n - i) * y[i];
-            sum -= y[i];
-            suml += y[i];
-            db(i, temp, minCost, minVal);
-            if (temp <= minCost)
-            {
-                if (temp == minCost)
-                    minVal = min(minVal, y[i]);
-                else
-                    minVal = y[i];
-                minCost = temp;
-            }
-        }
-        cout << minVal << '\n';
+        sort(all(a));
+        if (a[0].f + a[1].f <= a[n - 1].f)
+            cout << a[0].s << ' ' << a[1].s << ' ' << a[n - 1].s << '\n';
+        else
+            cout << -1 << '\n';
     }
 };
 
@@ -65,7 +45,7 @@ int32_t main()
     cin.tie(0);
 #endif
     int t = 1;
-    // cin >> t;
+    cin >> t;
     Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {

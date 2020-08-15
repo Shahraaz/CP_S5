@@ -23,38 +23,29 @@ struct Solution
     {
         int n;
         cin >> n;
-        ll sum = 0;
-        vector<ll> y(n);
-        for (size_t i = 0; i < n; i++)
+        string a;
+        cin >> a;
+        vector<ll> A(n);
+        map<int, int> mp;
+        for (int i = 0; i < n; i++)
         {
-            int x;
-            cin >> x;
-            y[i] = x;
-            sum += x;
+            A[i] = a[i] - '0';
+            if (i > 0)
+                A[i] += A[i - 1];
         }
-        // cout << sum << '\n';
-        // return;
-        ll suml = 0;
-        ll minVal = 0;
-        ll minCost = LLONG_MAX;
-        sort(all(y));
-        for (size_t i = 0; i < n; i++)
+        for (int i = 0; i < n; i++)
+            mp[A[i] - i]++;
+        ll res = 0;
+        for (int i = 0; i < n; i++)
         {
-            ll temp = i * y[i] - suml;
-            temp += sum - (n - i) * y[i];
-            sum -= y[i];
-            suml += y[i];
-            db(i, temp, minCost, minVal);
-            if (temp <= minCost)
-            {
-                if (temp == minCost)
-                    minVal = min(minVal, y[i]);
-                else
-                    minVal = y[i];
-                minCost = temp;
-            }
+            int temp = -i + 1;
+            if (i > 0)
+                temp += A[i - 1];
+            res += mp[temp];
+            db(i, temp, mp[temp], mp);
+            mp[A[i] - i]--;
         }
-        cout << minVal << '\n';
+        cout << res << '\n';
     }
 };
 
@@ -65,7 +56,7 @@ int32_t main()
     cin.tie(0);
 #endif
     int t = 1;
-    // cin >> t;
+    cin >> t;
     Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {

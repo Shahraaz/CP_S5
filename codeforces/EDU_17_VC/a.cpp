@@ -21,40 +21,29 @@ struct Solution
     Solution() {}
     void solveCase()
     {
-        int n;
-        cin >> n;
-        ll sum = 0;
-        vector<ll> y(n);
-        for (size_t i = 0; i < n; i++)
+        ll n, k;
+        cin >> n >> k;
+        vector<ll> divisors;
+        for (ll i = 1; i * i <= n; i++)
         {
-            int x;
-            cin >> x;
-            y[i] = x;
-            sum += x;
-        }
-        // cout << sum << '\n';
-        // return;
-        ll suml = 0;
-        ll minVal = 0;
-        ll minCost = LLONG_MAX;
-        sort(all(y));
-        for (size_t i = 0; i < n; i++)
-        {
-            ll temp = i * y[i] - suml;
-            temp += sum - (n - i) * y[i];
-            sum -= y[i];
-            suml += y[i];
-            db(i, temp, minCost, minVal);
-            if (temp <= minCost)
+            if (n % i == 0)
             {
-                if (temp == minCost)
-                    minVal = min(minVal, y[i]);
+                if (n == i * i)
+                    divisors.pb(i);
                 else
-                    minVal = y[i];
-                minCost = temp;
+                {
+                    divisors.pb(i);
+                    divisors.pb(n / i);
+                }
             }
         }
-        cout << minVal << '\n';
+        sort(all(divisors));
+        if (k > divisors.size())
+            cout << -1 << '\n';
+        else
+        {
+            cout << divisors[k - 1] << '\n';
+        }
     }
 };
 

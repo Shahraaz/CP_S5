@@ -14,31 +14,38 @@ using ll = long long;
 #define pb push_back
 #define all(v) v.begin(), v.end()
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
+const int NAX = 100 + 5, MOD = 1000000007;
 
+bool vis[NAX][NAX];
+bool row[NAX];
 struct Solution
 {
     Solution() {}
     void solveCase()
     {
-        string s;
-        cin >> s;
-        int row, col;
-        row = s[0] - 'a';
-        col = s[1] - '1';
-        int ret = 0;
-        for (int i = -1; i <= 1; i++)
+        int n, m;
+        cin >> n >> m;
+        int sx, sy;
+        cin >> sx >> sy;
+        sx--, sy--;
+        for (size_t i = 0; i < n; i++)
         {
-            for (int j = -1; j <= 1; j++)
-            {
-                if (i == 0 && j == 0)
-                    continue;
-                int x = row + i, y = col + j;
-                if (0 <= x && x <= 7 && 0 <= y && y <= 7)
-                    ret++;
-            }
+            int idx = 0;
+            if (i == 0)
+                idx = sx;
+            while (row[idx])
+                idx++;
+            cout << idx + 1 << ' ' << sy + 1 << '\n';
+            vis[idx][sy] = 1;
+            for (size_t j = 0; j < m; j++)
+                if (!vis[idx][j])
+                {
+                    vis[idx][j] = 1;
+                    sy = j;
+                    cout << idx + 1 << ' ' << sy + 1 << '\n';
+                }
+            row[idx] = 1;
         }
-        cout << ret << '\n';
     }
 };
 

@@ -23,22 +23,32 @@ struct Solution
     {
         string s;
         cin >> s;
-        int row, col;
-        row = s[0] - 'a';
-        col = s[1] - '1';
-        int ret = 0;
-        for (int i = -1; i <= 1; i++)
+        vector<int> temp;
+        char back = '\0';
+        int len = 0;
+        for (auto &x : s)
         {
-            for (int j = -1; j <= 1; j++)
+            if (x == back)
+                len++;
+            else
             {
-                if (i == 0 && j == 0)
-                    continue;
-                int x = row + i, y = col + j;
-                if (0 <= x && x <= 7 && 0 <= y && y <= 7)
-                    ret++;
+                if (back == '1')
+                    temp.pb(len);
+                len = 1;
+                back = x;
             }
         }
-        cout << ret << '\n';
+        if (back == '1')
+            temp.pb(len);
+        sort(all(temp));
+        reverse(all(temp));
+        db(temp);
+        int res = 0;
+        for (size_t i = 0; i < temp.size(); i += 2)
+        {
+            res += temp[i];
+        }
+        cout << res << '\n';
     }
 };
 
@@ -49,7 +59,7 @@ int32_t main()
     cin.tie(0);
 #endif
     int t = 1;
-    // cin >> t;
+    cin >> t;
     Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {

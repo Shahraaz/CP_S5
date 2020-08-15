@@ -16,45 +16,39 @@ using ll = long long;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
+bool vis[201][1024];
 struct Solution
 {
     Solution() {}
     void solveCase()
     {
-        int n;
-        cin >> n;
-        ll sum = 0;
-        vector<ll> y(n);
+        int n, m;
+        cin >> n >> m;
+        vector<int> a(n), b(m);
         for (size_t i = 0; i < n; i++)
         {
-            int x;
-            cin >> x;
-            y[i] = x;
-            sum += x;
+            cin >> a[i];
         }
-        // cout << sum << '\n';
-        // return;
-        ll suml = 0;
-        ll minVal = 0;
-        ll minCost = LLONG_MAX;
-        sort(all(y));
-        for (size_t i = 0; i < n; i++)
+        for (size_t i = 0; i < m; i++)
         {
-            ll temp = i * y[i] - suml;
-            temp += sum - (n - i) * y[i];
-            sum -= y[i];
-            suml += y[i];
-            db(i, temp, minCost, minVal);
-            if (temp <= minCost)
+            cin >> b[i];
+        }
+
+        int res = INT_MAX;
+        function<void(int, int)> fun = [&](int idx, int prev) -> void {
+            if (idx == n)
             {
-                if (temp == minCost)
-                    minVal = min(minVal, y[i]);
-                else
-                    minVal = y[i];
-                minCost = temp;
+                res = min(res, prev);
+                return;
             }
-        }
-        cout << minVal << '\n';
+            if (vis[idx][prev])
+                return;
+            vis[idx][prev] = true;
+            for (size_t j = 0; j < m; j++)
+                fun(idx + 1, prev | (a[idx] & b[j]));
+        };
+        fun(0, 0);
+        cout << res << '\n';
     }
 };
 
