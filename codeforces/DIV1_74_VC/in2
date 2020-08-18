@@ -1,0 +1,16 @@
+15
+Widget pack(10,10)
+HBox dummy
+HBox x
+VBox y
+y.pack(dummy)
+y.set_border(5)
+y.set_spacing(55)
+dummy.set_border(10)
+dummy.set_spacing(20)
+x.set_border(10)
+x.set_spacing(10)
+x.pack(pack)
+x.pack(dummy)
+x.pack(pack)
+x.set_border(0)
