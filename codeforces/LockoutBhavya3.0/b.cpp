@@ -14,7 +14,7 @@ using ll = long long;
 #define pb push_back
 #define all(v) v.begin(), v.end()
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
+const int NAX = 1e5 + 5, MOD = 1000000007;
 
 struct Solution
 {
@@ -26,39 +26,24 @@ void Solution::solveCase()
 {
     int n, k;
     cin >> n >> k;
-    vector<int> a(n);
-    for (auto &x : a)
+    vector<pair<int, int>> vecc(n);
+    vector<map<int, int>> mySet(1e5 + 10);
+    for (size_t i = 0; i < n; i++)
     {
-        cin >> x;
-        if (x < k)
-            x = 0;
-        else if (x == k)
-            x = 1;
-        else
-            x = 2;
+        cin >> vecc[i].f >> vecc[i].s;
+        mySet[vecc[i].f][vecc[i].s]++;
     }
-    if (count(all(a), 1) == 0)
-        cout << "no\n";
-    else
-    {
-        if (n == 1)
-        {
-            cout << "yes\n";
-            return;
-        }
-        for (size_t i = 0; i < n; i++)
-        {
-            for (size_t j = i + 1; j <= (i + 2) && j < n; j++)
-            {
-                if (a[i] && a[j])
-                {
-                    cout << "yes\n";
-                    return;
-                }
-            }
-        }
-        cout << "no\n";
-    }
+    // for (size_t i = 0; i < NAX; i++)
+    // {
+    //     if (mySet.size())
+    //     {
+    //         if (mySet.size() < i)
+    //         {
+
+    //         }
+    //     }
+    // }
+    cout << "YES\n";
 }
 
 int32_t main()
@@ -68,7 +53,7 @@ int32_t main()
     cin.tie(0);
 #endif
     int t = 1;
-    cin >> t;
+    // cin >> t;
     Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {

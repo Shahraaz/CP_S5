@@ -24,40 +24,45 @@ struct Solution
 
 void Solution::solveCase()
 {
-    int n, k;
-    cin >> n >> k;
-    vector<int> a(n);
-    for (auto &x : a)
+    int h1, a1, c1;
+    int h2, a2;
+    cin >> h1 >> a1 >> c1;
+    cin >> h2 >> a2;
+    vector<string> vecc;
+    bool turn = 1;
+    while (true)
     {
-        cin >> x;
-        if (x < k)
-            x = 0;
-        else if (x == k)
-            x = 1;
-        else
-            x = 2;
-    }
-    if (count(all(a), 1) == 0)
-        cout << "no\n";
-    else
-    {
-        if (n == 1)
+        if (turn)
         {
-            cout << "yes\n";
-            return;
-        }
-        for (size_t i = 0; i < n; i++)
-        {
-            for (size_t j = i + 1; j <= (i + 2) && j < n; j++)
+            if (h2 - a1 <= 0)
             {
-                if (a[i] && a[j])
-                {
-                    cout << "yes\n";
-                    return;
-                }
+                h2 -= a1;
+                vecc.pb("STRIKE");
+                break;
+            }
+            if (h1 - a2 > 0)
+            {
+                h2 -= a1;
+                vecc.pb("STRIKE");
+            }
+            else
+            {
+                h1 += c1;
+                vecc.pb("HEAL");
             }
         }
-        cout << "no\n";
+        else
+        {
+            h1 -= a2;
+            if (h1 <= 0)
+                break;
+        }
+        turn = !turn;
+    }
+    cout << vecc.size() << '\n';
+    for (auto &x : vecc)
+    {
+        cout << x << '\n';
     }
 }
 
@@ -68,7 +73,7 @@ int32_t main()
     cin.tie(0);
 #endif
     int t = 1;
-    cin >> t;
+    // cin >> t;
     Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {

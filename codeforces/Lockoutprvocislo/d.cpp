@@ -24,41 +24,46 @@ struct Solution
 
 void Solution::solveCase()
 {
-    int n, k;
-    cin >> n >> k;
+    int n, m;
+    cin >> n >> m;
     vector<int> a(n);
+    vector<int> b(m);
+    int one, two;
+    one = two = 0;
     for (auto &x : a)
     {
         cin >> x;
-        if (x < k)
-            x = 0;
-        else if (x == k)
-            x = 1;
-        else
-            x = 2;
+        one ^= x;
     }
-    if (count(all(a), 1) == 0)
-        cout << "no\n";
-    else
+    for (auto &x : b)
     {
-        if (n == 1)
-        {
-            cout << "yes\n";
-            return;
-        }
-        for (size_t i = 0; i < n; i++)
-        {
-            for (size_t j = i + 1; j <= (i + 2) && j < n; j++)
-            {
-                if (a[i] && a[j])
-                {
-                    cout << "yes\n";
-                    return;
-                }
-            }
-        }
-        cout << "no\n";
+        cin >> x;
+        two ^= x;
     }
+    if (one == two)
+    {
+        cout << "YES\n";
+        one = a[0];
+        for (size_t i = 1; i < m; i++)
+        {
+            one ^= b[i];
+        }
+        cout << one << ' ';
+        for (size_t i = 1; i < m; i++)
+            cout << b[i] << ' ';
+        cout << '\n';
+        for (size_t i = 1; i < n; i++)
+        {
+            cout << a[i] << ' ';
+            for (size_t j = 1; j < m; j++)
+            {
+                cout << 0 << ' ';
+            }
+            cout << '\n';
+        }
+    }
+    else
+        cout << "NO\n";
 }
 
 int32_t main()
@@ -68,7 +73,7 @@ int32_t main()
     cin.tie(0);
 #endif
     int t = 1;
-    cin >> t;
+    // cin >> t;
     Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {

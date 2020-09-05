@@ -24,41 +24,35 @@ struct Solution
 
 void Solution::solveCase()
 {
-    int n, k;
-    cin >> n >> k;
-    vector<int> a(n);
-    for (auto &x : a)
+    int n, x, y;
+    cin >> n >> x >> y;
+    vector<ll> vecc = {LLONG_MAX, 0, 1};
+    for (ll i = 0; i < n; i++)
     {
-        cin >> x;
-        if (x < k)
-            x = 0;
-        else if (x == k)
-            x = 1;
-        else
-            x = 2;
-    }
-    if (count(all(a), 1) == 0)
-        cout << "no\n";
-    else
-    {
-        if (n == 1)
+        for (ll j = i + 1; j < n; j++)
         {
-            cout << "yes\n";
-            return;
-        }
-        for (size_t i = 0; i < n; i++)
-        {
-            for (size_t j = i + 1; j <= (i + 2) && j < n; j++)
+            int diff = j - i;
+            if ((y - x) % diff == 0)
             {
-                if (a[i] && a[j])
-                {
-                    cout << "yes\n";
-                    return;
-                }
+                int k = (y - x) / diff;
+                int a0 = x - i * k;
+                ll an = a0 + (n - 1) * k;
+                if (a0 > 0)
+                    vecc = min(vecc, {an, i, j});
             }
         }
-        cout << "no\n";
     }
+    int i = vecc[1];
+    int j = vecc[2];
+    int diff = j - i;
+    int k = (y - x) / diff;
+    int a0 = x - i * k;
+    for (size_t i = 0; i < n; i++)
+    {
+        cout << a0 << ' ';
+        a0 += k;
+    }
+    cout << '\n';
 }
 
 int32_t main()

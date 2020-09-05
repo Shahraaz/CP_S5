@@ -24,41 +24,50 @@ struct Solution
 
 void Solution::solveCase()
 {
-    int n, k;
-    cin >> n >> k;
-    vector<int> a(n);
-    for (auto &x : a)
+    int n, d;
+    cin >> n >> d;
+    vector<ll> a(n);
+    ll sum = 0;
+    ll res = 0;
+    ll gunjaish = 0;
+    for (size_t i = 0; i < n; i++)
     {
-        cin >> x;
-        if (x < k)
-            x = 0;
-        else if (x == k)
-            x = 1;
-        else
-            x = 2;
-    }
-    if (count(all(a), 1) == 0)
-        cout << "no\n";
-    else
-    {
-        if (n == 1)
+        cin >> a[i];
+        db(i, a[i], sum, gunjaish);
+        if (a[i] == 0)
         {
-            cout << "yes\n";
-            return;
-        }
-        for (size_t i = 0; i < n; i++)
-        {
-            for (size_t j = i + 1; j <= (i + 2) && j < n; j++)
+            if (sum < 0)
             {
-                if (a[i] && a[j])
+                if (abs(sum) <= gunjaish)
                 {
-                    cout << "yes\n";
-                    return;
+                    gunjaish -= abs(sum);
+                    sum = 0;
+                }
+                else
+                {
+                    res++;
+                    sum = 0;
+                    gunjaish = MOD;
                 }
             }
         }
-        cout << "no\n";
+        else if (a[i] > 0)
+        {
+            sum += a[i];
+            if (sum > d)
+            {
+                std::cout << -1 << '\n';
+                return;
+            }
+            gunjaish = min(gunjaish, d - sum);
+        }
+        else
+        {
+            sum += a[i];
+            gunjaish = min(gunjaish, d - sum);
+        }
     }
+    cout << res << '\n';
 }
 
 int32_t main()
@@ -68,7 +77,7 @@ int32_t main()
     cin.tie(0);
 #endif
     int t = 1;
-    cin >> t;
+    // cin >> t;
     Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {

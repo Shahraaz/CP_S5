@@ -24,41 +24,42 @@ struct Solution
 
 void Solution::solveCase()
 {
-    int n, k;
-    cin >> n >> k;
+    int n;
+    cin >> n;
     vector<int> a(n);
     for (auto &x : a)
-    {
         cin >> x;
-        if (x < k)
-            x = 0;
-        else if (x == k)
-            x = 1;
-        else
-            x = 2;
-    }
-    if (count(all(a), 1) == 0)
-        cout << "no\n";
-    else
+    for (int i = 1; i <= 1; i++)
     {
-        if (n == 1)
+        for (int j = 2; j <= 2; j++)
         {
-            cout << "yes\n";
-            return;
-        }
-        for (size_t i = 0; i < n; i++)
-        {
-            for (size_t j = i + 1; j <= (i + 2) && j < n; j++)
+            set<int> ss = {i, j};
+            int sum = i + j;
+            bool ok = true;
+            for (auto &x : a)
             {
-                if (a[i] && a[j])
+                db(ss, x);
+                if (ss.count(x))
                 {
-                    cout << "yes\n";
-                    return;
+                    ss.erase(sum - x);
+                    int loser = sum - x;
+                    sum = 6 - loser;
+                    ss.insert(6 - x - loser);
+                }
+                else
+                {
+                    ok = false;
+                    break;
                 }
             }
+            if (ok)
+            {
+                cout << "YES\n";
+                return;
+            }
         }
-        cout << "no\n";
     }
+    cout << "NO\n";
 }
 
 int32_t main()
@@ -68,7 +69,7 @@ int32_t main()
     cin.tie(0);
 #endif
     int t = 1;
-    cin >> t;
+    // cin >> t;
     Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {

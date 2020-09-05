@@ -24,41 +24,39 @@ struct Solution
 
 void Solution::solveCase()
 {
-    int n, k;
-    cin >> n >> k;
-    vector<int> a(n);
-    for (auto &x : a)
+    int n;
+    ll x, y;
+    cin >> n;
+    cin >> x >> y;
+    if (y < n)
     {
-        cin >> x;
-        if (x < k)
-            x = 0;
-        else if (x == k)
-            x = 1;
-        else
-            x = 2;
+        cout << -1 << '\n';
+        return;
     }
-    if (count(all(a), 1) == 0)
-        cout << "no\n";
+    // auto one = y / n, two = y % n;
+    vector<ll> a(n, 1);
+    ll a1, b;
+    a1 = 0, b = 0;
+    a[0] += y - n;
+    for (size_t i = 0; i < n; i++)
+    {
+        // a[i] = one;
+        // a[i] += two;
+        // two = 0;
+        a1 += a[i] * a[i];
+        b += a[i];
+        db(i, a[i]);
+    }
+    db(a1, b);
+    if (a1 >= x && b <= y)
+    {
+        for (auto &x : a)
+        {
+            cout << x << '\n';
+        }
+    }
     else
-    {
-        if (n == 1)
-        {
-            cout << "yes\n";
-            return;
-        }
-        for (size_t i = 0; i < n; i++)
-        {
-            for (size_t j = i + 1; j <= (i + 2) && j < n; j++)
-            {
-                if (a[i] && a[j])
-                {
-                    cout << "yes\n";
-                    return;
-                }
-            }
-        }
-        cout << "no\n";
-    }
+        cout << -1 << '\n';
 }
 
 int32_t main()
@@ -68,7 +66,7 @@ int32_t main()
     cin.tie(0);
 #endif
     int t = 1;
-    cin >> t;
+    // cin >> t;
     Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {
