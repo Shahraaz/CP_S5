@@ -1,28 +1,12 @@
-// Optimise
 #include <bits/stdc++.h>
 using namespace std;
 
-#ifdef LOCAL
-#include "/home/shahraaz/bin/debug.h"
-#else
-#define db(...)
-#endif
-
-using ll = long long;
+#define pb push_back
 #define f first
 #define s second
-#define pb push_back
-#define all(v) v.begin(), v.end()
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
 
-struct Solution
-{
-    Solution() {}
-    void solveCase();
-};
-
-using flowUnit = ll;
+using flowUnit = long long;
 struct Edge
 {
     int from, to;
@@ -132,105 +116,3 @@ struct PushReLabel
         return max_flow;
     }
 };
-
-bool isPrime[2001];
-
-void Solution::solveCase()
-{
-    fill(isPrime + 2, isPrime + 2001, 1);
-    for (int i = 2; i < 2001; i++)
-        if (isPrime[i])
-            for (int j = i * i; j < 2001; j += i)
-                isPrime[j] = false;
-
-    int n, k;
-    cin >> n >> k;
-
-    vector<vector<ll>> a(n);
-    for (auto &x : a)
-    {
-        int p, c, l;
-        cin >> p >> c >> l;
-        x = {p, c, l};
-    }
-
-    auto check = [&](int lvl) -> bool {
-        vector<pair<ll, ll>> b;
-        ll on = -1;
-        for (auto &x : a)
-        {
-            if (x[2] > lvl)
-                continue;
-            if (x[1] == 1)
-                on = max(on, x[0]);
-            else
-                b.pb({x[0], x[1]});
-        }
-        if (on > 0)
-            b.pb({on, 1});
-
-        int n = b.size();
-        if (n == 0)
-            return false;
-
-        PushReLabel flow(n + 2);
-
-        ll ans = 0;
-        for (auto &x : b)
-            ans += x.f;
-        for (size_t i = 0; i < n; i++)
-        {
-            if (b[i].s % 2)
-                flow.addEdge(n, i, b[i].f);
-            else
-                flow.addEdge(i, n + 1, b[i].f);
-            for (size_t j = i + 1; j < n; j++)
-                if (isPrime[b[i].s + b[j].s])
-                    if (b[i].s % 2)
-                        flow.addEdge(i, j, 1e9);
-                    else
-                        flow.addEdge(j, i, 1e9);
-        }
-
-        ans -= flow.max_flow(n, n + 1);
-        db(lvl, ans, k);
-        return ans >= k;
-    };
-
-    int low = 0, high = n + 2;
-    int ans = high;
-    while (low <= high)
-    {
-        int mid = (low + high) / 2;
-        if (check(mid))
-        {
-            ans = min(ans, mid);
-            high = mid - 1;
-        }
-        else
-            low = mid + 1;
-    }
-    if (ans > n)
-        ans = -1;
-    cout << ans << '\n';
-}
-
-int32_t main()
-{
-#ifndef LOCAL
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-#endif
-    int t = 1;
-    // cin >> t;
-    Solution mySolver;
-    for (int i = 1; i <= t; ++i)
-    {
-        mySolver.solveCase();
-#ifdef LOCAL
-        cerr << "Case #" << i << ": Time " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " s.\n";
-        TimeStart = chrono::steady_clock::now();
-#endif
-    }
-    return 0;
-}

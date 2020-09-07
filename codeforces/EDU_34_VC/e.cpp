@@ -28,103 +28,78 @@ void Solution::solveCase()
 {
     int k, n;
     cin >> k >> n;
-    vector<string> s(k);
-    string hash;
-    for (auto &x : s)
-    {
-        cin >> x;
-        auto y = x;
-        sort(all(y));
-        if (hash.size())
+    set<string> s;
+
+    auto check = [&](string &curr) -> bool {
+        for (auto &it : s)
         {
-            if (y != hash)
+            vector<int> diff;
+            for (size_t i = 0; i < n; i++)
+                if ((it[i] != curr[i]))
+                    diff.pb(i);
+
+            if (diff.size() == 0)
             {
-                cout << -1 << '\n';
-                return;
+                int ok = false;
+                for (char c = 'a'; !ok && c <= 'z'; c++)
+                {
+                    int cnt = 0;
+                    for (size_t i = 0; i < n; i++)
+                        cnt += curr[i] == c;
+                    ok = ok || cnt > 1;
+                }
+                if (!ok)
+                    return false;
             }
+            else if (diff.size() == 2)
+            {
+                if (it[diff[0]] != curr[diff[1]] || it[diff[1]] != curr[diff[0]])
+                    return false;
+            }
+            else
+                return false;
         }
-        else
-            hash = y;
-    }
-    if (k == 1)
+        return true;
+    };
+
+    for (size_t i = 0; i < k; i++)
     {
-        cout << s[0] << '\n';
+        string str;
+        cin >> str;
+        s.insert(str);
+    }
+    if (s.size() == 1)
+    {
+        auto temp = *s.begin();
+        swap(temp[0], temp[1]);
+        cout << temp << '\n';
         return;
     }
-    string sstr;
+    auto s1 = *s.begin();
+    auto s2 = *next(s.begin());
+    vector<int> diff;
     for (size_t i = 0; i < n; i++)
-        if (s[0][i] != s[1][i])
-            sstr.pb('?');
-        else
-            sstr.pb(s[0][i]);
-    function<void(int)> solve = [&](int pos) -> void {
-        if (pos == n)
+        if (s1[i] != s2[i])
+            diff.pb(i);
+    if (diff.size() == 1 || diff.size() > 4)
+        cout << -1 << '\n';
+    else
+    {
+        for (size_t i = 0; i < diff.size(); i++)
         {
-            db(sstr);
-            for (size_t i = 0; i < k; i++)
+            for (size_t j = 0; j < n; j++)
             {
-                int cnt = 0;
-                for (size_t j = 0; j < n; j++)
-                    cnt += sstr[j] != s[i][j];
-                if (cnt == 0 || cnt == 2)
-                    continue;
-                return;
-            }
-            auto y = sstr;
-            sort(all(y));
-            db(y, hash, sstr);
-            if (y == hash)
-            {
-                cout << sstr << '\n';
-                exit(0);
-            }
-            return;
-        }
-        if (sstr[pos] == '?')
-        {
-            for (char c = 'a'; c <= 'z'; c++)
-            {
-                sstr[pos] = c;
-                solve(pos + 1);
-                sstr[pos] = '?';
+                auto r = s1;
+                swap(r[diff[i]], r[j]);
+                if (check(r))
+                {
+                    cout << r << '\n';
+                    return;
+                }
             }
         }
-        else
-        {
-            solve(pos + 1);
-        }
-    };
-    db(sstr);
-    solve(0);
-    sstr = "";
-    if (k > 2)
-    {
-        for (size_t i = 0; i < n; i++)
-            if (s[0][i] != s[2][i])
-                sstr.pb('?');
-            else
-                sstr.pb(s[0][i]);
-        solve(0);
+        cout << -1 << '\n';
     }
-    if (k > 2)
-    {
-        for (size_t i = 0; i < n; i++)
-            if (s[1][i] != s[2][i])
-                sstr.pb('?');
-            else
-                sstr.pb(s[0][i]);
-        solve(0);
-    }
-    if (k > 3)
-    {
-        for (size_t i = 0; i < n; i++)
-            if (s[1][i] != s[3][i])
-                sstr.pb('?');
-            else
-                sstr.pb(s[0][i]);
-        solve(0);
-    }
-    cout << -1 << '\n';
 }
 
 int32_t main()
