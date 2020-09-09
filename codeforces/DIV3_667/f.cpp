@@ -22,7 +22,7 @@ struct Solution
     void solveCase();
 };
 
-int dp[NAX][NAX][2];
+int dp[NAX][NAX][NAX];
 
 void Solution::solveCase()
 {
@@ -30,59 +30,33 @@ void Solution::solveCase()
     cin >> n >> k;
     string s, t;
     cin >> s >> t;
-    function<int(int, int, int)> solve = [&](int pos, int rem, int toCheck) -> int {
-        if (rem < 0)
-            return -MOD;
-        if (pos == n)
-            return 0;
-        int &ret = dp[pos][rem][toCheck];
-        if (ret >= 0)
-            return ret;
-        ret = solve(pos + 1, rem, 0);
-        // ret = 0;
-        if (toCheck == 0)
-        {
-            if (t[0] == s[pos])
-            {
-                ret = max(ret, solve(pos + 1, rem, 1));
-                ret = max(ret, solve(pos + 1, rem, 0));
-            }
-            else
-            {
-                ret = max(ret, solve(pos + 1, rem, 0));
-                ret = max(ret, 1 + solve(pos + 1, rem - 1, 1));
-            }
-        }
-        else
-        {
-            if (t[1] == s[pos])
-            {
-                if (t[0] == s[pos])
-                {
-                    ret = max(ret, 1 + solve(pos + 1, rem, 1));
-                    ret = max(ret, 1 + solve(pos + 1, rem, 0));
-                }
-                else
-                {
-                    ret = max(ret, 1 + solve(pos + 1, rem, 0));
-                    // ret = max(ret, 1 + solve(pos + 1, rem, 0));
-                }
-            }
-            else
-            {
-                ret = max(ret, solve(pos + 1, rem, 0));
-                if (t[0] == s[pos])
-                {
-                    ret = max(ret, 1 + solve(pos + 1, rem - 1, 1));
-                    ret = max(ret, 1 + solve(pos + 1, rem - 1, 0));
-                }
-                else
-                    ret = max(ret, 1 + solve(pos + 1, rem - 1, 0));
-            }
-        }
-        return ret;
+    for (size_t i = 0; i < NAX; i++)
+        for (size_t j = 0; j < NAX; j++)
+            for (size_t k = 0; k < NAX; k++)
+                dp[i][j][k] = -MOD;
+    auto self_max = [](int &a, int b) {
+        a = max(a, b);
     };
-    cout << solve(0, k, 0) << '\n';
+    dp[0][0][0] = 0;
+    for (size_t i = 0; i < n; i++)
+        for (size_t j = 0; j <= k; j++)
+            for (size_t cnt0 = 0; cnt0 <= n; cnt0++)
+            {
+                if (dp[i][j][cnt0] == -MOD)
+                    continue;
+                db(i, j, cnt0, dp[i][j][cnt0]);
+                int e0 = s[i] == t[0];
+                int e1 = s[i] == t[1];
+                int e01 = t[0] == t[1];
+                self_max(dp[i + 1][j][cnt0 + e0], dp[i][j][cnt0] + (e1 ? cnt0 : 0));
+                self_max(dp[i + 1][j + 1][cnt0 + 1], dp[i][j][cnt0] + (e01 ? cnt0 : 0));
+                self_max(dp[i + 1][j + 1][cnt0 + e01], dp[i][j][cnt0] + cnt0);
+            }
+    int ans = 0;
+    for (size_t j = 0; j <= k; j++)
+        for (size_t cnt0 = 0; cnt0 <= n; cnt0++)
+            ans = max(ans, dp[n][j][cnt0]);
+    cout << ans << '\n';
 }
 
 int32_t main()
