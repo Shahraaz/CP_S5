@@ -24,45 +24,6 @@ struct Solution
 
 void Solution::solveCase()
 {
-    int n;
-    cin >> n;
-    string str;
-    cin >> str;
-    if (count(all(str), '(') == count(all(str), ')'))
-    {
-        int res = 0;
-        int cnt = 0;
-        int i = 0;
-        while (i < n)
-        {
-            int j = i + 1;
-            bool ok = true;
-            cnt = 0;
-            if (str[i] == '(')
-                cnt++;
-            else
-                cnt--;
-            ok = ok && cnt >= 0;
-            while (j < n && cnt)
-            {
-                if (str[j] == '(')
-                    cnt++;
-                else
-                    cnt--;
-                ok = ok && cnt >= 0;
-                ++j;
-            }
-            if (!ok)
-                res += j - i;
-            i = j;
-        }
-        cout << res << '\n';
-    }
-    else
-    {
-        cout << -1 << '\n';
-        return;
-    }
 }
 
 int32_t main()

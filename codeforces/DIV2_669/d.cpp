@@ -22,11 +22,11 @@ struct Solution
     void solveCase();
 };
 
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-using namespace __gnu_pbds;
+// #include <ext/pb_ds/assoc_container.hpp>
+// #include <ext/pb_ds/tree_policy.hpp>
+// using namespace __gnu_pbds;
 
-#define ordered_set tree<pair<int, int>, null_type, less<pair<int, int>>, rb_tree_tag, tree_order_statistics_node_update>
+// #define ordered_set tree<pair<int, int>, null_type, less<pair<int, int>>, rb_tree_tag, tree_order_statistics_node_update>
 
 void Solution::solveCase()
 {
@@ -34,50 +34,79 @@ void Solution::solveCase()
     cin >> n;
     vector<int> h(n);
     vector<int> dp(n);
-    ordered_set o;
-    ordered_set o_neg;
     vector<int> nextIdx[n];
     for (size_t i = 0; i < n; i++)
     {
         cin >> h[i];
-        o.insert({h[i], i});
-        o_neg.insert({-h[i], i});
         dp[i] = i;
     }
-    for (int i = 0; i < n; i++)
-    {
-        if (i + 1 < n)
-            nextIdx[i].pb(i + 1);
+    vector<pair<int, int>> st;
 
-        o.erase({h[i], i});
-        auto it = o.lower_bound({h[i], 0});
-        if (it != o.end())
-            nextIdx[i].pb(it->s);
-
-        o_neg.erase({-h[i], i});
-        it = o_neg.lower_bound({-h[i], 0});
-        if (it != o_neg.end())
-            nextIdx[i].pb(it->s);
-    }
-
-    reverse(all(h));
+    // prev Next greater
+    db("prev Next greater");
     for (size_t i = 0; i < n; i++)
     {
-        o.insert({h[i], i});
-        o_neg.insert({-h[i], i});
+        db(i, h[i], st);
+        while (st.size() && st.back().f < h[i])
+            st.pop_back();
+        if (st.size())
+            nextIdx[st.back().s].pb(i);
+        st.pb({h[i], i});
     }
-    for (int i = 0; i < n; i++)
-    {
-        o.erase({h[i], i});
-        auto it = o.lower_bound({h[i], 0});
-        if (it != o.end())
-            nextIdx[n - 1 - it->s].pb(n - i - 1);
+    st.clear();
 
-        o_neg.erase({-h[i], i});
-        it = o_neg.lower_bound({-h[i], 0});
-        if (it != o_neg.end())
-            nextIdx[n - 1 - it->s].pb(n - i - 1);
+    // prev Next Lower
+    db("prev Next Lower");
+    for (size_t i = 0; i < n; i++)
+    {
+        db(i, h[i], st);
+        while (st.size() && st.back().f > h[i])
+            st.pop_back();
+        if (st.size())
+            nextIdx[st.back().s].pb(i);
+        st.pb({h[i], i});
     }
+    st.clear();
+
+    // prev Next greater
+    db("prev Next greater");
+    for (size_t i = 0; i < n; i++)
+    {
+        db(i, h[i], st);
+        while (st.size() && st.back().f < h[i])
+            st.pop_back();
+        if (st.size())
+            nextIdx[st.back().s].pb(i);
+        st.pb({h[i], i});
+    }
+    st.clear();
+
+    // Next Next Lower
+    db("Next Next Lower");
+    for (int i = n - 1; i >= 0; i--)
+    {
+        db(i, h[i], st);
+        while (st.size() && st.back().f > h[i])
+            st.pop_back();
+        if (st.size())
+            nextIdx[i].pb(st.back().s);
+        st.pb({h[i], i});
+    }
+    st.clear();
+
+    // Next Next greater
+    db("Next Next greater");
+    for (int i = n - 1; i >= 0; i--)
+    {
+        db(i, h[i], st);
+        while (st.size() && st.back().f < h[i])
+            st.pop_back();
+        if (st.size())
+            nextIdx[i].pb(st.back().s);
+        st.pb({h[i], i});
+    }
+    st.clear();
+
     for (size_t i = 0; i < n; i++)
     {
         db(i, nextIdx[i]);
