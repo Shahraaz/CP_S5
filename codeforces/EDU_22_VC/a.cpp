@@ -26,50 +26,36 @@ void Solution::solveCase()
 {
     int n;
     cin >> n;
-    vector<int> cnt(102);
+    int totalTime = 0;
     for (size_t i = 0; i < n; i++)
     {
         int x;
         cin >> x;
-        cnt[x]++;
+        totalTime += x;
     }
-    int ptr1 = 0;
-    vector<int> mex(2);
-    for (size_t i = 0; i < 102; i++)
+    int m;
+    cin >> m;
+    int ans = MOD;
+    for (size_t i = 0; i < m; i++)
     {
-        if (ptr1 == 0)
+        int l, r;
+        cin >> l >> r;
+        if (totalTime <= l)
         {
-            if (cnt[i] >= 2)
-            {
-            }
-            else if (cnt[i] == 1)
-            {
-                mex[ptr1] = i;
-                ptr1++;
-            }
-            else
-            {
-                mex[ptr1] = i;
-                ptr1++;
-                mex[ptr1] = i;
-                ptr1++;
-                break;
-            }
+            ans = min(ans, l);
+        }
+        else if (l <= totalTime && totalTime <= r)
+        {
+            ans = totalTime;
+            break;
         }
         else
         {
-            if (cnt[i] >= 1)
-            {
-            }
-            else if (cnt[i] == 0)
-            {
-                mex[ptr1] = i;
-                ptr1++;
-                break;
-            }
         }
     }
-    cout << mex[0] + mex[1] << '\n';
+    if (ans == MOD)
+        ans = -1;
+    cout << ans << '\n';
 }
 
 int32_t main()
@@ -79,7 +65,7 @@ int32_t main()
     cin.tie(0);
 #endif
     int t = 1;
-    cin >> t;
+    // cin >> t;
     Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {

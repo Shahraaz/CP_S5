@@ -16,13 +16,7 @@ using ll = long long;
 
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
-struct Solution
-{
-    Solution() {}
-    void solveCase();
-};
-
-void Solution::solveCase()
+void solveCase()
 {
 }
 
@@ -34,10 +28,9 @@ int32_t main()
 #endif
     int t = 1;
     // cin >> t;
-    Solution mySolver;
     for (int i = 1; i <= t; ++i)
     {
-        mySolver.solveCase();
+        solveCase();
 #ifdef LOCAL
         cerr << "Case #" << i << ": Time " << chrono::duration<double>(chrono::steady_clock::now() - TimeStart).count() << " s.\n";
         TimeStart = chrono::steady_clock::now();
