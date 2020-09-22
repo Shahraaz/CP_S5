@@ -21,38 +21,33 @@ void solveCase()
     int n;
     cin >> n;
     vector<int> a(n);
-    vector<int> b(n);
-    int ans = 0;
     for (auto &x : a)
         cin >> x;
-    for (int bit = 0; bit < 29; bit++)
+    int cnt = 0;
+    for (size_t i = 0; i < n; i++)
     {
-        for (size_t i = 0; i < n; i++)
-            b[i] = a[i] % (1 << (bit + 1));
-        sort(all(b));
-        int tot = 0;
-        for (size_t i = 0; i < n; i++)
+        for (size_t j = i + 1; j < n; j++)
         {
-            int x = lower_bound(all(b), (1 << bit) - b[i]) - b.begin();
-            if (x <= i)
-                tot--;
-            tot += n - x;
-
-            x = lower_bound(all(b), (1 << (bit + 1)) - b[i]) - b.begin();
-            if (x <= i)
-                tot++;
-            tot -= n - x;
-
-            x = lower_bound(all(b), (1 << (bit + 1)) + ((1 << bit)) - b[i]) - b.begin();
-            if (x <= i)
-                tot--;
-            tot += n - x;
+            cnt += a[i] > a[j];
         }
-        tot /= 2;
-        if (tot & 1)
-            ans |= (1 << bit);
     }
-    cout << ans << '\n';
+    cnt %= 2;
+    int m;
+    cin >> m;
+    for (size_t i = 0; i < m; i++)
+    {
+        int l, r;
+        cin >> l >> r;
+        r -= l;
+        r = r * (r + 1) / 2;
+        r %= 2;
+        if (r)
+            cnt = !cnt;
+        if (cnt)
+            cout << "odd\n";
+        else
+            cout << "even\n";
+    }
 }
 
 int32_t main()

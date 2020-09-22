@@ -21,38 +21,20 @@ void solveCase()
     int n;
     cin >> n;
     vector<int> a(n);
-    vector<int> b(n);
-    int ans = 0;
     for (auto &x : a)
         cin >> x;
-    for (int bit = 0; bit < 29; bit++)
+    int mini = *min_element(all(a));
+    int prev = -MOD;
+    int res = MOD;
+    for (int i = 0; i < n; i++)
     {
-        for (size_t i = 0; i < n; i++)
-            b[i] = a[i] % (1 << (bit + 1));
-        sort(all(b));
-        int tot = 0;
-        for (size_t i = 0; i < n; i++)
+        if (a[i] == mini)
         {
-            int x = lower_bound(all(b), (1 << bit) - b[i]) - b.begin();
-            if (x <= i)
-                tot--;
-            tot += n - x;
-
-            x = lower_bound(all(b), (1 << (bit + 1)) - b[i]) - b.begin();
-            if (x <= i)
-                tot++;
-            tot -= n - x;
-
-            x = lower_bound(all(b), (1 << (bit + 1)) + ((1 << bit)) - b[i]) - b.begin();
-            if (x <= i)
-                tot--;
-            tot += n - x;
+            res = min(res, i - prev);
+            prev = i;
         }
-        tot /= 2;
-        if (tot & 1)
-            ans |= (1 << bit);
     }
-    cout << ans << '\n';
+    cout << res << '\n';
 }
 
 int32_t main()

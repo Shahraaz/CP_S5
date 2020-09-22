@@ -148,40 +148,66 @@ void Solution::solveCase()
             exit(1);
         }
 
-        for (auto &x : adj[centroid[0]])
-            adj[x].erase(centroid[0]);
-        auto back = adj[centroid[0]];
-        adj[centroid[0]].clear();
-
         UnionFind U(n + 1);
+        adj[centroid[0]].erase(centroid[1]);
+        adj[centroid[1]].erase(centroid[0]);
         for (size_t i = 1; i <= n; i++)
             for (auto &x : adj[i])
-                U.unionSet(i, x);
+                U.unionSet(x, i);
 
-        int max1 = 0, max2 = 0;
-        for (auto &i : back)
+        vector<int> dist(n + 1, -1);
+        queue<int> Q;
+        Q.push(centroid[0]);
+        Q.push(centroid[1]);
+        dist[centroid[0]] = 0;
+        dist[centroid[1]] = 0;
+        while (Q.size())
         {
-            db(i, U.sizeOfSet(i));
-            if (U.sizeOfSet(i) >= max1)
+            auto top = Q.front();
+            Q.pop();
+            for (auto &x : adj[top])
+                if (dist[x] == -1)
+                {
+                    dist[x] = dist[top] + 1;
+                    Q.push(x);
+                }
+        }
+
+        for (size_t i = 1; i <= n; i++)
+        {
+            if (i == centroid[0])
+                continue;
+            if (i == centroid[1])
+                continue;
+            if (U.isSameSet(i, centroid[0]))
             {
-                max2 = max1;
-                max1 = i;
+                for (auto &x : adj[i])
+                {
+                    cout << i << ' ' << x << '\n';
+                    if (dist[i] > dist[x])
+                        cout << i << ' ';
+                    else
+                        cout << x << ' ';
+                    cout << centroid[1];
+                    cout << '\n';
+                    return;
+                }
             }
-            else if (U.sizeOfSet(i) >= max2)
+            else
             {
-                max2 = i;
+                for (auto &x : adj[i])
+                {
+                    cout << i << ' ' << x << '\n';
+                    if (dist[i] > dist[x])
+                        cout << i << ' ';
+                    else
+                        cout << x << ' ';
+                    cout << centroid[0];
+                    cout << '\n';
+                    return;
+                }
             }
         }
-        cout << centroid[0] << ' ' << max2 << '\n';
-        cout << max1 << ' ' << max2 << '\n';
-    }
-    else
-    {
-        db(n);
-        db(centroid);
-        for (size_t i = 1; i <= n; i++)
-            db(i, adj[i]);
-        exit(1);
     }
 }
 
