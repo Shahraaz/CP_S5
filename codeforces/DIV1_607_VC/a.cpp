@@ -18,37 +18,39 @@ const int NAX = 2e5 + 5, MOD = 1000000007;
 
 void solveCase()
 {
-    int n;
-    cin >> n;
-    vector<vector<int>> vecc;
-    vector<int> res(n);
-    for (size_t i = 0; i < n; i++)
-    {
-        int l, r;
-        cin >> l >> r;
-        vecc.pb({l, (int)i, r});
-    }
-    sort(all(vecc));
-    int now = 1;
-    for (size_t i = 0; i < n; i++)
-    {
-        if (now <= vecc[i][0])
+    int x;
+    cin >> x;
+    string str;
+    cin >> str;
+    // str = "$" + str;
+    ll len = str.size();
+    auto append = [&](int pos, int time) {
+        // db(pos, time);
+        ll tempLern = len - pos - 1;
+        tempLern %= MOD;
+        if (tempLern < 0)
+            tempLern += MOD;
+        for (size_t i = 0; i < time; i++)
         {
-            now = vecc[i][0];
-            res[vecc[i][1]] = now;
-            now++;
+            len += tempLern;
+            len %= MOD;
         }
-        else if (now <= vecc[i][2])
+        if (str.size() < x)
         {
-            res[vecc[i][1]] = now;
-            now++;
+            auto suff = str.substr(pos + 1);
+            for (size_t i = 0; i < time; i++)
+                str += suff;
         }
-    }
-    for (auto &x : res)
+    };
+    // db(str, x);
+    for (size_t i = 0; i < x; i++)
     {
-        cout << x << ' ';
+        // db(i, x, len);
+        int cnt = str[i] - '1';
+        append(i, cnt);
     }
-    cout << '\n';
+    // cout << str << '\n';
+    cout << len << '\n';
 }
 
 int32_t main()

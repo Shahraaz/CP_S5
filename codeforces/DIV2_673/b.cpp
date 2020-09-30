@@ -19,35 +19,40 @@ const int NAX = 2e5 + 5, MOD = 1000000007;
 void solveCase()
 {
     int n;
-    cin >> n;
-    vector<vector<int>> vecc;
+    ll T;
+    cin >> n >> T;
+    vector<int> a(n);
     vector<int> res(n);
+    map<int, vector<int>> mp;
     for (size_t i = 0; i < n; i++)
     {
-        int l, r;
-        cin >> l >> r;
-        vecc.pb({l, (int)i, r});
+        cin >> a[i];
+        mp[a[i]].pb(i);
     }
-    sort(all(vecc));
-    int now = 1;
-    for (size_t i = 0; i < n; i++)
+    map<int, int> clr;
+    for (auto &x : mp)
     {
-        if (now <= vecc[i][0])
+        int ctr = 0;
+        if (x.f * 2 == T)
         {
-            now = vecc[i][0];
-            res[vecc[i][1]] = now;
-            now++;
+            for (auto &y : x.second)
+            {
+                res[y] = ctr;
+                ctr = 1 - ctr;
+            }
+            continue;
         }
-        else if (now <= vecc[i][2])
-        {
-            res[vecc[i][1]] = now;
-            now++;
-        }
+        if (clr.find(T - x.f) != clr.end())
+            ctr = 1 - clr[T - x.f];
+        clr[x.f] = ctr;
+        for (auto &y : x.second)
+            res[y] = ctr;
     }
     for (auto &x : res)
     {
         cout << x << ' ';
     }
+
     cout << '\n';
 }
 

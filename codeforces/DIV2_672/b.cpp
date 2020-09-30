@@ -20,35 +20,31 @@ void solveCase()
 {
     int n;
     cin >> n;
-    vector<vector<int>> vecc;
-    vector<int> res(n);
+    vector<int> vecc[32];
+    int zebra = 0;
     for (size_t i = 0; i < n; i++)
     {
-        int l, r;
-        cin >> l >> r;
-        vecc.pb({l, (int)i, r});
-    }
-    sort(all(vecc));
-    int now = 1;
-    for (size_t i = 0; i < n; i++)
-    {
-        if (now <= vecc[i][0])
+        int x;
+        cin >> x;
+        bool ok = 0;
+        for (int i = 31 - 1; i >= 0; i--)
         {
-            now = vecc[i][0];
-            res[vecc[i][1]] = now;
-            now++;
+            if (x & (1 << i))
+            {
+                vecc[i].pb(x);
+                ok = true;
+                break;
+            }
         }
-        else if (now <= vecc[i][2])
-        {
-            res[vecc[i][1]] = now;
-            now++;
-        }
+        zebra += ok == 0;
     }
-    for (auto &x : res)
+    ll res = 0;
+    for (int i = 31 - 1; i >= 0; i--)
     {
-        cout << x << ' ';
+        res += vecc[i].size() * (vecc[i].size() - 1LL) / 2;
     }
-    cout << '\n';
+    res += zebra * (zebra - 1LL) / 2;
+    cout << res << '\n';
 }
 
 int32_t main()

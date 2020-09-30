@@ -20,35 +20,28 @@ void solveCase()
 {
     int n;
     cin >> n;
-    vector<vector<int>> vecc;
-    vector<int> res(n);
+    vector<int> a(n);
+    vector<pair<int, int>> vecc;
+    map<int, int> cnt;
     for (size_t i = 0; i < n; i++)
     {
-        int l, r;
-        cin >> l >> r;
-        vecc.pb({l, (int)i, r});
+        cin >> a[i];
+        cnt[a[i]]++;
     }
-    sort(all(vecc));
-    int now = 1;
-    for (size_t i = 0; i < n; i++)
+    for (auto &x : cnt)
     {
-        if (now <= vecc[i][0])
+        if (x.s > 1)
         {
-            now = vecc[i][0];
-            res[vecc[i][1]] = now;
-            now++;
-        }
-        else if (now <= vecc[i][2])
-        {
-            res[vecc[i][1]] = now;
-            now++;
+            cout << "YES\n";
+            return;
         }
     }
-    for (auto &x : res)
-    {
-        cout << x << ' ';
-    }
-    cout << '\n';
+
+    if (is_sorted(a.rbegin(), a.rend()))
+        cout << "NO\n";
+    else
+        cout << "YES\n";
+    // cout << res << '\n';
 }
 
 int32_t main()
