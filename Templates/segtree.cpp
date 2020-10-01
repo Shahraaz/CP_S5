@@ -1,34 +1,27 @@
-
 struct Node
 {
     long long val;
     Node(long long one = 0) : val(one) {}
-    Node operator+(const Node &rhs)
-    {
-        Node a = *this;
-        a.val = max(a.val, rhs.val);
-        return a;
-    }
     Node lazylazyMerge(const Node &rhs)
     {
         Node a = *this;
         a.val = (a.val + rhs.val);
         return a;
     }
-    Node seglazyMerge(const Node &rhs)
+    Node seglazyMerge(const Node &rhs, const int &l, const int &r)
     {
         Node a = *this;
-        a.val = (a.val + rhs.val);
+        a.val += (r - l + 1) * (rhs.val);
         return a;
     }
     Node segSegMerge(const Node &rhs)
     {
         Node a = *this;
-        a.val = min(a.val, rhs.val);
+        a.val = (a.val + rhs.val);
         return a;
     }
 };
- 
+
 template <typename segNode>
 struct Segtree
 {
@@ -52,7 +45,7 @@ struct Segtree
         if (isLazy[node])
         {
             isLazy[node] = false;
-            Seg[node] = Seg[node].seglazyMerge(Lazy[node]);
+            Seg[node] = Seg[node].seglazyMerge(Lazy[node], L, R);
             if (L != R)
             {
                 Lazy[2 * node] = Lazy[2 * node].lazylazyMerge(Lazy[node]);
@@ -157,4 +150,3 @@ struct Segtree
         Update(1, 0, n - 1, start, end, val);
     }
 };
- 
