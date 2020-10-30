@@ -14,23 +14,32 @@ using ll = long long;
 #define pb push_back
 #define all(v) v.begin(), v.end()
 
-const int NAX = 2e5 + 5, MOD = 1000000007;
+const int NAX = 400 + 5, MOD = 1000000007;
+
+int dp[NAX][NAX];
 
 void solveCase()
 {
-    int n, m;
-    cin >> n >> m;
-    ll sum = 0;
-    for (size_t i = 0; i < n; i++)
-    {
-        int x;
+    int n;
+    cin >> n;
+    vector<int> vecc(n);
+    for (auto &x : vecc)
         cin >> x;
-        sum += x;
-    }
-    if (sum == m)
-        cout << "YES\n";
-    else
-        cout << "NO\n";
+    sort(all(vecc));
+    memset(dp, -1, sizeof dp);
+    function<int(int, int)> solve = [&](int dishidx, int xCord) -> int {
+        if (dishidx == n)
+            return 0;
+        if (xCord == 404)
+            return MOD;
+        int &ret = dp[dishidx][xCord];
+        if (ret >= 0)
+            return ret;
+        ret = min(solve(dishidx, xCord + 1), abs(xCord - vecc[dishidx]) + solve(dishidx + 1, xCord + 1));
+        db(dishidx, xCord, ret);
+        return ret;
+    };
+    cout << solve(0, 1) << '\n';
 }
 
 int32_t main()

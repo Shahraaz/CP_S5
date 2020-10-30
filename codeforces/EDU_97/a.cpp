@@ -18,19 +18,29 @@ const int NAX = 2e5 + 5, MOD = 1000000007;
 
 void solveCase()
 {
-    int n, m;
-    cin >> n >> m;
-    ll sum = 0;
-    for (size_t i = 0; i < n; i++)
+    ll l, r;
+    cin >> l >> r;
+    ll x = 2 * l;
+    x -= 25;
+    int cnt = 50;
+    while (cnt--)
     {
-        int x;
-        cin >> x;
-        sum += x;
+        if (x > 0)
+        {
+            ll a = l % x;
+            ll b = r % x;
+            if (l / x == r / x)
+                if (2 * a >= x && 2 * b >= x)
+                {
+                    db(a, b);
+                    db(x);
+                    cout << "YES\n";
+                    return;
+                }
+        }
+        ++x;
     }
-    if (sum == m)
-        cout << "YES\n";
-    else
-        cout << "NO\n";
+    cout << "NO\n";
 }
 
 int32_t main()

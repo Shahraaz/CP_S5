@@ -18,19 +18,31 @@ const int NAX = 2e5 + 5, MOD = 1000000007;
 
 void solveCase()
 {
-    int n, m;
-    cin >> n >> m;
-    ll sum = 0;
-    for (size_t i = 0; i < n; i++)
-    {
-        int x;
+    int n;
+    cin >> n;
+    deque<int> order(n);
+    for (auto &x : order)
         cin >> x;
-        sum += x;
+    queue<pair<int, int>> Q;
+    Q.push({1, 0});
+    order.pop_front();
+    int maxDepth = 0;
+    while (Q.size())
+    {
+        auto top = Q.front();
+        int node = top.f;
+        maxDepth = max(maxDepth, top.s);
+        Q.pop();
+        maxDepth = max(maxDepth, top.s);
+        int prev = 0;
+        while (order.size() && prev <= order.front())
+        {
+            prev = order.front();
+            Q.push({order.front(), top.s + 1});
+            order.pop_front();
+        }
     }
-    if (sum == m)
-        cout << "YES\n";
-    else
-        cout << "NO\n";
+    cout << maxDepth << '\n';
 }
 
 int32_t main()

@@ -18,19 +18,6 @@ const int NAX = 2e5 + 5, MOD = 1000000007;
 
 void solveCase()
 {
-    int n, m;
-    cin >> n >> m;
-    ll sum = 0;
-    for (size_t i = 0; i < n; i++)
-    {
-        int x;
-        cin >> x;
-        sum += x;
-    }
-    if (sum == m)
-        cout << "YES\n";
-    else
-        cout << "NO\n";
 }
 
 int32_t main()
@@ -40,7 +27,7 @@ int32_t main()
     cin.tie(0);
 #endif
     int t = 1;
-    cin >> t;
+    // cin >> t;
     for (int i = 1; i <= t; ++i)
     {
         solveCase();
