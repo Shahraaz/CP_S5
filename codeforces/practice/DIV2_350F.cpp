@@ -137,6 +137,7 @@ void solveCase()
     }
     if (res.empty())
         res = "0";
+        
     cout << res << '\n';
 }
 
