@@ -179,13 +179,17 @@ void solveCase()
     }
     sort(all(p));
     db(p);
-
     auto compute_time = [&](int idxPerson, int startTime) {
         int start = max(p[idxPerson].first, startTime);
         int endd = min(p[idxPerson].second, startTime + k - 1);
-        return endd - start + 1;
+        int tt = endd - start + 1;
+        if (tt < 0)
+            tt = 0;
+        return tt;
     };
     ll res = 0;
+    // db(p);
+
     for (size_t i = 0; i < n; i++)
     {
         ll one = 0;
@@ -193,43 +197,58 @@ void solveCase()
         for (size_t j = 0; j < m; j++)
         {
             int t = compute_time(j, i);
-            one += t;
-            vecc[j] = MOD;
-            if (p[j].first <= i)
-                continue;
-            if (i + k - 1 < p[j].first)
+            db(i, j, t);
+            if (t == 0)
             {
-                vecc[j] = i;
-                continue;
+                vecc[j] = MOD;
+                stree.update(p[j].first, p[j].second, 1);
             }
-            int low = i;
-            int rptr = p[j].second;
-            int ans = rptr;
-            while (low <= rptr)
+            else if (t == (p[j].second - p[j].first + 1))
             {
-                int mid = (low + rptr) / 2;
-                if (compute_time(j, mid) >= t)
+                vecc[j] = MOD;
+                one += t;
+            }
+            else
+            {
+                if (t >= compute_time(j, i + 1))
                 {
-                    ans = mid;
-                    rptr = mid - 1;
+                    vecc[j] = MOD;
+                    one += t;
                 }
                 else
-                    low = mid + 1;
+                {
+                    int lptr = i, rptr = p[j].second, ans = rptr + 1;
+                    while (lptr <= rptr)
+                    {
+                        int mid = (lptr + rptr) / 2;
+                        int two = compute_time(j, mid);
+                        if (two >= t)
+                            lptr = mid + 1;
+                        else
+                        {
+                            ans = min(ans, mid);
+                            rptr = mid - 1;
+                        }
+                    }
+                    db(i, j, one, ans, compute_time(j, ans));
+                    // if (ans >= n)
+                    stree.update(p[j].first, p[j].second, 1);
+                    vecc[j] = ans;
+                }
             }
-            vecc[j] = ans;
         }
-        db(i, vecc);
+        db(i, one, vecc);
         vector<vector<int>> events(n);
         for (size_t j = 0; j < m; j++)
-            if (vecc[j] != MOD)
+            if (vecc[j] < n)
                 events[vecc[j]].pb(j);
         res = max(res, one);
         for (int j = i; j < n; j++)
         {
             for (auto &x : events[j])
             {
-                one -= compute_time(x, i);
-                stree.update(p[x].first, p[x].second, 1);
+                one += compute_time(x, i);
+                stree.update(p[x].first, p[x].second, -1);
             }
             res = max(res, one + stree.query(j, min(n - 1, j + k - 1)).val);
         }

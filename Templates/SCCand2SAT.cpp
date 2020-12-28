@@ -96,3 +96,19 @@ public:
         return {SccG, Comp};
     }
 };
+
+/*
+
+    SCC scc(adj);
+    auto assignment = scc.GetScc().second;
+    for (size_t i = 0; i < 2 * n; i += 2)
+    {
+        if (assignment[i] == assignment[i + 1])
+        {
+            cout << "NO\n";
+            return;
+        }
+        db(i, assignment[i] > assignment[i + 1]);
+    }
+
+*/
