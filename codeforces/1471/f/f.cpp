@@ -61,29 +61,57 @@ void solveCase()
 {
     int n, m;
     cin >> n >> m;
-    UnionFind u(m + 1);
-    vector<int> res;
-    int val = 1;
-    for (size_t i = 0; i < n; i++)
+    vector<vector<int>> adj(n);
+    vector<int> degree(n);
+    UnionFind U(n);
+    for (size_t i = 0; i < m; i++)
     {
-        int k;
-        cin >> k;
-        int a = 0, b = 0;
-        cin >> a;
-        if (k > 1)
-            cin >> b;
-        if (u.unionSet(a, b))
-        {
-            res.pb(i + 1);
-            val += val;
-            if (val >= MOD)
-                val -= MOD;
-        }
+        int u, v;
+        cin >> u >> v;
+        --u, --v;
+        adj[u].pb(v);
+        adj[v].pb(u);
+        degree[u]++;
+        degree[v]++;
+        U.unionSet(u, v);
     }
-    cout << val << ' ';
+    if (U.sizeOfSet(0) != n)
+    {
+        cout << "NO\n";
+        return;
+    }
+    vector<int> issel(n), res;
+    queue<int> Q;
+    vector<int> isinres(n);
+    Q.push(0);
+    isinres[0] = 1;
+    issel[0] = 1;
+    res.pb(0);
+    while (Q.size())
+    {
+        auto top = Q.front();
+        Q.pop();
+        for (auto &x : adj[top])
+            if (!issel[x])
+            {
+                bool ok = true;
+                for (auto &y : adj[x])
+                    ok = ok && !isinres[y];
+                if (ok)
+                {
+                    isinres[x] = 1;
+                    res.pb(x);
+                }
+                issel[x] = 1;
+                Q.push(x);
+            }
+    }
+    cout << "YES\n";
     cout << res.size() << '\n';
     for (auto &x : res)
-        cout << x << ' ';
+    {
+        cout << x + 1 << ' ';
+    }
     cout << '\n';
 }
 
@@ -94,7 +122,7 @@ int32_t main()
     cin.tie(0);
 #endif
     int t = 1;
-    // cin >> t;
+    cin >> t;
     for (int i = 1; i <= t; ++i)
         solveCase();
     return 0;

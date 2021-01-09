@@ -16,35 +16,61 @@ ll res = 0;
 
 vector<int> adj[NAX];
 int n;
-ll dp[NAX], sz[NAX], dpg[NAX];
+ll sum_odd[NAX], sum_even[NAX];
+ll cnt_odd[NAX], cnt_even[NAX];
 
 void dfs(int node, int par)
 {
-    sz[node] = 1;
-    for (auto &x : adj[node])
-        if (x != par)
+    sum_even[node] = 0;
+    cnt_even[node] = 1;
+    for (auto &c : adj[node])
+        if (c != par)
         {
-            dfs(x, node);
-            sz[node] += sz[x];
-            if (par != -1)
-                dpg[par] += sz[x] + dp[x];
-            dp[node] += 1;
+            dfs(c, node);
+            cnt_even[node] += cnt_odd[c];
+            cnt_odd[node] += cnt_even[c];
+
+            sum_even[node] += cnt_odd[c] + sum_odd[c];
+            sum_odd[node] += cnt_even[c] + sum_even[c];
         }
-    dp[node] += dpg[node];
-    db("dfs", node, par, sz[node], dp[node], dpg[node]);
+    db(node, par);
+    db(sum_even[node], cnt_even[node]);
+    db(sum_odd[node], cnt_odd[node]);
 }
 
 void dfs_reroot(int node, int par)
 {
-    res += dp[node];
+    ll res_node = (sum_even[node]) / 2;
+    res_node += (sum_odd[node] + cnt_odd[node]) / 2;
+    res += res_node;
+    db(node, par, res);
 
-    ll sumdpg = 0;
-
-    for (auto &x : adj[node])
-        sumdpg += sz[x] + dp[x];
-    for (auto &x : adj[node])
-        if (x != par)
+    for (auto &c : adj[node])
+        if (c != par)
         {
+            ll back_cnt_even_node = cnt_even[node];
+            ll back_cnt_odd_node = cnt_odd[node];
+            ll back_sum_even_node = sum_even[node];
+            ll back_sum_odd_node = sum_odd[node];
+
+            cnt_even[node] -= cnt_odd[c];
+            cnt_odd[node] -= cnt_even[c];
+
+            sum_even[node] -= cnt_odd[c] + sum_odd[c];
+            sum_odd[node] -= cnt_even[c] + sum_even[c];
+
+            cnt_even[c] += cnt_odd[node];
+            cnt_odd[c] += cnt_even[node];
+
+            sum_even[c] += cnt_odd[node] + sum_odd[node];
+            sum_odd[c] += cnt_even[node] + sum_even[node];
+
+            dfs_reroot(c, node);
+
+            cnt_even[node] = back_cnt_even_node;
+            cnt_odd[node] = back_cnt_odd_node;
+            sum_even[node] = back_sum_even_node;
+            sum_odd[node] = back_sum_odd_node;
         }
 }
 
@@ -59,9 +85,10 @@ void solveCase()
         adj[u].pb(v);
         adj[v].pb(u);
     }
+    res = 0;
     dfs(0, -1);
     dfs_reroot(0, 0);
-    cout << res << '\n';
+    cout << res / 2 << '\n';
 }
 
 int32_t main()
