@@ -22,58 +22,47 @@ void solveCase()
     {
         cin >> p[i];
         --p[i];
-        if (i != p[i])
-        {
-            adj[i].pb(p[i]);
-            adj[p[i]].pb(i);
-        }
     }
     vector<int> vis(n);
-    vector<pair<int, int>> edges;
-    function<int(int, int)> dfs = [&](int node, int par) -> int {
-        for (auto &x : adj[node])
-            if (x != par)
-            {
-                if (!vis[x])
-                {
-                    vis[x] = 1;
-                    edges.pb({x, node});
-                    // edges.pb({p[x], p[node]});
-                    dfs(x, node);
-                }
-                else
-                    return false;
-            }
-        return true;
-    };
-    int node = -1;
+    vector<vector<int>> decomposed;
     for (size_t i = 0; i < n; i++)
     {
         if (vis[i])
             continue;
-        vis[i] = 1;
-        if (dfs(i, i))
+        int j = i;
+        vector<int> curr;
+        while (!vis[j])
         {
-            node = i;
-            break;
+            curr.pb(j);
+            vis[j] = 1;
+            j = p[j];
         }
-        edges.clear();
+        decomposed.pb(curr);
     }
-    if (node == -1)
+    sort(all(decomposed), [&](auto &x, auto &y) -> bool { return x.size() < y.size(); });
+    if (decomposed[0].size() > 2)
     {
         cout << "NO\n";
         return;
     }
-    fill(all(vis), false);
-    dfs(node, node);
-    for (size_t i = 0; i < n; i++)
+    vector<pair<int, int>> res;
+    if (decomposed[0].size() == 2)
+        res.pb({decomposed[0][0], decomposed[0][1]});
+    for (size_t i = 1; i < decomposed.size(); i++)
     {
-        if (!vis[i])
+        if (decomposed[i].size() % decomposed[0].size())
         {
-            vis[i] = 1;
-
-            
+            cout << "NO\n";
+            return;
         }
+        for (size_t j = 0; j < decomposed[i].size(); j += decomposed[0].size())
+            for (size_t k = 0; k < decomposed[0].size(); k++)
+                res.pb({decomposed[0][k], decomposed[i][j + k]});
+    }
+    cout << "YES\n";
+    for (auto &x : res)
+    {
+        cout << x.first + 1 << ' ' << x.second + 1 << '\n';
     }
 }
 

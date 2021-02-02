@@ -63,3 +63,45 @@ double polygonArea(vector<Point> Polygon)
 	// Return absolute value
 	return abs(area / 2.0);
 }
+
+const ld EPS = 1e-10;
+auto intersect = [&](Point a, Point b, Point c, Point d, bool &ok) -> pair<ld, ld> {
+	if (a.x > b.x)
+		swap(a, b);
+	ok = true;
+	auto oa = cross(c, d, a);
+	auto ob = cross(c, d, b);
+	// auto oc = cross(a, b, c);
+	// auto od = cross(a, b, d);
+
+	pair<ld, ld> ret;
+	ret.first = (ld)a.x * ob - (ld)b.x * oa;
+	ret.second = (ld)a.y * ob - (ld)b.y * oa;
+
+	if ((abs(ob - oa)) <= EPS)
+	{
+		// ok = false;
+		ret.first = b.x;
+		ret.second = b.y;
+		return ret;
+	}
+
+	ret.first /= ob - oa;
+	ret.second /= ob - oa;
+	db(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y);
+	db(ret.first, ret.second);
+
+	if (a.x <= (ret.first + EPS) && ret.first <= (b.x + EPS))
+		;
+	else
+		ok = false;
+
+	if (a.y > b.y)
+		swap(a, b);
+	if (a.y <= (ret.second + EPS) && ret.second <= (b.y + EPS))
+		;
+	else
+		ok = false;
+
+	return ret;
+};
