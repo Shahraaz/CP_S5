@@ -26,8 +26,6 @@ void solveCase()
     ll a = n - 1, b = 0;
     if (k == 1)
     {
-
-        
         cout << 1 << '\n';
         return;
     }
@@ -39,8 +37,8 @@ void solveCase()
     {
         b++;
 
-        k -= len - 1;
-        b += (k - 1) / len;
+        k -= len;
+        b += (k) / len;
     }
     b %= n;
     cout << b + 1 << '\n';
