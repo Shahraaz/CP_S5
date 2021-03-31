@@ -27,7 +27,7 @@ int main()
     insert_numbers(126271);
 }
 */
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 
 using namespace std;
 struct custom_hash
@@ -47,6 +47,8 @@ struct custom_hash
         return splitmix64(x + FIXED_RANDOM);
     }
 };
+
+unordered_map<long long, int, custom_hash> numbers;
 
 const int N = 1e6;
 
