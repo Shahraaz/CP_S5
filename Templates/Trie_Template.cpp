@@ -1,3 +1,39 @@
+const int AL = 26;
+
+struct node
+{
+    int nxt[AL];
+    bool term;
+    node()
+    {
+        memset(nxt, -1, sizeof(nxt));
+        term = false;
+    };
+    int &operator[](const int x)
+    {
+        return nxt[x];
+    }
+};
+
+vector<node> trie = vector<node>(1, node());
+
+void add(const string &s)
+{
+    int cur = 0;
+    int d = 1;
+    for (const char &c : s)
+    {
+        ++d;
+        if (trie[cur][c - 'a'] == -1)
+        {
+            trie[cur][c - 'a'] = trie.size();
+            trie.push_back(node());
+        }
+        cur = trie[cur][c - 'a'];
+    }
+    trie[cur].term = true;
+}
+
 class Trie_Node
 {
 private:
@@ -8,7 +44,7 @@ public:
     {
         child.resize(26, nullptr);
     }
-    void insert(string s)
+    void insert(const string &s)
     {
         Trie_Node *curr = this;
         int len = s.length();
