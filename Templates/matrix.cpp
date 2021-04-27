@@ -8,7 +8,7 @@ struct matrix
 	}
 };
 
-matrix mul(cosnt matrix &A, const matrix &B)
+matrix mul(const matrix &A, const matrix &B)
 {
 	int n = A.MAT.size(), m = B.MAT.size(), k = B.MAT[0].size();
 	matrix X(n, k);
