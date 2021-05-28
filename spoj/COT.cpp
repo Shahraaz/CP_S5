@@ -26,6 +26,7 @@ struct node
 };
 
 node *null = new node(0, NULL, NULL);
+// null->left = null->right = null;
 
 node *node::insert(int l, int r, int w)
 {
@@ -39,6 +40,19 @@ node *node::insert(int l, int r, int w)
         return new node(this->count + 1, this->left->insert(l, mid, w), this->right->insert(mid + 1, r, w));
     }
     return this;
+}
+
+int query(node *a, node *b, node *c, node *d, int l, int r, int k)
+{
+    if (l == r)
+        return l;
+
+    int count = a->left->count + b->left->count - c->left->count - d->left->count;
+    int m = (l + r) / 2;
+
+    if (count >= k)
+        return query(a->left, b->left, c->left, d->left, l, m, k);
+    return query(a->right, b->right, c->right, d->right, m + 1, r, k - count);
 }
 
 node *root[NAX];
@@ -78,19 +92,6 @@ int LCA(int u, int v)
     }
 
     return u;
-}
-
-int query(node *a, node *b, node *c, node *d, int l, int r, int k)
-{
-    if (l == r)
-        return l;
-
-    int count = a->left->count + b->left->count - c->left->count - d->left->count;
-    int m = (l + r) / 2;
-
-    if (count >= k)
-        return query(a->left, b->left, c->left, d->left, l, m, k);
-    return query(a->right, b->right, c->right, d->right, m + 1, r, k - count);
 }
 
 void solveCase()
