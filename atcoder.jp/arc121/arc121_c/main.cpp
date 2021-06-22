@@ -20,6 +20,24 @@ vector<int> solveCase(int n, vector<int64_t> &a)
     int idx = 1;
     for (size_t i = n; i >= 1;)
     {
+        if (i == 3)
+        {
+            if (a[1] == 1 && a[2] == 2 && a[3] == 3)
+                break;
+            int id = -1;
+            for (int j = 1; j + 1 <= i; j++)
+                if ((j & 1) == (idx & 1))
+                {
+                    id = j;
+                    break;
+                }
+            db(a, idx, id);
+            swap(a[id], a[id + 1]);
+            res.pb(id);
+            db(idx, id, a);
+            idx = (idx + 1) % 2;
+            continue;
+        }
         if (a[i] == i)
         {
             --i;
@@ -27,14 +45,12 @@ vector<int> solveCase(int n, vector<int64_t> &a)
         }
         int id = -1;
         for (int j = 1; j + 1 <= i; j++)
-        {
             if ((j & 1) == (idx & 1))
                 if ((a[j] == i))
                 {
                     id = j;
                     break;
                 }
-        }
         db(i, id);
         if (id == -1)
         {

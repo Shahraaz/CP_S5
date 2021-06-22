@@ -12,60 +12,38 @@ using namespace std;
 using ll = long long;
 const int NAX = 2e5 + 5, MOD = 1000000007;
 
-ll sum(ll idx)
-{
-    if (idx < 0)
-        return 0;
-    return (idx) * (idx + 1LL) / 2;
-}
+// ll sum(ll idx)
+// {
+//     if (idx < 0)
+//         return 0;
+//     return (idx) * (idx + 1LL) / 2;
+// }
 
-ll sum(ll l, ll r)
-{
-    return sum(r) - sum(l - 1);
-}
+// ll sum(ll l, ll r)
+// {
+//     return sum(r) - sum(l - 1);
+// }
 
 struct Node
 {
-    long long val, mex;
-    Node(long long one = 0, long long _mex = 0) : val(one), mex(_mex) {}
+    long long val;
+    Node(long long one = 0) : val(one) {}
     Node lazylazyMerge(const Node &rhs)
     {
-        return rhs;
+        Node a = *this;
+        a.val = rhs.val;
+        return a;
     }
     Node seglazyMerge(const Node &rhs, const int &l, const int &r)
     {
         Node a = *this;
-        a.val += sum(r, l) * (rhs.val);
-        a.mex = rhs.mex;
+        a.val = (r - l + 1) * (rhs.val);
         return a;
     }
     Node segSegMerge(const Node &rhs)
     {
         Node a = *this;
         a.val = (a.val + rhs.val);
-        a.mex = rhs.mex;
-        return a;
-    }
-};
-
-struct NodeMex
-{
-    long long val;
-    NodeMex(long long val = 0) : val(val) {}
-    NodeMex lazylazyMerge(const NodeMex &rhs)
-    {
-        return rhs;
-    }
-    NodeMex seglazyMerge(const NodeMex &rhs, const int &l, const int &r)
-    {
-        NodeMex a = *this;
-        a.val = rhs.val;
-        return a;
-    }
-    NodeMex segSegMerge(const NodeMex &rhs)
-    {
-        NodeMex a = *this;
-        a.val = rhs.mvaln;
         return a;
     }
 };
@@ -77,7 +55,7 @@ struct Segtree
     vector<segNode> Base;
     vector<bool> isLazy;
     int n;
-    Segtree(int _n = 2e5)
+    Segtree(int _n = 1e5)
     {
         this->n = _n;
         Seg.resize(4 * _n + 10);
@@ -197,39 +175,46 @@ struct Segtree
     {
         Update(1, 0, n - 1, start, end, val);
     }
-    ll bs(int i, int tl, int tr)
-    {
-        propagate(i, tl, tr);
-        if (tl == tr)
-            return tl;
-
-        int mid = (tl + tr) / 2;
-        if (Seg[2 * i].val == 0)
-            return bs(2 * i, tl, mid);
-        return bs(2 * i + 1, mid + 1, tr);
-    }
 };
 
 void solveCase()
 {
-    int n;
+    int n = 1e5;
     cin >> n;
-    vector<int> a(n + 1);
+    assert(n <= (100000));
+    vector<int> a(n + 5);
+    vector<vector<int>> poses(n + 5);
+    Segtree<Node> stree(n + 5);
+    int mx = 0;
     for (size_t i = 1; i <= n; i++)
-        cin >> a[i];
-
-    ll res = 0;
-    Segtree<Node> stree(n + 1);
-    for (int i = n; i >= 1; i--)
     {
-        // 4 0 1 2 3 8 5 4 6
-        //   1 2 3 4 4 4 6 7
-        // 0 1 2 3 5 5 6 6 7
-        int nowmex = a[i];
-        if (nowmex == 0)
-            nowmex = 1;
-        stree.update(i, nowmex);
-        
+        a[i] = rand() % n;
+        cin >> a[i];
+        poses[a[i]].pb(i);
+        while (poses[mx].size())
+            ++mx;
+        stree.update(i, Node(mx));
+    }
+    for (size_t i = 0; i <= n; i++)
+        reverse(all(poses[i]));
+    ll res = 0;
+    for (size_t i = 1; i <= n; i++)
+    {
+        res += stree.query(i, n).val;
+        int v = a[i];
+
+        poses[v].pop_back();
+        int rptr = poses[v].size() ? poses[v].back() : n + 1;
+        int low = i, high = rptr - 1, f = n + 1;
+        while (low <= high)
+        {
+            int mid = (low + high) / 2;
+            if (stree.query(mid).val > v)
+                f = mid, high = mid - 1;
+            else
+                low = mid + 1;
+        }
+        stree.update(f, rptr - 1, v);
     }
     cout << res << '\n';
 }
@@ -240,7 +225,7 @@ int32_t main()
     ios_base::sync_with_stdio(0);
     cin.tie(0);
 #endif
-    int t = 1;
+    int t = 100;
     cin >> t;
     for (int i = 1; i <= t; ++i)
         solveCase();
