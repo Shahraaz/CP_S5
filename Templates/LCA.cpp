@@ -9,13 +9,13 @@ struct LeastCommonAncestor
     vector<vector<int>> Adj;
     int Log;
     LeastCommonAncestor() {}
-    LeastCommonAncestor(vector<vector<int>> &Tree) : Adj(Tree)
+    LeastCommonAncestor(vector<vector<int>> &Tree,int root) : Adj(Tree)
     {
         int n = Tree.size();
         Log = ceil(log2(n)) + 1;
         dp.assign(Log, vector<int>(n));
         Level.assign(n, 0);
-        dfs(0, 0, 0);
+        dfs(root, root, 0);
         for (int i = 1; i < Log; ++i)
             for (int j = 0; j < n; ++j)
                 dp[i][j] = dp[i - 1][dp[i - 1][j]];
